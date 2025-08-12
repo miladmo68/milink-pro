@@ -80,7 +80,6 @@ export default function Hero({ onOpenLightbox }) {
               >
                 ⤢
               </button>
-              {/* هاله‌های رنگی حذف شده */}
             </div>
           </div>
         </div>

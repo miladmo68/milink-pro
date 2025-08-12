@@ -2,12 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Basics (همون قبلی‌ها) ===== */
+/* ===== Basics ===== */
 html,
 body,
 #root {
-  overflow-x: hidden;
-  width: 100%;
+  @apply w-full overflow-x-hidden;
 }
 * {
   box-sizing: border-box;
@@ -21,287 +20,254 @@ body {
 .container {
   @apply max-w-7xl mx-auto px-4;
 }
+
 @layer base {
   h1,
   h2,
   h3 {
     font-family: theme("fontFamily.display");
   }
-}
-h1 {
-  @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
-}
-h2 {
-  @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
-}
-h3 {
-  @apply text-2xl sm:text-3xl font-bold;
+  h1 {
+    @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
+  }
+  h2 {
+    @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
+  }
+  h3 {
+    @apply text-2xl sm:text-3xl font-bold;
+  }
 }
 
-/* ===== Utilities ===== */
-@layer utilities {
+/* ===== Vars ===== */
+:root {
+  --grid-size: 14px;
+  --grid-size-soft: 28px; /* خاموش */
+}
+
+/* ===== Shared mask (Tailwind هنوز mask utility نداره) ===== */
+.hero-mask-90 {
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    120% 95% at 50% 45%,
+    #000 0%,
+    #000 65%,
+    transparent 92%
+  );
+  mask-image: radial-gradient(
+    120% 95% at 50% 45%,
+    #000 0%,
+    #000 65%,
+    transparent 92%
+  );
+}
+
+/* ===== hero-plain (پایه نرم) ===== */
+.hero-plain {
+  @apply absolute inset-0 pointer-events-none;
+}
+.hero-plain {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.24) 40%,
+    rgba(255, 255, 255, 0.14) 100%
+  );
+}
+[data-theme="dark"] .hero-plain {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(10, 16, 28, 0.72) 0%,
+    rgba(10, 16, 28, 0.66) 40%,
+    rgba(10, 16, 28, 0.6) 100%
+  );
+}
+
+/* ===== hero-bleed ===== */
+.hero-bleed {
+  @apply absolute inset-0 pointer-events-none;
+}
+[data-theme="light"] .hero-bleed {
+  background: radial-gradient(
+    60% 40% at 50% 15%,
+    rgba(125, 169, 255, 0.05),
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+}
+[data-theme="dark"] .hero-bleed {
+  background: radial-gradient(
+    60% 40% at 50% 18%,
+    rgba(100, 160, 255, 0.1),
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+}
+
+/* ===== hero-grid (پایه) ===== */
+.hero-grid {
+  @apply absolute inset-0 pointer-events-none bg-[length:var(--grid-size)_var(--grid-size)];
+}
+.hero-grid {
+  background-position: 0 0;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.22) 1px,
+      rgba(0, 0, 0, 0) 1px
+    ),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.22) 1px, rgba(0, 0, 0, 0) 1px);
+  opacity: 0.18;
+}
+[data-theme="dark"] .hero-grid {
+  background-image: linear-gradient(
+      rgba(170, 200, 255, 0.12) 1px,
+      rgba(0, 0, 0, 0) 1px
+    ),
+    linear-gradient(90deg, rgba(170, 200, 255, 0.12) 1px, rgba(0, 0, 0, 0) 1px);
+  opacity: 0.1;
+}
+
+/* فید لبه‌ها روی لایه پایه */
+.grid-fade {
+  -webkit-mask-image: radial-gradient(
+    110% 90% at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.85) 55%,
+    rgba(0, 0, 0, 0.45) 78%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: radial-gradient(
+    110% 90% at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.85) 55%,
+    rgba(0, 0, 0, 0.45) 78%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+/* ===== hero-grid-center (بوست مرکز) ===== */
+.hero-grid-center {
+  @apply absolute inset-0 pointer-events-none bg-[length:var(--grid-size)_var(--grid-size)] z-[1];
+}
+.hero-grid-center {
+  background-position: 0 0;
+  background-image: linear-gradient(
+      rgba(0, 0, 0, 0.35) 1px,
+      rgba(0, 0, 0, 0) 1px
+    ),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, rgba(0, 0, 0, 0) 1px);
+  opacity: 0.55;
+  -webkit-mask-image: radial-gradient(
+    70% 50% at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0.65) 66%,
+    rgba(0, 0, 0, 0.15) 82%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: radial-gradient(
+    70% 50% at 50% 50%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0.65) 66%,
+    rgba(0, 0, 0, 0.15) 82%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+[data-theme="dark"] .hero-grid-center {
+  background-image: linear-gradient(
+      rgba(190, 215, 255, 0.28) 1px,
+      rgba(0, 0, 0, 0) 1px
+    ),
+    linear-gradient(90deg, rgba(190, 215, 255, 0.28) 1px, rgba(0, 0, 0, 0) 1px);
+  opacity: 0.38;
+}
+
+/* ===== highlight/shadow/topfade/vignette ===== */
+.hero-highlight {
+  @apply absolute inset-0 pointer-events-none;
+}
+[data-theme="light"] .hero-highlight {
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(255, 255, 255, 0.2),
+    transparent 72%
+  );
+}
+[data-theme="dark"] .hero-highlight {
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(255, 255, 255, 0.12),
+    transparent 72%
+  );
+}
+
+.hero-shadow {
+  @apply pointer-events-none mix-blend-multiply;
+}
+.hero-shadow {
+  @apply absolute;
+  inset: -6% -4% -10% -4%;
+}
+.hero-shadow {
+  background: radial-gradient(
+      70% 46% at 50% 40%,
+      rgba(0, 0, 0, 0.3),
+      transparent 68%
+    ),
+    radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.18), transparent 72%);
+}
+[data-theme="dark"] .hero-shadow {
+  background: radial-gradient(
+      70% 46% at 50% 40%,
+      rgba(0, 0, 0, 0.42),
+      transparent 68%
+    ),
+    radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.28), transparent 72%);
+}
+
+.hero-topfade {
+  @apply absolute inset-0 pointer-events-none;
+}
+[data-theme="light"] .hero-topfade {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.36),
+    rgba(255, 255, 255, 0) 28%
+  );
+}
+[data-theme="dark"] .hero-topfade {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 10, 0.48),
+    rgba(0, 0, 0, 0) 32%
+  );
+}
+
+.hero-vignette {
+  @apply absolute pointer-events-none;
+  inset: -12% -8% -24% -8%;
+}
+[data-theme="light"] .hero-vignette {
+  background: radial-gradient(
+    60% 40% at 50% 10%,
+    rgba(0, 0, 0, 0.14),
+    transparent 58%
+  );
+}
+[data-theme="dark"] .hero-vignette {
+  background: radial-gradient(
+    60% 40% at 50% 10%,
+    rgba(0, 0, 0, 0.36),
+    transparent 58%
+  );
+}
+
+/* ===== Responsive tweaks ===== */
+@media (max-width: 480px) {
   :root {
-    --grid-size: 14px; /* ریزتر از 18px */
-    --grid-size-soft: 28px; /* لایه نرم را خاموش می‌کنیم */
-  }
-
-  .hero-mask-90 {
-    pointer-events: none;
-    -webkit-mask-image: radial-gradient(
-      120% 95% at 50% 45%,
-      #000 0%,
-      #000 65%,
-      transparent 92%
-    );
-    mask-image: radial-gradient(
-      120% 95% at 50% 45%,
-      #000 0%,
-      #000 65%,
-      transparent 92%
-    );
-  }
-
-  /* پس‌زمینه‌ی نرم (همان قبلی) */
-  .hero-plain {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-      circle at 50% 45%,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(255, 255, 255, 0.24) 40%,
-      rgba(255, 255, 255, 0.14) 100%
-    );
-  }
-  [data-theme="dark"] .hero-plain {
-    background: radial-gradient(
-      circle at 50% 45%,
-      rgba(10, 16, 28, 0.72) 0%,
-      rgba(10, 16, 28, 0.66) 40%,
-      rgba(10, 16, 28, 0.6) 100%
-    );
-  }
-
-  .hero-bleed {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  [data-theme="light"] .hero-bleed {
-    background: radial-gradient(
-      60% 40% at 50% 15%,
-      rgba(125, 169, 255, 0.05),
-      transparent 70%
-    );
-    mix-blend-mode: screen;
-  }
-  [data-theme="dark"] .hero-bleed {
-    background: radial-gradient(
-      60% 40% at 50% 18%,
-      rgba(100, 160, 255, 0.1),
-      transparent 70%
-    );
-    mix-blend-mode: screen;
-  }
-
-  /* ===== Base grid (کم‌رنگ + فید تا لبه‌ها) ===== */
-  .hero-grid,
-  .hero-grid-soft {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-position: 0 0;
-  }
-  .hero-grid {
-    background-size: var(--grid-size) var(--grid-size);
-  }
-  .hero-grid-soft {
-    display: none;
-  } /* مربع‌های ریز حذف */
-
-  /* رنگ خطوط */
-  [data-theme="light"] .hero-grid {
-    background-image: linear-gradient(
-        rgba(0, 0, 0, 0.22) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 1px, rgba(0, 0, 0, 0) 1px);
-  }
-  [data-theme="dark"] .hero-grid {
-    background-image: linear-gradient(
-        rgba(170, 200, 255, 0.12) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      linear-gradient(
-        90deg,
-        rgba(170, 200, 255, 0.12) 1px,
-        rgba(0, 0, 0, 0) 1px
-      );
-  }
-
-  /* شفافیت پایه (کم‌رنگ‌تر تا جای مرکز تقویتی ما کار کند) */
-  .hero-grid {
-    opacity: 0.18;
-  } /* پایه کم‌رنگ */
-  [data-theme="dark"] .hero-grid {
-    opacity: 0.1;
-  }
-
-  /* فید از مرکز به کناره‌ها روی لایه پایه */
-  .grid-fade {
-    -webkit-mask-image: radial-gradient(
-      110% 90% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.85) 55%,
-      rgba(0, 0, 0, 0.45) 78%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: radial-gradient(
-      110% 90% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 0.85) 55%,
-      rgba(0, 0, 0, 0.45) 78%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  }
-
-  /* ===== Center boost layer (وسط خیلی واضح) ===== */
-  .hero-grid-center {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-position: 0 0;
-    background-size: var(--grid-size) var(--grid-size);
-    /* همان خطوط، اما پررنگ‌تر */
-    background-image: linear-gradient(
-        rgba(0, 0, 0, 0.35) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, rgba(0, 0, 0, 0) 1px);
-    opacity: 0.55; /* شدت مرکز */
-    -webkit-mask-image: radial-gradient(
-      70% 50% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0.65) 66%,
-      rgba(0, 0, 0, 0.15) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: radial-gradient(
-      70% 50% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0.65) 66%,
-      rgba(0, 0, 0, 0.15) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    z-index: 1; /* روی لایه‌ی پایه قرار بگیرد */
-  }
-  /* نسخه‌ی دارک برای مرکز */
-  [data-theme="dark"] .hero-grid-center {
-    background-image: linear-gradient(
-        rgba(190, 215, 255, 0.28) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      linear-gradient(
-        90deg,
-        rgba(190, 215, 255, 0.28) 1px,
-        rgba(0, 0, 0, 0) 1px
-      );
-    opacity: 0.38;
-  }
-
-  /* بقیه‌ی افکت‌ها (همان قبلی‌ها) */
-  .hero-highlight {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  [data-theme="light"] .hero-highlight {
-    background: radial-gradient(
-      circle at 50% 42%,
-      rgba(255, 255, 255, 0.2),
-      transparent 72%
-    );
-  }
-  [data-theme="dark"] .hero-highlight {
-    background: radial-gradient(
-      circle at 50% 42%,
-      rgba(255, 255, 255, 0.12),
-      transparent 72%
-    );
-  }
-
-  .hero-shadow {
-    position: absolute;
-    inset: -6% -4% -10% -4%;
-    pointer-events: none;
-    background: radial-gradient(
-        70% 46% at 50% 40%,
-        rgba(0, 0, 0, 0.3),
-        transparent 68%
-      ),
-      radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.18), transparent 72%);
-    mix-blend-mode: multiply;
-  }
-  [data-theme="dark"] .hero-shadow {
-    background: radial-gradient(
-        70% 46% at 50% 40%,
-        rgba(0, 0, 0, 0.42),
-        transparent 68%
-      ),
-      radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.28), transparent 72%);
-  }
-
-  .hero-topfade {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  [data-theme="light"] .hero-topfade {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.36),
-      rgba(255, 255, 255, 0) 28%
-    );
-  }
-  [data-theme="dark"] .hero-topfade {
-    background: linear-gradient(
-      180deg,
-      rgba(4, 6, 10, 0.48),
-      rgba(0, 0, 0, 0) 32%
-    );
-  }
-
-  .hero-vignette {
-    position: absolute;
-    inset: -12% -8% -24% -8%;
-    pointer-events: none;
-  }
-  [data-theme="light"] .hero-vignette {
-    background: radial-gradient(
-      60% 40% at 50% 10%,
-      rgba(0, 0, 0, 0.14),
-      transparent 58%
-    );
-  }
-  [data-theme="dark"] .hero-vignette {
-    background: radial-gradient(
-      60% 40% at 50% 10%,
-      rgba(0, 0, 0, 0.36),
-      transparent 58%
-    );
-  }
-
-  @media (max-width: 480px) {
-    :root {
-      --grid-size: 20px;
-      --grid-size-soft: 40px;
-    }
+    --grid-size: 20px;
+    --grid-size-soft: 40px;
   }
 }
-
-/* موبایل safe fixes (مثل قبل) */
 @media (max-width: 640px) {
   .hero-shadow,
   .hero-vignette {
@@ -309,49 +275,34 @@ h3 {
   }
 }
 
-/* ===========================
-   BRIGHTEN LIGHT MODE (ALL)
-   =========================== */
-/* از اینجا به بعد فقط روشن‌تر کردن کل صفحه در لایت مود: دسکتاپ + موبایل */
+/* ===== Brighten (Light mode) with ::before ===== */
 [data-theme="light"] .hero-plain {
   position: absolute;
 }
-
-/* Desktop: قوی‌تر */
 @media (min-width: 641px) {
   [data-theme="light"] .hero-plain::before {
     content: "";
-    position: absolute;
-    inset: 0;
-    background: #ffffff; /* سفید فلت */
-    opacity: 0.52; /* روشن‌تر (می‌تونی 0.48–0.58 رِنج کنی) */
-    mix-blend-mode: screen; /* ویدیو/بک‌گراند رو روشن می‌کند */
-    pointer-events: none;
+    @apply absolute inset-0 pointer-events-none mix-blend-screen;
+    background: #fff;
+    opacity: 0.52;
     z-index: 2;
   }
 }
-
-/* Mobile: کمی کمتر که هاله نشه */
 @media (max-width: 640px) {
   [data-theme="light"] .hero-plain::before {
     content: "";
-    position: absolute;
-    inset: 0;
-    background: #ffffff;
-    opacity: 0.46; /* اگر زیاد بود 0.40 کن */
-    mix-blend-mode: screen;
-    pointer-events: none;
+    @apply absolute inset-0 pointer-events-none mix-blend-screen;
+    background: #fff;
+    opacity: 0.46;
     z-index: 2;
   }
-}
-/* Light mode + Mobile: تقویت سفیدتر بالای هدر */
-@media (max-width: 640px) {
+  /* سفیدتر شدن بالای هدر (درخواست قبلی) */
   [data-theme="light"] .hero-topfade {
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.82),
-      /* قبلاً 0.68 بود → سفیدتر */ rgba(255, 255, 255, 0.28) 28%,
-      /* قبلاً 0.18 بود */ rgba(255, 255, 255, 0) 52%
+      rgba(255, 255, 255, 0.28) 28%,
+      rgba(255, 255, 255, 0) 52%
     ) !important;
   }
 }
