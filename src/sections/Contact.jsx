@@ -1,23 +1,84 @@
-export default function Contact(){
+import {
+  MapPinIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+} from "@heroicons/react/24/outline";
+
+export default function Contact() {
   return (
-    <section id="contact" className="py-16">
-      <div className="container grid md:grid-cols-2 gap-10">
-        <div>
-          <h2>Let’s build your next thing</h2>
-          <p className="mt-2 opacity-80">Tell us your goals. We’ll propose scope, timeline, and budget.</p>
-          <ul className="mt-6 space-y-2 text-sm opacity-80">
-            <li>• Toronto, ON</li>
-            <li>• hello@milink.studio</li>
-            <li>• +1 (647) 555‑0123</li>
-          </ul>
+    <section id="contact" className="py-20 bg-base-200">
+      {/* Title with margin-bottom */}
+      <h2 className="text-center mb-10 ">Contact Us</h2>
+
+      <div className="container mx-auto grid gap-12 lg:grid-cols-2">
+        {/* Left: Contact Info */}
+        <div className="space-y-8">
+          <h2 className="text-4xl font-bold">Get in Touch</h2>
+          <p className="opacity-80">
+            Have a question or want to start a project? Reach out to us and
+            let's bring your ideas to life.
+          </p>
+
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <MapPinIcon className="h-8 w-8 text-primary" />
+              <div>
+                <h3 className="font-semibold text-lg">Address</h3>
+                <p>GTA, Ontario, Canada</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <EnvelopeIcon className="h-8 w-8 text-primary" />
+              <div>
+                <h3 className="font-semibold text-lg">Email</h3>
+                <p>info@milink.com</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <PhoneIcon className="h-8 w-8 text-primary" />
+              <div>
+                <h3 className="font-semibold text-lg">Phone</h3>
+                <p>+1 (437) 999-3668</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <form onSubmit={(e)=>{e.preventDefault(); alert("Thanks! We’ll reach out soon.");}} className="card bg-base-200/60 p-6 space-y-4">
-          <input className="input input-bordered w-full" placeholder="Name" required />
-          <input type="email" className="input input-bordered w-full" placeholder="Email" required />
-          <input className="input input-bordered w-full" placeholder="Company (optional)" />
-          <textarea className="textarea textarea-bordered w-full" rows="5" placeholder="What do you need?"></textarea>
-          <button className="btn btn-primary">Send</button>
-        </form>
+
+        {/* Right: Contact Form */}
+        <div className="bg-base-100 shadow-lg rounded-2xl p-8">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              alert("Message sent!");
+            }}
+            className="space-y-5"
+          >
+            <h2 className="text-3xl font-bold mb-2">Send a Message</h2>
+            <input
+              type="text"
+              placeholder="Your Name"
+              className="input input-bordered w-full rounded-lg"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Your Email"
+              className="input input-bordered w-full rounded-lg"
+              required
+            />
+            <textarea
+              placeholder="Your Message"
+              className="textarea textarea-bordered w-full rounded-lg"
+              rows="5"
+              required
+            ></textarea>
+            <button className="btn btn-primary w-full rounded-lg text-lg">
+              Send Message
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   );
