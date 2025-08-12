@@ -344,3 +344,14 @@ h3 {
     z-index: 2;
   }
 }
+/* Light mode + Mobile: تقویت سفیدتر بالای هدر */
+@media (max-width: 640px) {
+  [data-theme="light"] .hero-topfade {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.82),
+      /* قبلاً 0.68 بود → سفیدتر */ rgba(255, 255, 255, 0.28) 28%,
+      /* قبلاً 0.18 بود */ rgba(255, 255, 255, 0) 52%
+    ) !important;
+  }
+}
