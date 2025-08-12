@@ -13,7 +13,6 @@ export default function Hero({ onOpenLightbox }) {
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
             src="/assets/video/hero.mp4"
-            poster="/assets/img/hero-poster.jpg"
             autoPlay
             muted
             loop
@@ -69,14 +68,14 @@ export default function Hero({ onOpenLightbox }) {
           <div className="relative">
             <div className="aspect-[4/5] rounded-3xl bg-base-200/60 shadow-2xl overflow-hidden">
               <img
-                src="/assets/img/1.jpg"
+                src="/assets/img/3.jpg"
                 alt="Showcase"
                 className="h-full w-full object-cover"
                 loading="eager"
               />
               <button
                 className="btn btn-sm btn-ghost absolute right-3 top-3"
-                onClick={() => onOpenLightbox?.("/assets/img/1.jpg")}
+                onClick={() => onOpenLightbox?.("/assets/img/3.jpg")}
                 aria-label="Expand"
               >
                 ⤢
