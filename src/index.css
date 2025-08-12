@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 /* ===== Basics ===== */
+/* === Global anti-horizontal scroll === */
+html,
+body,
+#root {
+  overflow-x: hidden;
+  width: 100%;
+}
+* {
+  box-sizing: border-box;
+}
 html {
   scroll-behavior: smooth;
 }
@@ -257,5 +267,11 @@ h3 {
   }
   .hero-compact .badge {
     transform: translateY(0);
+  }
+}
+@media (max-width: 640px) {
+  .hero-shadow,
+  .hero-vignette {
+    inset: 0 !important; /* جلوی بیرون‌زدن از عرض */
   }
 }

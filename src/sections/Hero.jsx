@@ -7,7 +7,7 @@ export default function Hero({ onOpenLightbox }) {
   return (
     <section
       id="home"
-      className="relative min-h-[100svh] md:min-h-[100dvh] bg-transparent"
+      className="relative overflow-hidden min-h-[100svh] md:min-h-[100dvh] bg-transparent"
     >
       {/* ===== BACKGROUND STACK ===== */}
       <div className="absolute inset-0 z-0 overflow-hidden">
