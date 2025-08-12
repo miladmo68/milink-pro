@@ -5,7 +5,7 @@ export default function Hero({ onOpenLightbox }) {
   const [fallback, setFallback] = useState(false);
 
   return (
-    <section id="home" className="relative  bg-transparent">
+    <section id="home" className="relative bg-transparent">
       {/* ===== BACKGROUND STACK ===== */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {!fallback ? (
@@ -30,21 +30,29 @@ export default function Hero({ onOpenLightbox }) {
           />
         )}
 
-        {/* Base + overlays (همون افکت‌هایی که قبلاً ساختیم) */}
+        {/* Base + overlays */}
         <div className="hero-plain hero-mask-90" aria-hidden="true" />
         <div className="hero-bleed hero-mask-90" aria-hidden="true" />
+
+        {/* پایه: گرید کم‌رنگ + فید تا لبه‌ها */}
         <div className="hero-grid grid-fade hero-mask-90" aria-hidden="true" />
+
+        {/* مرکز: تقویت‌کننده، وسط رو واضح و پررنگ می‌کنه */}
         <div
-          className="hero-grid-soft grid-fade hero-mask-90"
+          className="hero-grid hero-grid-center hero-mask-90"
           aria-hidden="true"
         />
+
+        {/* لایه‌ی نرم که مربع‌های ریز می‌داد حذف شد */}
+        {/* <div className="hero-grid-soft grid-fade hero-mask-90" aria-hidden="true" /> */}
+
         <div className="hero-highlight hero-mask-90" aria-hidden="true" />
         <div className="hero-shadow hero-mask-90" aria-hidden="true" />
         <div className="hero-topfade" aria-hidden="true" />
         <div className="hero-vignette" aria-hidden="true" />
       </div>
 
-      {/* ===== FOREGROUND CONTENT (وسط‌چین عمودی تمام‌قد) ===== */}
+      {/* ===== FOREGROUND CONTENT ===== */}
       <div className="relative z-10 h-full">
         <div className="container h-full grid md:grid-cols-2 gap-8 items-center py-8 md:py-10">
           <div>
