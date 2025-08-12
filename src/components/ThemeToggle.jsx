@@ -13,7 +13,7 @@ export default function ThemeToggle({ className = "" }) {
       title={isDark ? "Switch to Light" : "Switch to Dark"}
     >
       {isDark ? "🌙" : "☀️"}
-      <span className="ml-2 hidden sm:inline">{isDark ? "Dark" : "Light"}</span>
+      {/* <span className="ml-2 hidden sm:inline">{isDark ? "Dark" : "Light"}</span> */}
     </button>
   );
 }

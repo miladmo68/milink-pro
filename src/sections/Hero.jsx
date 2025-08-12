@@ -5,10 +5,7 @@ export default function Hero({ onOpenLightbox }) {
   const [fallback, setFallback] = useState(false);
 
   return (
-    <section
-      id="home"
-      className="relative overflow-hidden min-h-[100svh] md:min-h-[100dvh] bg-transparent"
-    >
+    <section id="home" className="relative  bg-transparent">
       {/* ===== BACKGROUND STACK ===== */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {!fallback ? (

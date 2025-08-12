@@ -43,11 +43,10 @@ h3 {
 /* ===== Utilities ===== */
 @layer utilities {
   :root {
-    --grid-size: 26px; /* اندازه مربع‌های گرید (لایه اصلی) */
-    --grid-size-soft: 52px; /* لایه نرم‌تر گرید */
+    --grid-size: 18px; /* گرید ریزتر */
+    --grid-size-soft: 36px; /* گرید نرم (×2) */
   }
 
-  /* پوشش افکت‌ها حدود ۹۰٪ قاب ویدیو */
   .hero-mask-90 {
     pointer-events: none;
     -webkit-mask-image: radial-gradient(
@@ -64,29 +63,28 @@ h3 {
     );
   }
 
-  /* ===== Base نیمه‌شفاف با گرادیانت ملایم (Light روشن‌تر / Dark تیره‌تر) ===== */
+  /* Plain base */
   .hero-plain {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* Light: خیلی شفاف‌تر تا ویدیو واضح‌تر دیده بشه */
     background: radial-gradient(
       circle at 50% 45%,
-      rgba(255, 255, 255, 0.55) 0%,
-      /* وسط */ rgba(255, 255, 255, 0.42) 40%,
-      /* میانه */ rgba(255, 255, 255, 0.28) 100% /* لبه‌ها */
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.24) 40%,
+      rgba(255, 255, 255, 0.14) 100%
     );
   }
   [data-theme="dark"] .hero-plain {
     background: radial-gradient(
       circle at 50% 45%,
-      rgba(10, 16, 28, 0.88) 0%,
-      /* آبی نفتی تیره نزدیک رفرنس */ rgba(10, 16, 28, 0.84) 40%,
-      rgba(10, 16, 28, 0.8) 100%
+      rgba(10, 16, 28, 0.72) 0%,
+      rgba(10, 16, 28, 0.66) 40%,
+      rgba(10, 16, 28, 0.6) 100%
     );
   }
 
-  /* هاله آبی خیلی لطیف برای عمق */
+  /* Bleed (blue glow) */
   .hero-bleed {
     position: absolute;
     inset: 0;
@@ -95,7 +93,7 @@ h3 {
   [data-theme="light"] .hero-bleed {
     background: radial-gradient(
       60% 40% at 50% 15%,
-      rgba(125, 169, 255, 0.08),
+      rgba(125, 169, 255, 0.05),
       transparent 70%
     );
     mix-blend-mode: screen;
@@ -103,13 +101,13 @@ h3 {
   [data-theme="dark"] .hero-bleed {
     background: radial-gradient(
       60% 40% at 50% 18%,
-      rgba(100, 160, 255, 0.14),
+      rgba(100, 160, 255, 0.1),
       transparent 70%
     );
     mix-blend-mode: screen;
   }
 
-  /* ===== Grid (اندازه مربع‌ها ثابت) ===== */
+  /* Grid layers */
   .hero-grid,
   .hero-grid-soft {
     position: absolute;
@@ -124,14 +122,14 @@ h3 {
     background-size: var(--grid-size-soft) var(--grid-size-soft);
   }
 
-  /* رنگ خطوط */
+  /* Lines color */
   [data-theme="light"] .hero-grid,
   [data-theme="light"] .hero-grid-soft {
     background-image: linear-gradient(
-        rgba(0, 0, 0, 0.22) 1px,
+        rgba(0, 0, 0, 0.28) 1px,
         rgba(0, 0, 0, 0) 1px
       ),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 1px, rgba(0, 0, 0, 0) 1px);
+      linear-gradient(90deg, rgba(0, 0, 0, 0.28) 1px, rgba(0, 0, 0, 0) 1px);
   }
   [data-theme="dark"] .hero-grid,
   [data-theme="dark"] .hero-grid-soft {
@@ -146,21 +144,21 @@ h3 {
       );
   }
 
-  /* شدت کلی خطوط کمتر (لطیف‌تر) */
+  /* Global opacity balance (Light OK؛ Dark شفاف‌تر طبق خواسته‌ات) */
   .hero-grid {
-    opacity: 0.26;
-  }
+    opacity: 0.28;
+  } /* Light */
   .hero-grid-soft {
-    opacity: 0.36;
-  }
+    opacity: 0.34;
+  } /* Light */
   [data-theme="dark"] .hero-grid {
-    opacity: 0.22;
-  }
+    opacity: 0.14;
+  } /* was 0.20 */
   [data-theme="dark"] .hero-grid-soft {
-    opacity: 0.32;
-  }
+    opacity: 0.18;
+  } /* was 0.26 */
 
-  /* محوشدن گرید از مرکز به همهٔ لبه‌ها (بالا/پایین محوتر) */
+  /* Grid fade (oval mask – بالا/پایین محوتر) */
   .grid-fade {
     -webkit-mask-image: radial-gradient(
       82% 56% at 50% 46%,
@@ -174,10 +172,9 @@ h3 {
       rgba(0, 0, 0, 0.45) 68%,
       rgba(0, 0, 0, 0) 86%
     );
-    /* اگر محو خیلی بیشتر می‌خوای: 45%→42% و 86%→83% */
   }
 
-  /* ===== Highlight (نور مرکزی) ===== */
+  /* Highlight (center light) */
   .hero-highlight {
     position: absolute;
     inset: 0;
@@ -186,19 +183,19 @@ h3 {
   [data-theme="light"] .hero-highlight {
     background: radial-gradient(
       circle at 50% 42%,
-      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.22),
       transparent 72%
     );
   }
   [data-theme="dark"] .hero-highlight {
     background: radial-gradient(
       circle at 50% 42%,
-      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.12),
       transparent 72%
     );
   }
 
-  /* ===== Shadow (عمق عمومی) ===== */
+  /* Shadow / depth */
   .hero-shadow {
     position: absolute;
     inset: -6% -4% -10% -4%;
@@ -220,7 +217,7 @@ h3 {
       radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.28), transparent 72%);
   }
 
-  /* ===== فید بالایی + وینیت ===== */
+  /* Top fade */
   .hero-topfade {
     position: absolute;
     inset: 0;
@@ -229,18 +226,19 @@ h3 {
   [data-theme="light"] .hero-topfade {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.75),
-      rgba(255, 255, 255, 0) 42%
+      rgba(255, 255, 255, 0.38),
+      rgba(255, 255, 255, 0) 28%
     );
   }
   [data-theme="dark"] .hero-topfade {
     background: linear-gradient(
       180deg,
-      rgba(4, 6, 10, 0.75),
-      rgba(0, 0, 0, 0) 40%
+      rgba(4, 6, 10, 0.5),
+      rgba(0, 0, 0, 0) 32%
     );
   }
 
+  /* Vignette edges */
   .hero-vignette {
     position: absolute;
     inset: -12% -8% -24% -8%;
@@ -249,29 +247,103 @@ h3 {
   [data-theme="light"] .hero-vignette {
     background: radial-gradient(
       60% 40% at 50% 10%,
-      rgba(0, 0, 0, 0.2),
-      transparent 62%
+      rgba(0, 0, 0, 0.14),
+      transparent 58%
     );
   }
   [data-theme="dark"] .hero-vignette {
     background: radial-gradient(
       60% 40% at 50% 10%,
-      rgba(0, 0, 0, 0.48),
-      transparent 62%
+      rgba(0, 0, 0, 0.36),
+      transparent 58%
     );
   }
 
-  /* ===== نسخهٔ فشرده برای Hero (کاهش ارتفاع واقعی) ===== */
+  /* Compact hero tweaks (اختیاری) */
   .hero-compact h1 {
     line-height: 1.15;
   }
   .hero-compact .badge {
     transform: translateY(0);
   }
+
+  /* Mobile tweak: کمی بزرگ‌تر شدن گرید تا پیکسلی نشه */
+  @media (max-width: 480px) {
+    :root {
+      --grid-size: 20px;
+      --grid-size-soft: 40px;
+    }
+  }
 }
+
+/* ===== Mobile-specific transparency at TOP (both themes) ===== */
+/* رو موبایل، بالای هیرو شفاف‌تر: ویدیو بیشتر دیده میشه */
 @media (max-width: 640px) {
+  /* گرید کمی محوتر برای عبور ویدیو */
+  .hero-grid {
+    opacity: 0.24;
+  } /* Light (کمتر از دسکتاپ 0.28) */
+  .hero-grid-soft {
+    opacity: 0.3;
+  } /* Light (کمتر از 0.34) */
+  [data-theme="dark"] .hero-grid {
+    opacity: 0.12;
+  } /* Dark (کمتر از 0.14) */
+  [data-theme="dark"] .hero-grid-soft {
+    opacity: 0.16;
+  } /* Dark (کمتر از 0.18) */
+
+  /* بالای صفحه fade سبک‌تر بشه */
+  [data-theme="light"] .hero-topfade {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0) 26%
+    );
+  }
+  [data-theme="dark"] .hero-topfade {
+    background: linear-gradient(
+      180deg,
+      rgba(4, 6, 10, 0.28),
+      rgba(0, 0, 0, 0) 28%
+    );
+  }
+
+  /* هایلایت مرکزی کمی ضعیف‌تر تا بالای تصویر بازتر شود */
+  [data-theme="light"] .hero-highlight {
+    background: radial-gradient(
+      circle at 50% 38%,
+      rgba(255, 255, 255, 0.16),
+      transparent 70%
+    );
+  }
+  [data-theme="dark"] .hero-highlight {
+    background: radial-gradient(
+      circle at 50% 38%,
+      rgba(255, 255, 255, 0.08),
+      transparent 70%
+    );
+  }
+
+  /* ماسک فید گرید در موبایل طوری که بالاتر زودتر محوتر شود */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(
+      78% 54% at 50% 44%,
+      rgba(0, 0, 0, 1) 42%,
+      rgba(0, 0, 0, 0.36) 64%,
+      rgba(0, 0, 0, 0) 82%
+    );
+    mask-image: radial-gradient(
+      78% 54% at 50% 44%,
+      rgba(0, 0, 0, 1) 42%,
+      rgba(0, 0, 0, 0.36) 64%,
+      rgba(0, 0, 0, 0) 82%
+    );
+  }
+
+  /* جلوگیری از بیرون‌زدن وینیت/شدوز در موبایل (حفظ شود) */
   .hero-shadow,
   .hero-vignette {
-    inset: 0 !important; /* جلوی بیرون‌زدن از عرض */
+    inset: 0 !important;
   }
 }
