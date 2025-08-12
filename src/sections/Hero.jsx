@@ -8,7 +8,7 @@ export default function Hero({ onOpenLightbox }) {
     <section id="home" className="relative bg-transparent">
       {/* ===== BACKGROUND STACK ===== */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {!fallback ? (
+        {!fallback && (
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
@@ -19,13 +19,6 @@ export default function Hero({ onOpenLightbox }) {
             loop
             playsInline
             onError={() => setFallback(true)}
-            aria-hidden="true"
-          />
-        ) : (
-          <img
-            src="/assets/img/hero-poster.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
             aria-hidden="true"
           />
         )}
@@ -76,25 +69,19 @@ export default function Hero({ onOpenLightbox }) {
           <div className="relative">
             <div className="aspect-[4/5] rounded-3xl bg-base-200/60 shadow-2xl overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1524666041070-9d87656c25bb?q=80&w=1200&auto=format&fit=crop"
+                src="/assets/img/1.jpg"
                 alt="Showcase"
                 className="h-full w-full object-cover"
                 loading="eager"
               />
               <button
                 className="btn btn-sm btn-ghost absolute right-3 top-3"
-                onClick={() =>
-                  onOpenLightbox?.(
-                    "https://images.unsplash.com/photo-1524666041070-9d87656c25bb?q=80&w=1600&auto=format&fit=crop"
-                  )
-                }
+                onClick={() => onOpenLightbox?.("/assets/img/1.jpg")}
                 aria-label="Expand"
               >
                 ⤢
               </button>
-              {/* ⬇️ دوتا هاله‌ی صورتی/قرمز حذف شد */}
-              {/* <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-primary/20 blur-2xl" /> */}
-              {/* <div className="absolute -bottom-16 -right-12 w-56 h-56 rounded-full bg-secondary/20 blur-2xl" /> */}
+              {/* هاله‌های رنگی حذف شده */}
             </div>
           </div>
         </div>
