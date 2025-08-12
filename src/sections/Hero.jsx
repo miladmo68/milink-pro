@@ -55,7 +55,7 @@ export default function Hero({ onOpenLightbox }) {
       {/* ===== FOREGROUND CONTENT ===== */}
       <div className="relative z-10 h-full">
         <div className="container h-full grid md:grid-cols-2 gap-8 items-center py-8 md:py-10">
-          <div>
+          <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <div className="badge badge-primary badge-lg mb-4">
               Milink Studio
             </div>
