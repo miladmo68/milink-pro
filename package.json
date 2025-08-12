@@ -9,16 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@heroicons/react": "^2.2.0",
     "daisyui": "^4.12.24",
-    "@heroicons/react": "^2.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "vite": "^4.5.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
-    "autoprefixer": "^10.4.21"
+    "tailwindcss": "^3.4.17",
+    "vite": "^4.5.0"
   }
 }
