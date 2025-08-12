@@ -33,19 +33,11 @@ export default function Hero({ onOpenLightbox }) {
         {/* Base + overlays */}
         <div className="hero-plain hero-mask-90" aria-hidden="true" />
         <div className="hero-bleed hero-mask-90" aria-hidden="true" />
-
-        {/* پایه: گرید کم‌رنگ + فید تا لبه‌ها */}
         <div className="hero-grid grid-fade hero-mask-90" aria-hidden="true" />
-
-        {/* مرکز: تقویت‌کننده، وسط رو واضح و پررنگ می‌کنه */}
         <div
           className="hero-grid hero-grid-center hero-mask-90"
           aria-hidden="true"
         />
-
-        {/* لایه‌ی نرم که مربع‌های ریز می‌داد حذف شد */}
-        {/* <div className="hero-grid-soft grid-fade hero-mask-90" aria-hidden="true" /> */}
-
         <div className="hero-highlight hero-mask-90" aria-hidden="true" />
         <div className="hero-shadow hero-mask-90" aria-hidden="true" />
         <div className="hero-topfade" aria-hidden="true" />
@@ -100,8 +92,9 @@ export default function Hero({ onOpenLightbox }) {
               >
                 ⤢
               </button>
-              <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-primary/20 blur-2xl" />
-              <div className="absolute -bottom-16 -right-12 w-56 h-56 rounded-full bg-secondary/20 blur-2xl" />
+              {/* ⬇️ دوتا هاله‌ی صورتی/قرمز حذف شد */}
+              {/* <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-primary/20 blur-2xl" /> */}
+              {/* <div className="absolute -bottom-16 -right-12 w-56 h-56 rounded-full bg-secondary/20 blur-2xl" /> */}
             </div>
           </div>
         </div>
