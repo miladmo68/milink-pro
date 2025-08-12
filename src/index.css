@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Basics (مثل قبل) ===== */
+/* ===== Basics (همون قبلی‌ها) ===== */
 html,
 body,
 #root {
@@ -41,9 +41,8 @@ h3 {
 /* ===== Utilities ===== */
 @layer utilities {
   :root {
-    /* ↑ 1) مربع‌ها بزرگ‌تر */
-    --grid-size: 18px; /* بود 14px */
-    --grid-size-soft: 36px; /* لایه نرم را عملاً استفاده نمی‌کنیم */
+    --grid-size: 14px; /* ریزتر از 18px */
+    --grid-size-soft: 28px; /* لایه نرم را خاموش می‌کنیم */
   }
 
   .hero-mask-90 {
@@ -62,7 +61,7 @@ h3 {
     );
   }
 
-  /* Plain base */
+  /* پس‌زمینه‌ی نرم (همان قبلی) */
   .hero-plain {
     position: absolute;
     inset: 0;
@@ -83,7 +82,6 @@ h3 {
     );
   }
 
-  /* Bleed (blue glow) */
   .hero-bleed {
     position: absolute;
     inset: 0;
@@ -106,7 +104,7 @@ h3 {
     mix-blend-mode: screen;
   }
 
-  /* ===== Base grid ===== */
+  /* ===== Base grid (کم‌رنگ + فید تا لبه‌ها) ===== */
   .hero-grid,
   .hero-grid-soft {
     position: absolute;
@@ -119,107 +117,101 @@ h3 {
   }
   .hero-grid-soft {
     display: none;
-  } /* جلوگیری از مربع‌های ریز اضافی */
+  } /* مربع‌های ریز حذف */
 
-  /* 2) گرید پررنگ‌تر */
+  /* رنگ خطوط */
   [data-theme="light"] .hero-grid {
     background-image: linear-gradient(
-        rgba(0, 0, 0, 0.32) 1px,
+        rgba(0, 0, 0, 0.22) 1px,
         rgba(0, 0, 0, 0) 1px
       ),
-      /* بود ~0.22 */
-        linear-gradient(90deg, rgba(0, 0, 0, 0.32) 1px, rgba(0, 0, 0, 0) 1px);
+      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 1px, rgba(0, 0, 0, 0) 1px);
   }
   [data-theme="dark"] .hero-grid {
     background-image: linear-gradient(
-        rgba(170, 200, 255, 0.18) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      /* بود ~0.12-0.14 */
-        linear-gradient(
-          90deg,
-          rgba(170, 200, 255, 0.18) 1px,
-          rgba(0, 0, 0, 0) 1px
-        );
-  }
-
-  /* Opacity پایه */
-  .hero-grid {
-    opacity: 0.26;
-  } /* بود 0.18 */
-  [data-theme="dark"] .hero-grid {
-    opacity: 0.14;
-  } /* بود 0.10 */
-
-  /* 3) Side fade زودتر از راست/چپ روی لایه پایه */
-  .grid-fade {
-    -webkit-mask-image: radial-gradient(
-      78% 100% at 50% 50%,
-      /* عرض بیضی کمتر => کناره‌ها زودتر فید */ rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 40%,
-      /* مرکز تا حدود 40% کامل */ rgba(0, 0, 0, 0.8) 60%,
-      /* شروع فید محسوس */ rgba(0, 0, 0, 0.35) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: radial-gradient(
-      78% 100% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 40%,
-      rgba(0, 0, 0, 0.8) 60%,
-      rgba(0, 0, 0, 0.35) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  }
-
-  /* ===== Center boost (وسط خیلی واضح) ===== */
-  .hero-grid-center {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    background-position: 0 0;
-    background-size: var(--grid-size) var(--grid-size);
-
-    /* خطوط پررنگ‌تر برای مرکز */
-    background-image: linear-gradient(
-        rgba(0, 0, 0, 0.42) 1px,
-        rgba(0, 0, 0, 0) 1px
-      ),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.42) 1px, rgba(0, 0, 0, 0) 1px);
-    opacity: 0.68; /* شدت مرکز بیشتر از قبل */
-
-    /* مرکز کامل؛ راست/چپ زودتر فید (بیضی باریک‌تر) */
-    -webkit-mask-image: radial-gradient(
-      60% 56% at 50% 50%,
-      /* باریک‌تر از قبل */ rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0.6) 66%,
-      rgba(0, 0, 0, 0.15) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: radial-gradient(
-      60% 56% at 50% 50%,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0.6) 66%,
-      rgba(0, 0, 0, 0.15) 82%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  }
-  [data-theme="dark"] .hero-grid-center {
-    background-image: linear-gradient(
-        rgba(190, 215, 255, 0.34) 1px,
+        rgba(170, 200, 255, 0.12) 1px,
         rgba(0, 0, 0, 0) 1px
       ),
       linear-gradient(
         90deg,
-        rgba(190, 215, 255, 0.34) 1px,
+        rgba(170, 200, 255, 0.12) 1px,
         rgba(0, 0, 0, 0) 1px
       );
-    opacity: 0.5; /* کمی قوی‌تر از قبل ولی هنوز ویدیو معلومه */
   }
 
-  /* سایر افکت‌ها (بدون تغییر رفتاری) */
+  /* شفافیت پایه (کم‌رنگ‌تر تا جای مرکز تقویتی ما کار کند) */
+  .hero-grid {
+    opacity: 0.18;
+  } /* پایه کم‌رنگ */
+  [data-theme="dark"] .hero-grid {
+    opacity: 0.1;
+  }
+
+  /* فید از مرکز به کناره‌ها روی لایه پایه */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(
+      110% 90% at 50% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 55%,
+      rgba(0, 0, 0, 0.45) 78%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: radial-gradient(
+      110% 90% at 50% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 55%,
+      rgba(0, 0, 0, 0.45) 78%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+
+  /* ===== Center boost layer (وسط خیلی واضح) ===== */
+  .hero-grid-center {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-position: 0 0;
+    background-size: var(--grid-size) var(--grid-size);
+    /* همان خطوط، اما پررنگ‌تر */
+    background-image: linear-gradient(
+        rgba(0, 0, 0, 0.35) 1px,
+        rgba(0, 0, 0, 0) 1px
+      ),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, rgba(0, 0, 0, 0) 1px);
+    opacity: 0.55; /* شدت مرکز */
+    -webkit-mask-image: radial-gradient(
+      70% 50% at 50% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0.65) 66%,
+      rgba(0, 0, 0, 0.15) 82%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: radial-gradient(
+      70% 50% at 50% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0.65) 66%,
+      rgba(0, 0, 0, 0.15) 82%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    z-index: 1; /* روی لایه‌ی پایه قرار بگیرد */
+  }
+  /* نسخه‌ی دارک برای مرکز */
+  [data-theme="dark"] .hero-grid-center {
+    background-image: linear-gradient(
+        rgba(190, 215, 255, 0.28) 1px,
+        rgba(0, 0, 0, 0) 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(190, 215, 255, 0.28) 1px,
+        rgba(0, 0, 0, 0) 1px
+      );
+    opacity: 0.38;
+  }
+
+  /* بقیه‌ی افکت‌ها (همان قبلی‌ها) */
   .hero-highlight {
     position: absolute;
     inset: 0;
@@ -301,7 +293,6 @@ h3 {
     );
   }
 
-  /* Anti-pixel for very small screens */
   @media (max-width: 480px) {
     :root {
       --grid-size: 20px;
@@ -310,10 +301,46 @@ h3 {
   }
 }
 
-/* موبایل safe fixes */
+/* موبایل safe fixes (مثل قبل) */
 @media (max-width: 640px) {
   .hero-shadow,
   .hero-vignette {
     inset: 0 !important;
+  }
+}
+
+/* ===========================
+   BRIGHTEN LIGHT MODE (ALL)
+   =========================== */
+/* از اینجا به بعد فقط روشن‌تر کردن کل صفحه در لایت مود: دسکتاپ + موبایل */
+[data-theme="light"] .hero-plain {
+  position: absolute;
+}
+
+/* Desktop: قوی‌تر */
+@media (min-width: 641px) {
+  [data-theme="light"] .hero-plain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #ffffff; /* سفید فلت */
+    opacity: 0.52; /* روشن‌تر (می‌تونی 0.48–0.58 رِنج کنی) */
+    mix-blend-mode: screen; /* ویدیو/بک‌گراند رو روشن می‌کند */
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+/* Mobile: کمی کمتر که هاله نشه */
+@media (max-width: 640px) {
+  [data-theme="light"] .hero-plain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0.46; /* اگر زیاد بود 0.40 کن */
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
   }
 }
