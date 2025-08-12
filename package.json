@@ -1,0 +1,24 @@
+{
+  "name": "milink-pro-polish-fixed-theme",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "daisyui": "^4.12.24",
+    "@heroicons/react": "^2.2.0"
+  },
+  "devDependencies": {
+    "vite": "^4.5.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "tailwindcss": "^3.4.17",
+    "postcss": "^8.5.6",
+    "autoprefixer": "^10.4.21"
+  }
+}

@@ -1,0 +1,261 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Basics ===== */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-base-100 text-base-content;
+}
+.container {
+  @apply max-w-7xl mx-auto px-4;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: theme("fontFamily.display");
+  }
+}
+h1 {
+  @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
+}
+h2 {
+  @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
+}
+h3 {
+  @apply text-2xl sm:text-3xl font-bold;
+}
+
+/* ===== Utilities ===== */
+@layer utilities {
+  :root {
+    --grid-size: 26px; /* اندازه مربع‌های گرید (لایه اصلی) */
+    --grid-size-soft: 52px; /* لایه نرم‌تر گرید */
+  }
+
+  /* پوشش افکت‌ها حدود ۹۰٪ قاب ویدیو */
+  .hero-mask-90 {
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(
+      120% 95% at 50% 45%,
+      #000 0%,
+      #000 65%,
+      transparent 92%
+    );
+    mask-image: radial-gradient(
+      120% 95% at 50% 45%,
+      #000 0%,
+      #000 65%,
+      transparent 92%
+    );
+  }
+
+  /* ===== Base نیمه‌شفاف با گرادیانت ملایم (Light روشن‌تر / Dark تیره‌تر) ===== */
+  .hero-plain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Light: خیلی شفاف‌تر تا ویدیو واضح‌تر دیده بشه */
+    background: radial-gradient(
+      circle at 50% 45%,
+      rgba(255, 255, 255, 0.55) 0%,
+      /* وسط */ rgba(255, 255, 255, 0.42) 40%,
+      /* میانه */ rgba(255, 255, 255, 0.28) 100% /* لبه‌ها */
+    );
+  }
+  [data-theme="dark"] .hero-plain {
+    background: radial-gradient(
+      circle at 50% 45%,
+      rgba(10, 16, 28, 0.88) 0%,
+      /* آبی نفتی تیره نزدیک رفرنس */ rgba(10, 16, 28, 0.84) 40%,
+      rgba(10, 16, 28, 0.8) 100%
+    );
+  }
+
+  /* هاله آبی خیلی لطیف برای عمق */
+  .hero-bleed {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  [data-theme="light"] .hero-bleed {
+    background: radial-gradient(
+      60% 40% at 50% 15%,
+      rgba(125, 169, 255, 0.08),
+      transparent 70%
+    );
+    mix-blend-mode: screen;
+  }
+  [data-theme="dark"] .hero-bleed {
+    background: radial-gradient(
+      60% 40% at 50% 18%,
+      rgba(100, 160, 255, 0.14),
+      transparent 70%
+    );
+    mix-blend-mode: screen;
+  }
+
+  /* ===== Grid (اندازه مربع‌ها ثابت) ===== */
+  .hero-grid,
+  .hero-grid-soft {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-position: 0 0;
+  }
+  .hero-grid {
+    background-size: var(--grid-size) var(--grid-size);
+  }
+  .hero-grid-soft {
+    background-size: var(--grid-size-soft) var(--grid-size-soft);
+  }
+
+  /* رنگ خطوط */
+  [data-theme="light"] .hero-grid,
+  [data-theme="light"] .hero-grid-soft {
+    background-image: linear-gradient(
+        rgba(0, 0, 0, 0.22) 1px,
+        rgba(0, 0, 0, 0) 1px
+      ),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.22) 1px, rgba(0, 0, 0, 0) 1px);
+  }
+  [data-theme="dark"] .hero-grid,
+  [data-theme="dark"] .hero-grid-soft {
+    background-image: linear-gradient(
+        rgba(170, 200, 255, 0.12) 1px,
+        rgba(0, 0, 0, 0) 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(170, 200, 255, 0.12) 1px,
+        rgba(0, 0, 0, 0) 1px
+      );
+  }
+
+  /* شدت کلی خطوط کمتر (لطیف‌تر) */
+  .hero-grid {
+    opacity: 0.26;
+  }
+  .hero-grid-soft {
+    opacity: 0.36;
+  }
+  [data-theme="dark"] .hero-grid {
+    opacity: 0.22;
+  }
+  [data-theme="dark"] .hero-grid-soft {
+    opacity: 0.32;
+  }
+
+  /* محوشدن گرید از مرکز به همهٔ لبه‌ها (بالا/پایین محوتر) */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(
+      82% 56% at 50% 46%,
+      rgba(0, 0, 0, 1) 45%,
+      rgba(0, 0, 0, 0.45) 68%,
+      rgba(0, 0, 0, 0) 86%
+    );
+    mask-image: radial-gradient(
+      82% 56% at 50% 46%,
+      rgba(0, 0, 0, 1) 45%,
+      rgba(0, 0, 0, 0.45) 68%,
+      rgba(0, 0, 0, 0) 86%
+    );
+    /* اگر محو خیلی بیشتر می‌خوای: 45%→42% و 86%→83% */
+  }
+
+  /* ===== Highlight (نور مرکزی) ===== */
+  .hero-highlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  [data-theme="light"] .hero-highlight {
+    background: radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.34),
+      transparent 72%
+    );
+  }
+  [data-theme="dark"] .hero-highlight {
+    background: radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.15),
+      transparent 72%
+    );
+  }
+
+  /* ===== Shadow (عمق عمومی) ===== */
+  .hero-shadow {
+    position: absolute;
+    inset: -6% -4% -10% -4%;
+    pointer-events: none;
+    background: radial-gradient(
+        70% 46% at 50% 40%,
+        rgba(0, 0, 0, 0.3),
+        transparent 68%
+      ),
+      radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.18), transparent 72%);
+    mix-blend-mode: multiply;
+  }
+  [data-theme="dark"] .hero-shadow {
+    background: radial-gradient(
+        70% 46% at 50% 40%,
+        rgba(0, 0, 0, 0.42),
+        transparent 68%
+      ),
+      radial-gradient(85% 58% at 50% 48%, rgba(0, 0, 0, 0.28), transparent 72%);
+  }
+
+  /* ===== فید بالایی + وینیت ===== */
+  .hero-topfade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  [data-theme="light"] .hero-topfade {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.75),
+      rgba(255, 255, 255, 0) 42%
+    );
+  }
+  [data-theme="dark"] .hero-topfade {
+    background: linear-gradient(
+      180deg,
+      rgba(4, 6, 10, 0.75),
+      rgba(0, 0, 0, 0) 40%
+    );
+  }
+
+  .hero-vignette {
+    position: absolute;
+    inset: -12% -8% -24% -8%;
+    pointer-events: none;
+  }
+  [data-theme="light"] .hero-vignette {
+    background: radial-gradient(
+      60% 40% at 50% 10%,
+      rgba(0, 0, 0, 0.2),
+      transparent 62%
+    );
+  }
+  [data-theme="dark"] .hero-vignette {
+    background: radial-gradient(
+      60% 40% at 50% 10%,
+      rgba(0, 0, 0, 0.48),
+      transparent 62%
+    );
+  }
+
+  /* ===== نسخهٔ فشرده برای Hero (کاهش ارتفاع واقعی) ===== */
+  .hero-compact h1 {
+    line-height: 1.15;
+  }
+  .hero-compact .badge {
+    transform: translateY(0);
+  }
+}
