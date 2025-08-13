@@ -75,7 +75,7 @@ export default function Hero({ onOpenLightbox }) {
         <div className="hero-topfade" aria-hidden="true" />
         <div className="hero-vignette" aria-hidden="true" />
       </div>
-
+      //
       {/* ===== FOREGROUND CONTENT ===== */}
       <div className="relative z-10">
         <div className="container grid items-center gap-10 md:grid-cols-2 py-10 md:py-14">
