@@ -164,7 +164,7 @@ export default function Hero({ onOpenLightbox }) {
             >
               <picture>
                 <img
-                  src="/assets/img/3.jpg"
+                  src="/assets/img/4.jpg"
                   alt="Showcase"
                   className="block h-full w-full object-cover"
                   loading="eager"
@@ -180,7 +180,7 @@ export default function Hero({ onOpenLightbox }) {
 
               <button
                 className="btn btn-sm btn-ghost absolute right-3 top-3"
-                onClick={() => onOpenLightbox?.("/assets/img/3.jpg")}
+                onClick={() => onOpenLightbox?.("/assets/img/4.jpg")}
                 aria-label="Expand"
                 title="Expand"
               >
