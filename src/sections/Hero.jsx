@@ -124,9 +124,7 @@ export default function Hero({ onOpenLightbox }) {
               variants={fadeIn}
             >
               <div className="rounded-box bg-base-200 p-4">Web Design</div>
-              <div className="rounded-box bg-base-200 p-4">
-                Website Maintenance
-              </div>
+              <div className="rounded-box bg-base-200 p-4">SEO-Ready</div>
               <div className="rounded-box bg-base-200 p-4">E-Commerce</div>
             </motion.div>
           </motion.div>
