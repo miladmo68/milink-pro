@@ -90,10 +90,12 @@ export default function Hero({ onOpenLightbox }) {
               Milink Agency
             </motion.div>
 
-            {/* Heading */}
+            {/* Heading with mobile-only line breaks */}
             <motion.h1 className="leading-tight" variants={fromTop}>
-              Build <span className="text-primary">Your Digital </span>
-              Presence
+              Build
+              <br className="block md:hidden" />
+              <span className="text-primary">Your Digital</span>
+              <br className="block md:hidden" /> Presence
             </motion.h1>
 
             {/* Paragraph */}
@@ -122,7 +124,9 @@ export default function Hero({ onOpenLightbox }) {
               variants={fadeIn}
             >
               <div className="rounded-box bg-base-200 p-4">Web Design</div>
-              <div className="rounded-box bg-base-200 p-4">SEO & Content</div>
+              <div className="rounded-box bg-base-200 p-4">
+                Website Maintenance
+              </div>
               <div className="rounded-box bg-base-200 p-4">E-Commerce</div>
             </motion.div>
           </motion.div>
