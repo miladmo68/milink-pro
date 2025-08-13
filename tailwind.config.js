@@ -1,7 +1,6 @@
 // tailwind.config.js
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
-  // DaisyUI روی data-theme کار می‌کند؛ نیازی به تغییر نیست
   theme: {
     extend: {
       fontFamily: {
@@ -36,6 +35,6 @@ export default {
     },
   },
   plugins: [require("daisyui")],
-  // مهم: فقط همین دو تا، تا DaisyUI قطعی سوییچ کنه
-  daisyui: { themes: ["light", "dark"] },
+  // همه‌ی تم‌های DaisyUI فعال؛ دیگر لازم نیست این فایل را برای تعویض تم ویرایش کنی
+  daisyui: { themes: true },
 };

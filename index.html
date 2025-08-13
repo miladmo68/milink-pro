@@ -8,16 +8,55 @@
       rel="stylesheet"
     />
     <title>MILINK</title>
-  </head>
-  <body>
-    <!-- داخل <head> و قبل از رندر React بگذار -->
+
+    <!-- تنها منبعِ مپ تم: همین‌جا را ادیت کن -->
     <script>
-      try {
-        var t = localStorage.getItem("milink-theme") || "dark";
-        document.documentElement.setAttribute("data-theme", t);
-      } catch {}
+      // فقط این یک‌جا را تغییر بده:
+      window.__THEME_MAP__ = {
+        light: "light", // بعداً مثلا "winter"
+        dark: "dark", // بعداً مثلا "dim"
+      };
+      // پیش‌فرض منطقی (مود): "dark" مثل قبل
+      window.__DEFAULT_MODE__ = "dark";
+      // سازگاری با کلید قدیمی
+      window.__LEGACY_KEY__ = "milink-theme";
+      window.__MODE_KEY__ = "milink-theme-mode";
     </script>
 
+    <!-- اعمال تم قبل از رندر React (بدون چشمک) -->
+    <script>
+      (function () {
+        try {
+          var MAP = window.__THEME_MAP__ || { light: "light", dark: "dark" };
+          var MODE_KEY = window.__MODE_KEY__ || "milink-theme-mode";
+          var LEGACY_KEY = window.__LEGACY_KEY__ || "milink-theme";
+          var DEFAULT_MODE = window.__DEFAULT_MODE__ || "dark";
+
+          var mode =
+            localStorage.getItem(MODE_KEY) ||
+            localStorage.getItem(LEGACY_KEY) ||
+            DEFAULT_MODE;
+
+          // مهاجرت به کلید جدید
+          if (!localStorage.getItem(MODE_KEY)) {
+            localStorage.setItem(MODE_KEY, mode);
+          }
+
+          var physical = MAP[mode] || MAP[DEFAULT_MODE] || "light";
+          document.documentElement.setAttribute("data-theme", physical);
+          document.documentElement.classList.toggle(
+            "mode-dark",
+            mode === "dark"
+          );
+          document.documentElement.classList.toggle(
+            "mode-light",
+            mode === "light"
+          );
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

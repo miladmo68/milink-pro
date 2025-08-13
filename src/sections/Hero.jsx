@@ -138,10 +138,10 @@ export default function Hero({ onOpenLightbox }) {
                 Web Design
               </span>
               <span className="rounded-box bg-base-200 px-4 py-2">
-                SEO-Ready
+                E-Commerce
               </span>
               <span className="rounded-box bg-base-200 px-4 py-2">
-                E-Commerce
+                SEO-Ready
               </span>
             </motion.div>
           </motion.div>
