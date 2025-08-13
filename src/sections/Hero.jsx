@@ -71,9 +71,9 @@ export default function Hero({ onOpenLightbox }) {
       {/* ===== FOREGROUND CONTENT ===== */}
       <div className="relative z-10">
         <div className="container grid items-center gap-10 md:grid-cols-2 py-10 md:py-14">
-          {/* Left column (exact order like screenshot) */}
+          {/* Left column */}
           <motion.div
-            className="flex flex-col items-start text-left"
+            className="flex flex-col items-center text-center md:items-start md:text-left"
             variants={parent}
             initial="hidden"
             animate="visible"
@@ -121,7 +121,7 @@ export default function Hero({ onOpenLightbox }) {
               </a>
             </motion.div>
 
-            {/* Inline stats (چسبیده مثل قبل) */}
+            {/* Inline stats */}
             <motion.div
               className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
               variants={fadeIn}
@@ -141,13 +141,23 @@ export default function Hero({ onOpenLightbox }) {
           {/* Right column (image) */}
           <div className="relative flex justify-center md:justify-end">
             <div className="aspect-[4/5] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-3xl overflow-hidden shadow-2xl bg-base-200/60">
-              <img
-                src="/assets/img/3.jpg"
-                alt="Showcase"
-                className="h-full w-full object-cover"
-                loading="eager"
-                style={{ filter: "brightness(0.95) contrast(0.95)" }}
-              />
+              {/* Using picture + explicit sizes helps iPhone */}
+              <picture>
+                {/* If you later add webp/avif, keep jpg last as fallback */}
+                <img
+                  src="/assets/img/3.jpg"
+                  alt="Showcase"
+                  className="block h-full w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                  style={{
+                    WebkitTransform: "translateZ(0)",
+                    filter: "brightness(0.95) contrast(0.95)",
+                  }}
+                />
+              </picture>
+
               <button
                 className="btn btn-sm btn-ghost absolute right-3 top-3"
                 onClick={() => onOpenLightbox?.("/assets/img/3.jpg")}
@@ -235,30 +245,27 @@ export default function Hero({ onOpenLightbox }) {
 //       </div>
 
 //       {/* ===== FOREGROUND CONTENT ===== */}
-//       <div className="relative z-10 h-full">
-//         <div className="container h-full grid md:grid-cols-2 items-center gap-8 md:gap-12 py-8 md:py-12">
+//       <div className="relative z-10">
+//         <div className="container grid items-center gap-10 md:grid-cols-2 py-10 md:py-14">
+//           {/* Left column (exact order like screenshot) */}
 //           <motion.div
-//             className="flex flex-col items-center text-center md:items-start md:text-left"
+//             className="flex flex-col items-start text-left"
 //             variants={parent}
 //             initial="hidden"
 //             animate="visible"
 //           >
 //             {/* Badge */}
 //             <motion.div
-//               className="badge badge-primary badge-lg mb-6 md:mb-7"
+//               className="badge badge-primary badge-lg mb-6"
 //               variants={fadeInWithCTA}
-//               whileHover={{
-//                 scale: 1.07,
-//                 boxShadow:
-//                   "0 0 25px rgba(255,255,255,0.5), 0 0 40px rgba(0,112,255,0.6)",
-//               }}
+//               whileHover={{ scale: 1.07 }}
 //             >
 //               Milink Agency
 //             </motion.div>
 
 //             {/* Heading */}
 //             <motion.h1
-//               className="leading-tight mb-4 md:mb-6"
+//               className="leading-tight mb-5 md:mb-6"
 //               variants={fromTop}
 //             >
 //               Build <br className="block md:hidden" />
@@ -267,9 +274,9 @@ export default function Hero({ onOpenLightbox }) {
 //               Presence
 //             </motion.h1>
 
-//             {/* Paragraph — فاصله بیشتر تا دکمه‌ها */}
+//             {/* Paragraph */}
 //             <motion.p
-//               className="mt-2 md:mt-3 mb-10 md:mb-14 text-lg opacity-90 max-w-prose md:max-w-xl"
+//               className="mt-1 md:mt-2 mb-8 md:mb-10 text-lg opacity-90 max-w-prose md:max-w-xl"
 //               variants={fromBottom}
 //             >
 //               Grow your business with high-performing websites, premium
@@ -277,9 +284,9 @@ export default function Hero({ onOpenLightbox }) {
 //               customers.
 //             </motion.p>
 
-//             {/* CTA buttons */}
+//             {/* CTAs */}
 //             <motion.div
-//               className="mt-0 md:mt-16 flex flex-col sm:flex-row gap-3"
+//               className="flex flex-col sm:flex-row gap-3"
 //               variants={fadeIn}
 //             >
 //               <a href="#contact" className="btn btn-primary">
@@ -290,41 +297,38 @@ export default function Hero({ onOpenLightbox }) {
 //               </a>
 //             </motion.div>
 
-//             {/* Stats — فاصله کمتر از دکمه‌ها */}
+//             {/* Inline stats (چسبیده مثل قبل) */}
 //             <motion.div
-//               className="
-//                 mt-6 md:mt-8
-//                 grid grid-cols-1 sm:grid-cols-3
-//                 text-center text-sm
-//                 rounded-xl overflow-hidden
-//                 border border-base-300 bg-base-200/30 backdrop-blur-sm
-//                 divide-y sm:divide-y-0 sm:divide-x divide-base-300
-//               "
+//               className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
 //               variants={fadeIn}
 //             >
-//               <div className="py-3 md:py-4 px-5">Web Design</div>
-//               <div className="py-3 md:py-4 px-5">SEO-Ready</div>
-//               <div className="py-3 md:py-4 px-5">E-Commerce</div>
+//               <span className="rounded-box bg-base-200 px-4 py-2">
+//                 Web Design
+//               </span>
+//               <span className="rounded-box bg-base-200 px-4 py-2">
+//                 SEO-Ready
+//               </span>
+//               <span className="rounded-box bg-base-200 px-4 py-2">
+//                 E-Commerce
+//               </span>
 //             </motion.div>
 //           </motion.div>
 
-//           {/* ===== Image Section ===== */}
+//           {/* Right column (image) */}
 //           <div className="relative flex justify-center md:justify-end">
-//             <div className="aspect-[4/5] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-3xl bg-base-200/60 shadow-2xl overflow-hidden">
+//             <div className="aspect-[4/5] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-3xl overflow-hidden shadow-2xl bg-base-200/60">
 //               <img
 //                 src="/assets/img/3.jpg"
 //                 alt="Showcase"
 //                 className="h-full w-full object-cover"
 //                 loading="eager"
-//                 style={{
-//                   borderRadius: "1.5rem",
-//                   filter: "brightness(0.95) contrast(0.95)",
-//                 }}
+//                 style={{ filter: "brightness(0.95) contrast(0.95)" }}
 //               />
 //               <button
 //                 className="btn btn-sm btn-ghost absolute right-3 top-3"
 //                 onClick={() => onOpenLightbox?.("/assets/img/3.jpg")}
 //                 aria-label="Expand"
+//                 title="Expand"
 //               >
 //                 ⤢
 //               </button>
