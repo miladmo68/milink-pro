@@ -39,9 +39,9 @@ export default function Hero({ onOpenLightbox }) {
   };
 
   return (
-    <section id="home" className="relative bg-transparent">
-      {/* ===== BACKGROUND STACK ===== */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+    <section id="home" className="relative z-0 bg-transparent">
+      {/* ===== BACKGROUND STACK (pushed behind content) ===== */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         {!fallback && (
           <video
             ref={videoRef}
@@ -138,12 +138,19 @@ export default function Hero({ onOpenLightbox }) {
             </motion.div>
           </motion.div>
 
-          {/* Right column (image) */}
+          {/* Right column (image) — FULLY visible on mobile */}
           <div className="relative flex justify-center md:justify-end">
-            <div className="aspect-[4/5] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-3xl overflow-hidden shadow-2xl bg-base-200/60">
-              {/* Using picture + explicit sizes helps iPhone */}
+            <div
+              className="
+                w-full md:w-auto
+                min-h-[280px] sm:min-h-[340px]
+                aspect-[4/5]
+                rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
+                max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg
+              "
+            >
               <picture>
-                {/* If you later add webp/avif, keep jpg last as fallback */}
+                {/* اگر بعداً avif/webp اضافه کردی، اینجا بذار */}
                 <img
                   src="/assets/img/3.jpg"
                   alt="Showcase"
@@ -151,6 +158,7 @@ export default function Hero({ onOpenLightbox }) {
                   loading="eager"
                   decoding="async"
                   fetchpriority="high"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 560px"
                   style={{
                     WebkitTransform: "translateZ(0)",
                     filter: "brightness(0.95) contrast(0.95)",
