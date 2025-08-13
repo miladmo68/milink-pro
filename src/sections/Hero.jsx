@@ -37,6 +37,14 @@ export default function Hero({ onOpenLightbox }) {
       transition: { duration: 0.8, ease: "easeOut", delay: 0.8 },
     },
   };
+  const fromRight = {
+    hidden: { opacity: 0, x: 80 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.9, ease: "easeOut", delay: 0.3 },
+    },
+  };
 
   return (
     <section id="home" className="relative z-0 bg-transparent">
@@ -138,8 +146,13 @@ export default function Hero({ onOpenLightbox }) {
             </motion.div>
           </motion.div>
 
-          {/* Right column (image) — FULLY visible on mobile */}
-          <div className="relative flex justify-center md:justify-end">
+          {/* Right column (image) — animates from right, visible on mobile */}
+          <motion.div
+            className="relative flex justify-center md:justify-end"
+            variants={fromRight}
+            initial="hidden"
+            animate="visible"
+          >
             <div
               className="
                 w-full md:w-auto
@@ -150,7 +163,6 @@ export default function Hero({ onOpenLightbox }) {
               "
             >
               <picture>
-                {/* اگر بعداً avif/webp اضافه کردی، اینجا بذار */}
                 <img
                   src="/assets/img/3.jpg"
                   alt="Showcase"
@@ -175,7 +187,7 @@ export default function Hero({ onOpenLightbox }) {
                 ⤢
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -223,9 +235,9 @@ export default function Hero({ onOpenLightbox }) {
 //   };
 
 //   return (
-//     <section id="home" className="relative bg-transparent">
-//       {/* ===== BACKGROUND STACK ===== */}
-//       <div className="absolute inset-0 z-0 overflow-hidden">
+//     <section id="home" className="relative z-0 bg-transparent">
+//       {/* ===== BACKGROUND STACK (pushed behind content) ===== */}
+//       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
 //         {!fallback && (
 //           <video
 //             ref={videoRef}
@@ -255,9 +267,9 @@ export default function Hero({ onOpenLightbox }) {
 //       {/* ===== FOREGROUND CONTENT ===== */}
 //       <div className="relative z-10">
 //         <div className="container grid items-center gap-10 md:grid-cols-2 py-10 md:py-14">
-//           {/* Left column (exact order like screenshot) */}
+//           {/* Left column */}
 //           <motion.div
-//             className="flex flex-col items-start text-left"
+//             className="flex flex-col items-center text-center md:items-start md:text-left"
 //             variants={parent}
 //             initial="hidden"
 //             animate="visible"
@@ -305,7 +317,7 @@ export default function Hero({ onOpenLightbox }) {
 //               </a>
 //             </motion.div>
 
-//             {/* Inline stats (چسبیده مثل قبل) */}
+//             {/* Inline stats */}
 //             <motion.div
 //               className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
 //               variants={fadeIn}
@@ -322,16 +334,34 @@ export default function Hero({ onOpenLightbox }) {
 //             </motion.div>
 //           </motion.div>
 
-//           {/* Right column (image) */}
+//           {/* Right column (image) — FULLY visible on mobile */}
 //           <div className="relative flex justify-center md:justify-end">
-//             <div className="aspect-[4/5] max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg rounded-3xl overflow-hidden shadow-2xl bg-base-200/60">
-//               <img
-//                 src="/assets/img/3.jpg"
-//                 alt="Showcase"
-//                 className="h-full w-full object-cover"
-//                 loading="eager"
-//                 style={{ filter: "brightness(0.95) contrast(0.95)" }}
-//               />
+//             <div
+//               className="
+//                 w-full md:w-auto
+//                 min-h-[280px] sm:min-h-[340px]
+//                 aspect-[4/5]
+//                 rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
+//                 max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg
+//               "
+//             >
+//               <picture>
+//                 {/* اگر بعداً avif/webp اضافه کردی، اینجا بذار */}
+//                 <img
+//                   src="/assets/img/3.jpg"
+//                   alt="Showcase"
+//                   className="block h-full w-full object-cover"
+//                   loading="eager"
+//                   decoding="async"
+//                   fetchpriority="high"
+//                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 560px"
+//                   style={{
+//                     WebkitTransform: "translateZ(0)",
+//                     filter: "brightness(0.95) contrast(0.95)",
+//                   }}
+//                 />
+//               </picture>
+
 //               <button
 //                 className="btn btn-sm btn-ghost absolute right-3 top-3"
 //                 onClick={() => onOpenLightbox?.("/assets/img/3.jpg")}
