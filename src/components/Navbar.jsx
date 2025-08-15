@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { nav } from "../data/content.js";
 import { SITE } from "../config/siteConfig.js";
 import ThemeToggle from "./ThemeToggle.jsx";
-
-// ✅ Heroicons
 import { LinkIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Navbar() {
@@ -31,12 +29,21 @@ export default function Navbar() {
       >
         <div className="container navbar py-3">
           <div className="flex-1">
-            {/* ✅ Logo with Icon */}
+            {/* ✅ Logo with responsive size & stroke */}
             <a
               href="#home"
-              className="flex items-center gap-2 text-3xl font-display font-extrabold text-primary"
+              className="flex items-center gap-2 text-xl md:text-3xl font-display font-extrabold text-primary"
             >
-              <LinkIcon className="w-8 h-8 " strokeWidth={2.5} />
+              {/* Mobile: smaller, thinner stroke */}
+              <LinkIcon
+                className="w-6 h-6 md:hidden inline-block"
+                strokeWidth={1.5}
+              />
+              {/* Desktop: bigger, bolder stroke */}
+              <LinkIcon
+                className="hidden md:inline-block md:w-8 md:h-8"
+                strokeWidth={2.5}
+              />
               MILINK
             </a>
           </div>
