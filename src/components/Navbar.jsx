@@ -34,9 +34,9 @@ export default function Navbar() {
             {/* ✅ Logo with Icon */}
             <a
               href="#home"
-              className="flex items-center gap-2 text-xl font-display font-extrabold text-primary"
+              className="flex items-center gap-2 text-3xl font-display font-extrabold text-primary"
             >
-              <LinkIcon className="w-6 h-6" />
+              <LinkIcon className="w-8 h-8 " strokeWidth={2.5} />
               MILINK
             </a>
           </div>
