@@ -1,22 +1,5 @@
 import { useState } from "react";
-
-const testimonials = [
-  {
-    name: "Sarah Lee",
-    text: "Milink transformed our business presence!",
-    role: "CEO, TechNova",
-  },
-  {
-    name: "James Brown",
-    text: "Professional service and modern design.",
-    role: "Founder, BizCorp",
-  },
-  {
-    name: "Anna White",
-    text: "Loved their responsive approach!",
-    role: "Manager, CreativeHouse",
-  },
-];
+import { testimonials } from "../data/content.js";
 
 export default function Testimonials() {
   const [index, setIndex] = useState(0);
