@@ -185,12 +185,27 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How long does a site take?",
-    a: "Most sites launch in 2–4 weeks depending on scope and content readiness.",
+    q: "How long does it take to build a website?",
+    a: "Most standard sites launch in 2–4 weeks, depending on scope, content readiness, and feedback speed.",
   },
   {
-    q: "Do you offer ongoing support?",
-    a: "Yes—monthly care plans for updates, SEO, and performance.",
+    q: "Do you provide ongoing support and maintenance?",
+    a: "Yes — we offer monthly care plans that cover updates, security, SEO monitoring, and performance improvements.",
   },
-  { q: "Which stack do you use?", a: "React + Vite, TailwindCSS, DaisyUI." },
+  {
+    q: "Can you redesign my existing website?",
+    a: "Absolutely. We can refresh the design, improve speed and SEO, and align it with your brand and goals.",
+  },
+  {
+    q: "Do you work with e-commerce platforms like Shopify?",
+    a: "Yes, we specialize in Shopify stores, optimized product pages, and high-conversion checkouts.",
+  },
+  {
+    q: "How much does a website cost?",
+    a: "Pricing depends on your project scope and goals. Share your requirements, and we’ll send you a tailored proposal quickly.",
+  },
+  {
+    q: "What if I need something custom?",
+    a: "No problem — we create custom solutions for unique needs. Reach out and we’ll respond promptly with options.",
+  },
 ];
