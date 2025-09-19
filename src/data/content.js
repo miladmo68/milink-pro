@@ -146,22 +146,62 @@ export const work = [
   },
 ];
 
+// export const pricing = [
+//   {
+//     name: "Starter",
+//     price: 999,
+//     items: ["One‑page site", "Basic SEO", "2 revisions"],
+//   },
+//   {
+//     name: "Growth",
+//     price: 2499,
+//     items: ["5–7 pages", "SEO setup", "Lead capture", "Analytics"],
+//     popular: true,
+//   },
+//   {
+//     name: "Scale",
+//     price: 4999,
+//     items: ["Custom pages", "CRO", "Blog/CMS", "Integrations"],
+//   },
+// ];
+
 export const pricing = [
   {
     name: "Starter",
-    price: 999,
-    items: ["One‑page site", "Basic SEO", "2 revisions"],
+    priceLabel: "Contact us for a quote",
+    tagline: "A simple one-page website to get your business online fast.",
+    items: [
+      "One-page website",
+      "Mobile-friendly design",
+      "Basic SEO setup",
+      "2 rounds of revisions",
+    ],
   },
   {
     name: "Growth",
-    price: 2499,
-    items: ["5–7 pages", "SEO setup", "Lead capture", "Analytics"],
     popular: true,
+    badge: "Most Popular",
+    priceLabel: "Contact us for a quote",
+    tagline:
+      "A professional multi-page site designed to bring you leads and growth.",
+    items: [
+      "5–7 custom pages (Home, Services, About, Contact…)",
+      "SEO setup for better Google ranking",
+      "Lead capture forms (emails, signups)",
+      "Basic analytics to track visitors",
+    ],
   },
   {
     name: "Scale",
-    price: 4999,
-    items: ["Custom pages", "CRO", "Blog/CMS", "Integrations"],
+    priceLabel: "Contact us for a quote",
+    tagline:
+      "A custom website with advanced features, CMS, and integrations for bigger businesses.",
+    items: [
+      "Custom pages and layouts",
+      "Blog or CMS included",
+      "Integrations (CRM, payments, tools)",
+      "Conversion optimization (better sales)",
+    ],
   },
 ];
 
