@@ -92,7 +92,7 @@ export default function Hero({ onOpenLightbox }) {
               variants={fadeInWithCTA}
               whileHover={{ scale: 1.07 }}
             >
-              Milink Agency
+              Milink Digital Agency
             </motion.div>
 
             {/* Heading */}

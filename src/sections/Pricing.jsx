@@ -8,14 +8,12 @@ export default function Pricing() {
 
         <div className="mt-10 grid md:grid-cols-3 gap-6">
           {pricing.map((p, i) => {
-            // استایل پایه برای همه کارت‌ها
             const baseCard = `
               group relative z-0 overflow-hidden rounded-2xl
               card bg-base-200/60 p-6 shadow-soft
               transition-transform transition-shadow duration-200
             `;
 
-            // استایل اضافه فقط برای popular
             const popularExtras = p.popular
               ? `
                 ring-2 ring-primary shadow-glow

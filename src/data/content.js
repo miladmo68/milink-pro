@@ -146,25 +146,6 @@ export const work = [
   },
 ];
 
-// export const pricing = [
-//   {
-//     name: "Starter",
-//     price: 999,
-//     items: ["One‑page site", "Basic SEO", "2 revisions"],
-//   },
-//   {
-//     name: "Growth",
-//     price: 2499,
-//     items: ["5–7 pages", "SEO setup", "Lead capture", "Analytics"],
-//     popular: true,
-//   },
-//   {
-//     name: "Scale",
-//     price: 4999,
-//     items: ["Custom pages", "CRO", "Blog/CMS", "Integrations"],
-//   },
-// ];
-
 export const pricing = [
   {
     name: "Starter",
