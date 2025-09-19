@@ -205,21 +205,63 @@ export const pricing = [
   },
 ];
 
+// export const testimonials = [
+//   {
+//     name: "Sarah Lee",
+//     text: "Milink transformed our business presence!",
+//     role: "CEO, TechNova",
+//   },
+//   {
+//     name: "James Brown",
+//     text: "Professional service and modern design.",
+//     role: "Founder, BizCorp",
+//   },
+//   {
+//     name: "Anna White",
+//     text: "Loved their responsive approach!",
+//     role: "Manager, CreativeHouse",
+//   },
+// ];
 export const testimonials = [
   {
+    name: "Reza Mohammadi",
+    text: "Their UI/UX design completely elevated our product. Users love the new interface.",
+    role: "",
+  },
+  {
     name: "Sarah Lee",
-    text: "Milink transformed our business presence!",
-    role: "CEO, TechNova",
+    text: "Milink built a stunning website for us — fast, modern, and scalable.",
+    role: "",
+  },
+  {
+    name: "Leila Karimi",
+    text: "Our e-commerce store runs smoother than ever thanks to Milink.",
+    role: "",
   },
   {
     name: "James Brown",
-    text: "Professional service and modern design.",
-    role: "Founder, BizCorp",
+    text: "They boosted our search rankings in just weeks. SEO expertise at its best!",
+    role: "",
+  },
+  {
+    name: "Omid Farahani",
+    text: "Their ongoing maintenance support is top-notch. Always reliable.",
+    role: "",
   },
   {
     name: "Anna White",
-    text: "Loved their responsive approach!",
-    role: "Manager, CreativeHouse",
+    text: "The branding strategy they delivered gave us a strong new identity.",
+    role: "",
+  },
+  {
+    name: "Maryam Rahimi",
+    text: "From concept to launch, they handled everything seamlessly.",
+    role: "",
+  },
+  {
+    name: "David Chen",
+    text: "We launched faster thanks to their automation and integration expertise.",
+    role: "",
   },
 ];
 
