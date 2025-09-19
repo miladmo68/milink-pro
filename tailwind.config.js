@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
+      maxWidth: {
+        "8xl": "1440px",
+      },
       fontFamily: {
         display: ["Playfair Display", "Georgia", "serif"],
         body: ["Inter", "ui-sans-serif", "system-ui"],
