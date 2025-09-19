@@ -39,10 +39,10 @@ export default function Pricing() {
 
                 <h3 className="text-xl font-semibold">{p.name}</h3>
 
-                <div className="mt-2 text-4xl font-extrabold">
-                  {/* ${p.price} */}
-                  <span className="text-base font-normal opacity-70">
-                    project
+                <div className="mt-2 text-1xl font-bold">
+                  {p.tagline}
+                  <span className="text-base  opacity-70 text-2xl">
+                    {/* {p.tagline} */}
                   </span>
                 </div>
 

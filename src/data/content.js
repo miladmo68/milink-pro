@@ -205,23 +205,6 @@ export const pricing = [
   },
 ];
 
-// export const testimonials = [
-//   {
-//     name: "Sarah Lee",
-//     text: "Milink transformed our business presence!",
-//     role: "CEO, TechNova",
-//   },
-//   {
-//     name: "James Brown",
-//     text: "Professional service and modern design.",
-//     role: "Founder, BizCorp",
-//   },
-//   {
-//     name: "Anna White",
-//     text: "Loved their responsive approach!",
-//     role: "Manager, CreativeHouse",
-//   },
-// ];
 export const testimonials = [
   {
     name: "Reza Mohammadi",
