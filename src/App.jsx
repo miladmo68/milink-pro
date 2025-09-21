@@ -22,7 +22,7 @@ export default function App() {
       <main>
         <Hero onOpenLightbox={(img) => setLightbox(img)} />
         <Services onOpen={(payload) => setModal(payload)} />
-        <Work onOpen={(payload) => setModal(payload)} />
+        {/* <Work onOpen={(payload) => setModal(payload)} /> */}
         <Pricing />
         <Testimonials />
         <FAQ />
