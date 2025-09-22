@@ -378,7 +378,7 @@ function MediaCardSVG({ onOpenLightbox, variants }) {
         className="
           group relative
           w-full md:w-auto
-          min-h-[280px] sm:min-h-[340px]
+          min-h-[280px] sm:min-h-[680px]
           aspect-[4/5]
           rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
           max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg
@@ -436,7 +436,7 @@ function MediaCardSVG({ onOpenLightbox, variants }) {
           <rect
             x="200"
             y="140"
-            width="800"
+            width="00"
             height="520"
             rx="28"
             fill="url(#g-frame)"
