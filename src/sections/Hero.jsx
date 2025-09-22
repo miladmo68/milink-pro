@@ -369,7 +369,7 @@ function MediaCardSVG({ onOpenLightbox, variants }) {
 
   return (
     <motion.div
-      className="relative flex justify-center md:justify-end"
+      className="relative flex justify-center md:justify-end my-6 md:my-8" // ★ اضافه شد
       variants={variants}
       initial="hidden"
       animate="visible"
@@ -378,7 +378,7 @@ function MediaCardSVG({ onOpenLightbox, variants }) {
         className="
           group relative
           w-full md:w-auto
-          min-h-[280px] sm:min-h-[680px]
+          min-h-[280px] sm:min-h-[620px]
           aspect-[4/5]
           rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
           max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg
