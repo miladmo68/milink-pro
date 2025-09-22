@@ -107,7 +107,7 @@ export default function Contact() {
               <EnvelopeIcon className="h-8 w-8 text-primary" />
               <div>
                 <h3 className="font-semibold text-lg">Email</h3>
-                <p>miladmo68@gmail.com</p>
+                <p>info@milink.ca</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
