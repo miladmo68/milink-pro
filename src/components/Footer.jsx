@@ -6,7 +6,7 @@ export default function Footer() {
         <div>
           <p className="font-bold">Milink Digital Agency</p>
           <p className="text-sm opacity-80">
-            📍 GTA, Ontario, Canada | 📧 info@milink.com | 📞 +1 (437) 999-3668
+            📍 GTA, Ontario, Canada | 📧 info@milink.ca | 📞 +1 (437) 999-3668
           </p>
         </div>
 
