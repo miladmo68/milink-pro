@@ -148,19 +148,20 @@ export const work = [
     cover: "/assets/img/zarsagold.jpg",
     liveUrl: "https://zarsa.ca",
   },
+  // ⬇️ جایگزین‌های جدید
   {
     id: "p5",
-    title: "Intershine (Duplicate)",
-    summary: "Alternate design views for cleaning services.",
-    cover: "/assets/img/intershine.png",
-    liveUrl: "https://intershine.ca",
+    title: "Tarahan Choob",
+    summary: "Cabinetry & office furniture design/build studio.",
+    cover: "/assets/img/tarahanchoob.jpg", // تغییر بده به مسیر واقعی
+    liveUrl: "#", // لینک نهایی رو اینجا بگذار
   },
   {
     id: "p6",
-    title: "Zarsa Gold (Duplicate)",
-    summary: "Alternate layouts for luxury jewelry storefront.",
-    cover: "/assets/img/zarsagold.jpg",
-    liveUrl: "https://zarsa.ca",
+    title: "Jahan Ariya",
+    summary: "Metalworks & industrial hardware fabrication.",
+    cover: "/assets/img/jahanariya.jpg", // تغییر بده به مسیر واقعی
+    liveUrl: "#", // لینک نهایی رو اینجا بگذار
   },
 ];
 
