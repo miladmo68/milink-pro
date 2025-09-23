@@ -121,28 +121,46 @@ export const services = [
 
 export const work = [
   {
-    id: "saas",
-    title: "SaaS Lead Gen",
-    tag: "SEO + CRO",
-    summary: "3x demo bookings in 60 days.",
-    cover:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1400&auto=format&fit=crop",
+    id: "p1",
+    title: "Intershine",
+    summary: "Cleaning services website with a modern, clear layout.",
+    cover: "/assets/img/intershine.png",
+    liveUrl: "https://intershine.ca",
   },
   {
-    id: "ecom",
-    title: "D2C Scale",
-    tag: "Ads + Analytics",
-    summary: "+220% ROAS in 90 days.",
-    cover:
-      "https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=1400&auto=format&fit=crop",
+    id: "p2",
+    title: "Fair Construction",
+    summary: "Construction company site with project showcases.",
+    cover: "/assets/img/fairconstruction.jpg",
+    liveUrl: "https://fairconstruction.ca",
   },
   {
-    id: "local",
-    title: "Local Biz Boost",
-    tag: "Web + GMB",
-    summary: "Calls up 170% MoM.",
-    cover:
-      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1400&auto=format&fit=crop",
+    id: "p3",
+    title: "Sky Contracting Inc",
+    summary: "Renovation & cabinetry site highlighting services.",
+    cover: "/assets/img/sky.jpg",
+    liveUrl: "https://skyinc.ca",
+  },
+  {
+    id: "p4",
+    title: "Zarsa Gold",
+    summary: "Jewelry e-commerce site built for elegance and trust.",
+    cover: "/assets/img/zarsagold.jpg",
+    liveUrl: "https://zarsa.ca",
+  },
+  {
+    id: "p5",
+    title: "Intershine (Duplicate)",
+    summary: "Alternate design views for cleaning services.",
+    cover: "/assets/img/intershine.png",
+    liveUrl: "https://intershine.ca",
+  },
+  {
+    id: "p6",
+    title: "Zarsa Gold (Duplicate)",
+    summary: "Alternate layouts for luxury jewelry storefront.",
+    cover: "/assets/img/zarsagold.jpg",
+    liveUrl: "https://zarsa.ca",
   },
 ];
 

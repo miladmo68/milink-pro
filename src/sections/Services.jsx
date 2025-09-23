@@ -31,8 +31,13 @@ function ServiceCard({ data, onOpen }) {
   return (
     <article
       className="
-        relative card bg-base-200/60 p-6 shadow-md
-        transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl
+        relative card
+        bg-base-300/70 p-6
+        shadow-md rounded-2xl
+        ring-1 ring-primary/10
+        transition-all duration-200
+        hover:-translate-y-1 hover:shadow-xl hover:ring-primary/40
+        focus-within:ring-primary/50
       "
     >
       {data.badge && (
