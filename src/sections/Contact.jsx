@@ -141,11 +141,11 @@ export default function Contact() {
               <div>
                 <h3 className="font-semibold text-lg">Phone</h3>
                 <a
-                  href="tel:+14379993668"
+                  href="tel:+14376003139"
                   className="link link-hover"
-                  aria-label="Call +1 (437) 999-3668"
+                  aria-label="Call +1 (437) 600-3139"
                 >
-                  +1 (437) 999-3668
+                  +1 (437) 600-3139
                 </a>
               </div>
             </div>
