@@ -107,7 +107,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
+            {/* <div className="flex items-start gap-4">
               <EnvelopeIcon className="h-8 w-8 text-primary" />
               <div>
                 <h3 className="font-semibold text-lg">Email</h3>
@@ -119,7 +119,7 @@ export default function Contact() {
                   info@milink.ca
                 </a>
               </div>
-            </div>
+            </div> */}
             {/* Instagram (added) */}
             <div className="flex items-start gap-4">
               <Instagram className="h-8 w-8 text-primary" aria-hidden="true" />
