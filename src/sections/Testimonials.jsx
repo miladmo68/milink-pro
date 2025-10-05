@@ -8,7 +8,7 @@ export default function Testimonials() {
   const len = items.length || 1;
 
   const [perView, setPerView] = useState(3);
-  const [pos, setPos] = useState(1);
+  const [pos, setPos] = useState(1); // 1..len (با کلون‌ها میشه 0..len+1)
   const [hover, setHover] = useState(false);
   const [transitioning, setTransitioning] = useState(true);
 
@@ -20,6 +20,8 @@ export default function Testimonials() {
   }, []);
 
   const base = useMemo(() => items, [items]);
+
+  // کلون اول و آخر برای لوپ
   const extended = useMemo(() => {
     if (!len) return [];
     return [base[len - 1], ...base, base[0]];
@@ -27,31 +29,42 @@ export default function Testimonials() {
 
   const next = () => setPos((p) => p + 1);
   const prev = () => setPos((p) => p - 1);
-  const goTo = (i) => setPos(i + 1);
+  const goTo = (i) => setPos(i + 1); // i: 0..len-1  -> pos: 1..len
 
+  // اتو‌پلی
   useEffect(() => {
     if (hover || len < 2) return;
     const id = setInterval(() => next(), 4500);
     return () => clearInterval(id);
   }, [hover, len]);
 
+  // هر بار موقعیت تغییر کرد، انیمیشن روشن باشد
   useEffect(() => {
     setTransitioning(true);
   }, [pos]);
 
+  // فیکس لوپ انتها/ابتدا بدون پرش
   const onTransitionEnd = () => {
     if (pos === 0) {
+      // از قبلِ اول به آخر واقعی برگرد
       setTransitioning(false);
       setPos(len);
-      requestAnimationFrame(() => setTransitioning(true));
+      // دو بار RAF برای اطمینان از اعمال reflow قبل از روشن کردن transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setTransitioning(true));
+      });
     } else if (pos === len + 1) {
+      // از بعدِ آخر به اول واقعی برگرد
       setTransitioning(false);
       setPos(1);
-      requestAnimationFrame(() => setTransitioning(true));
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setTransitioning(true));
+      });
     }
   };
 
-  const step = perView === 1 ? 100 : 100 / 3;
+  // گام جابه‌جایی
+  const step = perView === 1 ? 100 : 100 / 3; // 100% یا 33.333%
   const translate = (pos - 1) * step;
 
   if (!items.length) return null;
@@ -126,7 +139,7 @@ export default function Testimonials() {
                       : "opacity-60";
 
                   const ring = isCenter
-                    ? "ring-1 ring-[#142133]/30 border-[#142133]/20 shadow-2xl"
+                    ? "ring-1 ring-primary/30 border-primary/20 shadow-2xl"
                     : "";
 
                   return (
@@ -173,9 +186,7 @@ export default function Testimonials() {
                         <div
                           className={cx(
                             "mt-8 h-1 rounded-full",
-                            isCenter
-                              ? "bg-gradient-to-r from-[#142133] via-[#142133] to-[#142133]"
-                              : "bg-base-300"
+                            isCenter ? "bg-primary" : "bg-base-300"
                           )}
                         />
                       </div>
@@ -190,19 +201,21 @@ export default function Testimonials() {
           </div>
 
           <div className="flex items-center justify-center gap-2 mt-8">
-            {items.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                aria-label={`Go to ${i + 1}`}
-                className={cx(
-                  "h-2 rounded-full transition-all",
-                  i + 1 === (pos > len ? 1 : pos < 1 ? len : pos)
-                    ? "w-6 bg-[#142133]"
-                    : "w-2 bg-base-300"
-                )}
-              />
-            ))}
+            {items.map((_, i) => {
+              const current = pos > len ? 1 : pos < 1 ? len : pos;
+              const active = i + 1 === current;
+              return (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  aria-label={`Go to ${i + 1}`}
+                  className={cx(
+                    "h-2 rounded-full transition-all",
+                    active ? "w-6 bg-primary" : "w-2 bg-base-300"
+                  )}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -227,7 +240,7 @@ function Avatar({ src, name = "" }) {
   }
   return (
     <div className="avatar">
-      <div className="w-14 rounded-full ring ring-[#142133]/20 ring-offset-2 ring-offset-base-100 overflow-hidden">
+      <div className="w-14 rounded-full ring ring-primary/20 ring-offset-2 ring-offset-base-100 overflow-hidden">
         <img src={src} alt={name} loading="lazy" />
       </div>
     </div>
