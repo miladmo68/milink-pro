@@ -25,7 +25,7 @@ export default function App() {
         <Work onOpen={(payload) => setModal(payload)} />
         <Pricing />
         <Testimonials />
-        <FAQ />
+        {/* <FAQ /> */}
         <Contact />
       </main>
       <Footer />
