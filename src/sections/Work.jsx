@@ -1,5 +1,5 @@
 import { work } from "../data/content.js";
-import { Instagram, Globe } from "lucide-react"; // آیکون‌ها
+import { Instagram, Globe } from "lucide-react";
 
 const INSTAGRAM_URL = "https://instagram.com/milink.ca";
 const PORTFOLIO_URL = "https://miladweb.com";

@@ -146,22 +146,21 @@ export const work = [
     title: "Zarsa Gold",
     summary: "Jewelry e-commerce site built for elegance and trust.",
     cover: "/assets/img/zarsagold.jpg",
-    liveUrl: "https://zarsa.ca",
+    liveUrl: "https://zarsa2.vercel.app/",
   },
-  // ⬇️ جایگزین‌های جدید
   {
     id: "p5",
     title: "Tarahan Choob",
     summary: "Cabinetry & office furniture design/build studio.",
-    cover: "/assets/img/tarahanchoob.jpg", // تغییر بده به مسیر واقعی
-    liveUrl: "#", // لینک نهایی رو اینجا بگذار
+    cover: "/assets/img/tarahanchoob.jpg",
+    liveUrl: "#",
   },
   {
     id: "p6",
     title: "Jahan Ariya",
     summary: "Metalworks & industrial hardware fabrication.",
-    cover: "/assets/img/jahanariya.jpg", // تغییر بده به مسیر واقعی
-    liveUrl: "#", // لینک نهایی رو اینجا بگذار
+    cover: "/assets/img/jahanariya.jpg",
+    liveUrl: "#",
   },
 ];
 
