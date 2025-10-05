@@ -145,7 +145,7 @@ export const work = [
     id: "p4",
     title: "Zarsa Gold",
     summary: "Jewelry e-commerce site built for elegance and trust.",
-    cover: "/assets/img/zarsagold.jpg",
+    cover: "/assets/img/zarsagold.png",
     liveUrl: "https://zarsa2.vercel.app/",
   },
   {
