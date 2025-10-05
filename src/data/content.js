@@ -55,10 +55,9 @@ export const services = [
       "From storefront setup to conversion-focused product pages, we build fast, secure shops with clean structure, smooth checkout, and tracking—so you can grow with confidence.",
   },
 
-  // ===== EXTRA (More ways we can help) =====
   {
     id: "seo",
-    tier: "extra",
+    tier: "core",
     icon: "MagnifyingGlassIcon",
     badge: "High ROI",
     title: "SEO Optimization",
@@ -67,19 +66,10 @@ export const services = [
     longDesc:
       "We remove technical blockers, add structured data, and ship a simple content plan. The result: steady, compounding organic traffic that brings ready-to-buy visitors.",
   },
-  {
-    id: "ads",
-    tier: "extra",
-    icon: "RocketLaunchIcon",
-    title: "Paid Growth",
-    desc: "Google & Meta ads with CRO-tuned landing pages.",
-    bullets: ["GA4/Tags plan", "Search / PMAX / Meta", "A/B testing"],
-    longDesc:
-      "We run targeted campaigns and pair them with fast, focused landing pages. Clear tracking shows what works, and experiments help you scale your best performers.",
-  },
+
   {
     id: "brand",
-    tier: "extra",
+    tier: "core",
     icon: "PaintBrushIcon",
     title: "Branding & Identity",
     desc: "Distinctive visual system and usage guide.",
@@ -87,35 +77,16 @@ export const services = [
     longDesc:
       "A clean, memorable identity that fits your business. You’ll get logo variations, type and color rules, and a short brand guide so everything stays consistent.",
   },
-  {
-    id: "analytics",
-    tier: "extra",
-    icon: "ChartBarIcon",
-    title: "Analytics & Attribution",
-    desc: "Event schema and dashboards tied to goals.",
-    bullets: ["GA4 + GTM", "Events & funnels", "Attribution reports"],
-    longDesc:
-      "We define the events that matter, implement tracking correctly, and build simple dashboards—so decisions are based on facts, not guesses.",
-  },
+
   {
     id: "ux",
-    tier: "extra",
+    tier: "core",
     icon: "DevicePhoneMobileIcon",
     title: "UI/UX Design",
     desc: "Intuitive interfaces that keep users engaged.",
     bullets: ["Wireflows", "Design systems", "Usability fixes"],
     longDesc:
       "From flows and wireframes to polished components, we design interfaces that reduce friction and guide users to action on any device.",
-  },
-  {
-    id: "assets",
-    tier: "extra",
-    icon: "PhotoIcon",
-    title: "Image & Asset Optimization",
-    desc: "Smaller, smarter assets (WebP, srcset) for faster loads.",
-    bullets: ["WebP/AVIF", "Responsive images", "CDN & caching"],
-    longDesc:
-      "We compress and serve images the right way, tune caching/CDN, and boost Core Web Vitals. Faster pages = better SEO and more conversions.",
   },
 ];
 
