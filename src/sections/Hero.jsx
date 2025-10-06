@@ -77,7 +77,7 @@ export default function Hero({ onOpenLightbox }) {
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
-            src="/assets/video/hero.mp4"
+            src="/assets/video/hero2.mp4"
             autoPlay
             muted
             loop
