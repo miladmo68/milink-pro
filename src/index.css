@@ -306,3 +306,33 @@ body {
     ) !important;
   }
 }
+
+/* گرادیانت زنده برای متن (کِش اَندرلاین Ankit-style) */
+.gradient-text {
+  background-image: linear-gradient(
+    90deg,
+    #38bdf8,
+    #22d3ee,
+    #3b82f6,
+    #22d3ee,
+    #38bdf8
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* اگر تم تاریک/روشن داری، می‌تونی رنگ‌ها رو کاستوم کنی */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
