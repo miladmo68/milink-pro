@@ -7,11 +7,12 @@ export default function Testimonials() {
   const items = useMemo(() => (Array.isArray(DATA) ? DATA : []), []);
   const len = items.length || 1;
 
-  const [perView, setPerView] = useState(3);
-  const [pos, setPos] = useState(1); // 1..len (با کلون‌ها میشه 0..len+1)
+  const [perView, setPerView] = useState(3); // 1 (mobile) or 3 (md+)
+  const [pos, setPos] = useState(1); // center index within `extended`
   const [hover, setHover] = useState(false);
   const [transitioning, setTransitioning] = useState(true);
 
+  // --- Responsiveness
   useEffect(() => {
     const onResize = () => setPerView(window.innerWidth >= 768 ? 3 : 1);
     onResize();
@@ -21,51 +22,53 @@ export default function Testimonials() {
 
   const base = useMemo(() => items, [items]);
 
-  // کلون اول و آخر برای لوپ
+  // --- Two clones (head & tail) to make looping seamless
   const extended = useMemo(() => {
     if (!len) return [];
-    return [base[len - 1], ...base, base[0]];
+    return [base[len - 1], ...base, base[0]]; // [cloneTail, ...real..., cloneHead]
   }, [base, len]);
 
   const next = () => setPos((p) => p + 1);
   const prev = () => setPos((p) => p - 1);
-  const goTo = (i) => setPos(i + 1); // i: 0..len-1  -> pos: 1..len
+  const goTo = (i) => setPos(i + 1); // i: 0..len-1 -> pos: 1..len
 
-  // اتو‌پلی
+  // --- Autoplay (pause on hover)
   useEffect(() => {
     if (hover || len < 2) return;
     const id = setInterval(() => next(), 4500);
     return () => clearInterval(id);
   }, [hover, len]);
 
-  // هر بار موقعیت تغییر کرد، انیمیشن روشن باشد
+  // --- Re-enable transition when pos changes
   useEffect(() => {
     setTransitioning(true);
   }, [pos]);
 
-  // فیکس لوپ انتها/ابتدا بدون پرش
+  // --- Fix loop at boundaries without visual jump
   const onTransitionEnd = () => {
     if (pos === 0) {
-      // از قبلِ اول به آخر واقعی برگرد
+      // jumped before first -> snap to last real
       setTransitioning(false);
       setPos(len);
-      // دو بار RAF برای اطمینان از اعمال reflow قبل از روشن کردن transition
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setTransitioning(true));
-      });
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setTransitioning(true))
+      );
     } else if (pos === len + 1) {
-      // از بعدِ آخر به اول واقعی برگرد
+      // jumped after last -> snap to first real
       setTransitioning(false);
       setPos(1);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setTransitioning(true));
-      });
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setTransitioning(true))
+      );
     }
   };
 
-  // گام جابه‌جایی
-  const step = perView === 1 ? 100 : 100 / 3; // 100% یا 33.333%
-  const translate = (pos - 1) * step;
+  // --- Geometry
+  // Use percentage widths with NO flex `gap` to keep math exact.
+  // Each slide width in % (mobile=100, desktop=33.3333)
+  const step = perView === 1 ? 100 : 100 / 3;
+  // Center the current card: left_i - translate = 50 - step/2  => translate = left_i - (50 - step/2)
+  const translatePct = pos * step - 50 + step / 2; // pos is index in `extended`
 
   if (!items.length) return null;
 
@@ -104,12 +107,13 @@ export default function Testimonials() {
               <div
                 onTransitionEnd={onTransitionEnd}
                 className={cx(
-                  "flex gap-10 will-change-transform",
+                  // IMPORTANT: remove `gap` so translate math stays exact
+                  "flex will-change-transform",
                   transitioning
                     ? "transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)]"
                     : "transition-none"
                 )}
-                style={{ transform: `translateX(-${translate}%)` }}
+                style={{ transform: `translateX(-${translatePct}%)` }}
               >
                 {extended.map((t, i) => {
                   const isCenter = i === pos;
@@ -146,8 +150,9 @@ export default function Testimonials() {
                     <article
                       key={i}
                       className={cx(
-                        "shrink-0 w-full",
-                        perView === 1 ? "md:w-full" : "md:w-1/3",
+                        // Widths (no external gap). Add inner padding for spacing.
+                        "shrink-0 px-3 md:px-4", // visual spacing
+                        perView === 1 ? "w-full" : "w-1/3",
                         "transition-all duration-700 ease-out"
                       )}
                     >
@@ -195,14 +200,16 @@ export default function Testimonials() {
                 })}
               </div>
 
+              {/* Edge fade masks */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-base-200 to-transparent" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-base-200 to-transparent" />
             </div>
           </div>
 
+          {/* Dots */}
           <div className="flex items-center justify-center gap-2 mt-8">
             {items.map((_, i) => {
-              const current = pos > len ? 1 : pos < 1 ? len : pos;
+              const current = pos > len ? 1 : pos < 1 ? len : pos; // normalize
               const active = i + 1 === current;
               return (
                 <button
