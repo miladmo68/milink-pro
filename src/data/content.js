@@ -8,85 +8,86 @@ export const nav = [
 ];
 
 export const services = [
-  // ===== CORE (Top 3) =====
   {
     id: "web",
-    tier: "core",
     icon: "CodeBracketIcon",
     badge: "Popular",
     title: "Web Design & Development",
-    desc: "Fast, responsive websites that impress and convert visitors into customers.",
+    desc: "Custom, responsive websites that are fast, secure, and designed to convert.",
     bullets: [
-      "Mobile-first UI",
-      "High performance (95+ Lighthouse)",
-      "SEO foundations",
+      "Mobile-first design",
+      "95+ Lighthouse performance",
+      "Easy-to-manage CMS options",
     ],
     longDesc:
-      "We plan, design, and build premium websites that look sharp and load fast. Your site will be easy to update, optimized for Google, and designed to turn visitors into customers.",
-  },
-  {
-    id: "maint",
-    tier: "core",
-    icon: "WrenchScrewdriverIcon",
-    badge: "Popular",
-    title: "Website Maintenance & Redesign",
-    desc: "Ensure your site runs smoothly, stays secure, and wows visitors year-round.",
-    bullets: [
-      "Core updates & backups",
-      "Security & uptime",
-      "Design refreshes",
-    ],
-    longDesc:
-      "We keep your site healthy and polished: updates, backups, monitoring, and quick fixes. Need a visual refresh or better conversions? We improve UX without breaking what already works.",
+      "We design and develop modern websites that go beyond just looking good. Our builds are responsive, SEO-friendly, and optimized for speed. You’ll get a website that is simple to manage and designed to turn visitors into customers.",
   },
   {
     id: "ecom",
-    tier: "core",
     icon: "ShoppingCartIcon",
     badge: "In Demand",
-    title: "E-Commerce Solutions",
-    desc: "Secure, scalable stores built for higher sales and retention.",
+    title: "E-Commerce Solutions (Shopify & WordPress)",
+    desc: "Scalable online stores with Shopify or WordPress WooCommerce.",
     bullets: [
-      "Shopify builds",
-      "CRO product pages",
-      "Checkout & email capture",
+      "Shopify storefronts",
+      "WooCommerce setups",
+      "Optimized product pages & checkout",
     ],
     longDesc:
-      "From storefront setup to conversion-focused product pages, we build fast, secure shops with clean structure, smooth checkout, and tracking—so you can grow with confidence.",
+      "Whether you want a powerful Shopify store or a flexible WordPress WooCommerce shop, we deliver secure, scalable, and conversion-optimized e-commerce solutions. From product pages and checkout flows to email capture and payment integration, everything is built for higher sales and long-term growth.",
   },
-
   {
     id: "seo",
-    tier: "core",
     icon: "MagnifyingGlassIcon",
     badge: "High ROI",
-    title: "SEO Optimization",
-    desc: "Rank higher on Google, attract quality traffic, and grow your reach.",
-    bullets: ["Technical audit", "Schema & meta", "Editorial calendar"],
+    title: "SEO & Performance Optimization",
+    desc: "Improve Google rankings, site speed, and organic reach.",
+    bullets: [
+      "Technical SEO audit",
+      "Structured data & metadata",
+      "Content & keyword strategy",
+    ],
     longDesc:
-      "We remove technical blockers, add structured data, and ship a simple content plan. The result: steady, compounding organic traffic that brings ready-to-buy visitors.",
+      "We go beyond basic SEO: fixing technical issues, adding schema and metadata, and creating a simple but effective content plan. Combined with performance optimization, your site will load faster, rank higher, and attract quality traffic.",
   },
-
+  {
+    id: "maint",
+    icon: "WrenchScrewdriverIcon",
+    title: "Website Maintenance & Support",
+    desc: "Keep your site secure, up-to-date, and running smoothly.",
+    bullets: [
+      "Updates & backups",
+      "Security monitoring",
+      "Content updates & quick fixes",
+    ],
+    longDesc:
+      "Launching your site is just the beginning. We provide ongoing maintenance and support, including security monitoring, backups, and updates. Need changes to your content or design tweaks? We’ve got you covered long-term.",
+  },
   {
     id: "brand",
-    tier: "core",
     icon: "PaintBrushIcon",
     title: "Branding & Identity",
-    desc: "Distinctive visual system and usage guide.",
-    bullets: ["Logo suite", "Color & typography", "Brand book"],
+    desc: "Build a strong, consistent brand presence.",
+    bullets: [
+      "Custom logo design",
+      "Typography & color systems",
+      "Mini brand book",
+    ],
     longDesc:
-      "A clean, memorable identity that fits your business. You’ll get logo variations, type and color rules, and a short brand guide so everything stays consistent.",
+      "We help your brand stand out with a clean and memorable identity. You’ll get a professional logo suite, a tailored typography and color system, and a concise brand guide for consistent use across all channels.",
   },
-
   {
     id: "ux",
-    tier: "core",
     icon: "DevicePhoneMobileIcon",
     title: "UI/UX Design",
-    desc: "Intuitive interfaces that keep users engaged.",
-    bullets: ["Wireflows", "Design systems", "Usability fixes"],
+    desc: "Intuitive and engaging interfaces for all devices.",
+    bullets: [
+      "User flows & wireframes",
+      "Reusable design systems",
+      "Usability improvements",
+    ],
     longDesc:
-      "From flows and wireframes to polished components, we design interfaces that reduce friction and guide users to action on any device.",
+      "From wireflows and design systems to usability testing and refinement, we design experiences that reduce friction and guide users towards meaningful actions — boosting engagement and conversions.",
   },
 ];
 
