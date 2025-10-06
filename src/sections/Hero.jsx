@@ -76,7 +76,8 @@ export default function Hero({ onOpenLightbox }) {
         {!fallback ? (
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover [object-position:30%_50%]     
+            sm:[object-position:center] "
             src="/assets/video/hero.mp4"
             autoPlay
             muted
