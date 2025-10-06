@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   MapPinIcon,
-  EnvelopeIcon,
   PhoneIcon,
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Instagram } from "lucide-react";
+import { Instagram, Whatsapp } from "lucide-react"; // ✅ واتس‌اپ اضافه شد
 
 export default function Contact() {
   // Fields
@@ -26,6 +25,16 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [serverMsg, setServerMsg] = useState(null);
 
+  // ✅ WhatsApp setup
+  const WA_PHONE = "14376003139"; // +1 437 600 3139 (digits only)
+  const WA_TEXT = encodeURIComponent(
+    "Hi Milink! I'm interested in your services."
+  );
+  // اگر فارسی می‌خوای:
+  // const WA_TEXT = encodeURIComponent("سلام میلینک! برای طراحی وب/ای‌کامرس می‌خوام مشاوره بگیرم.");
+  const WA_LINK = `https://wa.me/${WA_PHONE}?text=${WA_TEXT}`;
+  const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
+
   const regen = () => {
     setA(Math.floor(Math.random() * 9) + 1);
     setB(Math.floor(Math.random() * 9) + 1);
@@ -41,7 +50,6 @@ export default function Contact() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    // Honeypot
     if (trapRef.current?.value) {
       setCaptchaError(true);
       return;
@@ -88,7 +96,7 @@ export default function Contact() {
       <h2 className="text-center mb-10">Contact Us</h2>
 
       <div className="container mx-auto grid gap-12 lg:grid-cols-2">
-        {/* LEFT: Get in Touch (single box) */}
+        {/* LEFT: Get in Touch */}
         <div className="bg-base-100 shadow-lg rounded-2xl p-8 space-y-8">
           <div>
             <h2 className="text-4xl font-bold">Get in Touch</h2>
@@ -107,20 +115,6 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* <div className="flex items-start gap-4">
-              <EnvelopeIcon className="h-8 w-8 text-primary" />
-              <div>
-                <h3 className="font-semibold text-lg">Email</h3>
-                <a
-                  href="mailto:info@milink.ca"
-                  className="link link-hover"
-                  aria-label="Email info@milink.ca"
-                >
-                  info@milink.ca
-                </a>
-              </div>
-            </div> */}
-            {/* Instagram (added) */}
             <div className="flex items-start gap-4">
               <Instagram className="h-8 w-8 text-primary" aria-hidden="true" />
               <div>
@@ -136,6 +130,7 @@ export default function Contact() {
                 </a>
               </div>
             </div>
+
             <div className="flex items-start gap-4">
               <PhoneIcon className="h-8 w-8 text-primary" />
               <div>
@@ -149,10 +144,34 @@ export default function Contact() {
                 </a>
               </div>
             </div>
+
+            {/* ✅ WhatsApp row — دقیقا بعد از Phone */}
+            <div className="flex items-start gap-4">
+              <Whatsapp className="h-8 w-8 text-primary" aria-hidden="true" />
+              <div>
+                <h3 className="font-semibold text-lg">WhatsApp</h3>
+                <a
+                  href={WA_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link link-hover"
+                  aria-label="Chat on WhatsApp"
+                  onClick={(e) => {
+                    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+                      // تلاش برای باز کردن داخل اپ
+                      e.preventDefault();
+                      window.location.href = WA_MOBILE_FALLBACK;
+                    }
+                  }}
+                >
+                  Chat on WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT: Send a Message (unchanged) */}
+        {/* RIGHT: Send a Message */}
         <div className="bg-base-100 shadow-lg rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <h2 className="text-3xl font-bold mb-2">Send a Message</h2>

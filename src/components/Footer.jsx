@@ -1,4 +1,14 @@
 export default function Footer() {
+  const YEAR = new Date().getFullYear();
+
+  // WhatsApp helpers
+  const WA_PHONE = "14376003139"; // +1 437 600 3139 → digits only
+  const WA_TEXT = encodeURIComponent(
+    "Hi Milink! I'm interested in your services."
+  );
+  const WA_LINK = `https://wa.me/${WA_PHONE}?text=${WA_TEXT}`;
+  const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
+
   return (
     <footer className="py-10 border-t border-base-200">
       <div className="container flex flex-col items-center text-center gap-4">
@@ -6,8 +16,10 @@ export default function Footer() {
         <div>
           <p className="font-bold">Milink Digital Agency</p>
           <p className="text-sm opacity-80">
-            {/* 📍 GTA, Ontario, Canada | 📧 info@milink.ca | 📞 +1 (437) 999-3668 */}
-            📍 GTA, Ontario, Canada | 📞 +1 (437) 600-3139
+            📍 GTA, Ontario, Canada | 📞{" "}
+            <a href="tel:+14376003139" className="underline hover:no-underline">
+              +1 (437) 600-3139
+            </a>
           </p>
         </div>
 
@@ -28,12 +40,17 @@ export default function Footer() {
                 <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V24h-4V8zm7.5 0h3.7v2.3h.05c.52-1 1.8-2.3 3.7-2.3 3.96 0 4.7 2.6 4.7 6v9.7h-4V15c0-2.2 0-5-3-5s-3.5 2.3-3.5 4.8V24h-4V8z" />
               ),
             },
+            // ✅ Updated WhatsApp (with prefilled text + mobile fallback)
             {
-              href: "https://wa.me/14379993668",
+              href: WA_LINK,
               label: "WhatsApp",
               icon: (
                 <path d="M20.52 3.48A11.78 11.78 0 0012 0C5.38 0 0 5.38 0 12c0 2.12.55 4.18 1.6 6.02L0 24l6.16-1.6A11.96 11.96 0 0012 24c6.62 0 12-5.38 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 21.82c-1.83 0-3.6-.5-5.14-1.45l-.37-.22-3.65.95.97-3.56-.24-.37a9.78 9.78 0 01-1.52-5.17c0-5.42 4.4-9.82 9.82-9.82 2.62 0 5.09 1.02 6.94 2.88 1.85 1.85 2.88 4.32 2.88 6.94 0 5.42-4.4 9.82-9.82 9.82zm5.6-7.4c-.31-.15-1.84-.91-2.13-1.02-.29-.11-.5-.15-.71.15-.21.29-.82 1.02-1.01 1.23-.19.21-.37.23-.68.08-.31-.15-1.31-.48-2.5-1.53-.92-.82-1.53-1.83-1.71-2.14-.18-.31-.02-.48.13-.63.14-.14.31-.37.46-.55.15-.18.2-.31.31-.52.1-.21.05-.4-.02-.55-.08-.15-.71-1.72-.97-2.36-.26-.63-.52-.54-.71-.55h-.61c-.21 0-.55.08-.84.4-.29.31-1.1 1.08-1.1 2.63s1.13 3.05 1.29 3.26c.15.21 2.22 3.39 5.37 4.75.75.32 1.34.51 1.8.65.76.24 1.45.21 2-.13.31-.21 1.02-1.01 1.17-1.42.15-.4.15-.74.1-.82-.05-.08-.29-.18-.6-.32z" />
               ),
+              // open WA in-app on mobile if possible
+              onClick: (e) => {
+                // This onClick is illustrative; if you’re not using React handlers on <a>, ignore.
+              },
             },
           ].map((item, idx) => (
             <a
@@ -43,6 +60,15 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-sm btn-circle btn-outline text-base-content/80 border-base-content/40 hover:bg-base-content/10 hover:text-base-content hover:border-base-content transition-all duration-300 transform hover:scale-110"
+              onClick={(e) => {
+                if (
+                  item.label === "WhatsApp" &&
+                  /Mobi|Android|iPhone/i.test(navigator.userAgent)
+                ) {
+                  e.preventDefault();
+                  window.location.href = WA_MOBILE_FALLBACK;
+                }
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +84,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="opacity-70 text-sm">
-          © {new Date().getFullYear()} Milink. All rights reserved.
+          © {YEAR} Milink. All rights reserved.
         </div>
       </div>
     </footer>
