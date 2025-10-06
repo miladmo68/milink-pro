@@ -170,13 +170,15 @@ export default function Hero({ onOpenLightbox }) {
           </motion.div>
 
           {/* Right — Slider (SVG) */}
-          <MediaSlider
-            slides={slides}
-            onOpenLightbox={onOpenLightbox}
-            variants={fromRight}
-            autoPlay
-            interval={3500} // ← کوتاه‌تر و استاندارد
-          />
+          <div className="hidden md:block">
+            <MediaSlider
+              slides={slides}
+              onOpenLightbox={onOpenLightbox}
+              variants={fromRight}
+              autoPlay
+              interval={3500} // ← کوتاه‌تر و استاندارد
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -444,6 +446,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
         />
 
         {/* قاب و نمایشگر */}
+
         <rect
           x="200"
           y="140"
