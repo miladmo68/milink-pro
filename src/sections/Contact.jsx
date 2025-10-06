@@ -5,7 +5,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Instagram, Whatsapp } from "lucide-react"; // ✅ واتس‌اپ اضافه شد
+import { Instagram } from "lucide-react";
 
 export default function Contact() {
   // Fields
@@ -30,7 +30,7 @@ export default function Contact() {
   const WA_TEXT = encodeURIComponent(
     "Hi Milink! I'm interested in your services."
   );
-  // اگر فارسی می‌خوای:
+  // agar farsi mikhai:
   // const WA_TEXT = encodeURIComponent("سلام میلینک! برای طراحی وب/ای‌کامرس می‌خوام مشاوره بگیرم.");
   const WA_LINK = `https://wa.me/${WA_PHONE}?text=${WA_TEXT}`;
   const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
@@ -50,6 +50,7 @@ export default function Contact() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    // Honeypot
     if (trapRef.current?.value) {
       setCaptchaError(true);
       return;
@@ -145,9 +146,19 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* ✅ WhatsApp row — دقیقا بعد از Phone */}
+            {/* ✅ WhatsApp row */}
             <div className="flex items-start gap-4">
-              <Whatsapp className="h-8 w-8 text-primary" aria-hidden="true" />
+              {/* SVG rasmi-ye WhatsApp */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-8 w-8 text-primary"
+                aria-hidden="true"
+              >
+                <path d="M20.52 3.48A11.78 11.78 0 0012 0C5.38 0 0 5.38 0 12c0 2.12.55 4.18 1.6 6.02L0 24l6.16-1.6A11.96 11.96 0 0012 24c6.62 0 12-5.38 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 21.82c-1.83 0-3.6-.5-5.14-1.45l-.37-.22-3.65.95.97-3.56-.24-.37a9.78 9.78 0 01-1.52-5.17c0-5.42 4.4-9.82 9.82-9.82 2.62 0 5.09 1.02 6.94 2.88 1.85 1.85 2.88 4.32 2.88 6.94 0 5.42-4.4 9.82-9.82 9.82zm5.6-7.4c-.31-.15-1.84-.91-2.13-1.02-.29-.11-.5-.15-.71.15-.21.29-.82 1.02-1.01 1.23-.19.21-.37.23-.68.08-.31-.15-1.31-.48-2.5-1.53-.92-.82-1.53-1.83-1.71-2.14-.18-.31-.02-.48.13-.63.14-.14.31-.37.46-.55.15-.18.2-.31.31-.52.1-.21.05-.4-.02-.55-.08-.15-.71-1.72-.97-2.36-.26-.63-.52-.54-.71-.55h-.61c-.21 0-.55.08-.84.4-.29.31-1.1 1.08-1.1 2.63s1.13 3.05 1.29 3.26c.15.21 2.22 3.39 5.37 4.75.75.32 1.34.51 1.8.65.76.24 1.45.21 2-.13.31-.21 1.02-1.01 1.17-1.42.15-.4.15-.74.1-.82-.05-.08-.29-.18-.6-.32z" />
+              </svg>
+
               <div>
                 <h3 className="font-semibold text-lg">WhatsApp</h3>
                 <a
@@ -157,8 +168,8 @@ export default function Contact() {
                   className="link link-hover"
                   aria-label="Chat on WhatsApp"
                   onClick={(e) => {
+                    // mobile fallback for in-app open
                     if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-                      // تلاش برای باز کردن داخل اپ
                       e.preventDefault();
                       window.location.href = WA_MOBILE_FALLBACK;
                     }
