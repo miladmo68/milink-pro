@@ -4,6 +4,7 @@ import { SITE } from "../config/siteConfig.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import LogoFancy from "./LogoFancy.jsx";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export default function Navbar() {
       >
         <div className="container navbar py-4">
           {/* Logo */}
-          <div className="flex-1 ">
+          <div className="flex-1">
             <LogoFancy
               className="flex items-center font-[sans-serif]"
               idleSrc="/logo.png"
@@ -40,10 +41,9 @@ export default function Navbar() {
               idleSubtitle="DIGITAL AGENCY"
               hoverTitle="Design • Build • Grow"
               gradientClass="gradient-text"
-              // تنظیمات نزدیک‌کردن
               iconGap={0}
-              blockShiftY={1} // اگر عادی کمی بالا/پایینه، اینو 1- یا 2+ کن
-              hoverCenterShiftY={+1} // هاور دقیقاً وسط؛ بسته به فونت  -2 تا +1 خوبه
+              blockShiftY={1}
+              hoverCenterShiftY={+1}
             />
           </div>
 
@@ -68,12 +68,46 @@ export default function Navbar() {
           {/* Actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <a
+
+            {/* --- Desktop CTA (Framer Motion) --- */}
+            <motion.a
               href="#contact"
-              className="btn btn-primary btn-sm hidden md:inline-flex"
+              whileHover={{ scale: 1.06, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{
+                type: "spring",
+                stiffness: 420,
+                damping: 28,
+                mass: 0.6,
+              }}
+              className="
+                relative hidden md:inline-flex btn btn-primary btn-sm
+                will-change-transform overflow-hidden group
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60
+                hover:brightness-90 hover:saturate-110
+                [box-shadow:0_8px_22px_-12px_rgba(59,130,246,0.55)]
+                hover:[box-shadow:0_18px_46px_-14px_rgba(59,130,246,0.65)]
+              "
             >
-              Book a Call
-            </a>
+              <span className="relative z-10">Book a Call</span>
+
+              {/* لایه‌ی تیره‌تر روی هاور */}
+              <span
+                className="
+                  pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100
+                  transition-opacity duration-300 bg-black/10
+                "
+              />
+
+              {/* Glow رادیال هنگام هاور */}
+              <span
+                className="
+                  pointer-events-none absolute -inset-4 rounded-xl opacity-0 group-hover:opacity-100
+                  transition-opacity duration-500 blur-md
+                  bg-[radial-gradient(120px_60px_at_center,theme(colors.primary/40),transparent_70%)]
+                "
+              />
+            </motion.a>
 
             {/* Mobile toggle */}
             <button
@@ -90,23 +124,66 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile dropdown */}
-        {open && (
-          <div className="md:hidden bg-base-100 border-t">
-            <div className="container py-4 flex flex-col items-center text-center">
-              {nav.map((n, i) => (
-                <a
-                  key={i}
-                  href={n.href}
-                  className="py-2"
+        {/* Mobile dropdown (Animated) */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              key="mobileMenu"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ type: "tween", duration: 0.22 }}
+              className="md:hidden bg-base-100 border-t overflow-hidden"
+            >
+              <div className="container py-4 flex flex-col items-center text-center gap-1">
+                {nav.map((n, i) => (
+                  <motion.a
+                    key={i}
+                    href={n.href}
+                    onClick={() => setOpen(false)}
+                    initial={{ y: 8, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      delay: 0.03 * i,
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 30,
+                    }}
+                    className="py-2"
+                  >
+                    {n.label}
+                  </motion.a>
+                ))}
+
+                {/* --- Mobile CTA با افکت مشابه --- */}
+                <motion.a
+                  href="#contact"
                   onClick={() => setOpen(false)}
+                  whileHover={{ scale: 1.04, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 420,
+                    damping: 28,
+                    mass: 0.6,
+                  }}
+                  className="
+                    mt-2 relative inline-flex btn btn-primary btn-md
+                    will-change-transform overflow-hidden group
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60
+                    hover:brightness-90 hover:saturate-110
+                    [box-shadow:0_8px_22px_-12px_rgba(59,130,246,0.55)]
+                    hover:[box-shadow:0_18px_46px_-14px_rgba(59,130,246,0.65)]
+                  "
                 >
-                  {n.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+                  <span className="relative z-10">Book a Call</span>
+                  <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/10" />
+                  <span className="pointer-events-none absolute -inset-4 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md bg-[radial-gradient(120px_60px_at_center,theme(colors.primary/40),transparent_70%)]" />
+                </motion.a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Spacer */}
