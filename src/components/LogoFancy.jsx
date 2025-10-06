@@ -118,7 +118,7 @@ export default function LogoFancy({
                   <motion.span
                     key={`idle-title-${i}-${w}`}
                     variants={wordV}
-                    className={`text-xl md:text-2xl font-bold text-white tracking-[0.05em] ${WORD_GAP}`}
+                    className={`text-xl md:text-2xl font-bold  tracking-[0.05em] ${WORD_GAP}`}
                   >
                     {w}
                   </motion.span>
