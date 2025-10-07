@@ -82,7 +82,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CodeBracketIcon,
@@ -94,7 +94,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { services } from "../data/content.js";
 
-// icon map
+/* ===== Brand palette (tuned to your site) ===== */
+const BRAND = {
+  baseFrom: "#0b1220",
+  baseVia: "#0a0f1a",
+  baseTo: "#0e1b33",
+  accent: "#3b82f6", // main blue
+  accentSoft: "#60a5fa", // softer blue for icons/glow
+};
+
+// Icon map
 const iconMap = {
   CodeBracketIcon,
   DevicePhoneMobileIcon,
@@ -104,7 +113,7 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-// ===== Hover-only flip (بدون state → بدون لرزش)
+// ===== Hover-only flip (بدون state → بدون jitter)
 function FlippyHover({ front, back, className = "" }) {
   return (
     <div
@@ -112,19 +121,18 @@ function FlippyHover({ front, back, className = "" }) {
       style={{ perspective: "1200px" }}
     >
       <motion.div
-        // فقط با هاور می‌چرخیم؛ وقتی موس بیرون رفت برمی‌گرده
         whileHover={{ rotateY: 180 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full h-full rounded-2xl ring-1 ring-primary/15
+        className="relative w-full h-full rounded-2xl
                    [transform-style:preserve-3d] transform-gpu will-change-transform"
       >
         {/* Front */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl">
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden">
           {front}
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-2xl">
+        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-2xl overflow-hidden">
           {back}
         </div>
       </motion.div>
@@ -132,73 +140,121 @@ function FlippyHover({ front, back, className = "" }) {
   );
 }
 
+// Badge motion (Popular / In-Demand / High-Pro)
+const badgeMotion = {
+  animate: { y: [0, -2, 0], scale: [1, 1.06, 1] },
+  transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
+};
+
 function ServiceCard({ data, onOpen }) {
   const Icon = iconMap[data.icon] || CodeBracketIcon;
 
-  // ===== رنگ‌بندی دارک‌بلو (بدون افکت‌های جابه‌جایی برای جلوگیری از jitter)
+  // اندازه‌گیری داینامیک برای اسکرول پشت کارت
+  const bodyRef = useRef(null);
+  const [needsScroll, setNeedsScroll] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const el = bodyRef.current;
+      if (!el) return;
+      setNeedsScroll(el.scrollHeight > el.clientHeight + 2);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    if (bodyRef.current) ro.observe(bodyRef.current);
+    window.addEventListener("resize", check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", check);
+    };
+  }, []);
+
+  // ===== Front (گرادیان قبلی + تون اصلاح‌شده + Glow پایین‌راست)
   const Front = (
     <article
-      className="relative h-full p-6 rounded-2xl
-                 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900
-                 text-slate-100 shadow-md ring-1 ring-slate-700/40"
+      className="relative h-full p-6 rounded-2xl text-slate-100 shadow-md ring-1"
       aria-label={`${data.title} front`}
+      style={{
+        background: `linear-gradient(135deg, ${BRAND.baseFrom} 0%, ${BRAND.baseVia} 55%, ${BRAND.baseTo} 100%)`,
+        boxShadow: `0 0 0 1px rgba(59,130,246,0.18), 0 10px 28px rgba(0,0,0,0.35)`,
+        borderColor: "rgba(59,130,246,0.28)",
+      }}
     >
       {data.badge && (
-        <span className="badge badge-primary absolute right-3 top-3">
+        <motion.span
+          {...badgeMotion}
+          className="badge absolute right-3 top-3 text-slate-900"
+          style={{ backgroundColor: BRAND.accent, borderColor: "transparent" }}
+        >
           {data.badge}
-        </span>
+        </motion.span>
       )}
 
-      <div className="flex h-full flex-col items-center justify-center text-center gap-3">
-        <Icon className="h-12 w-12 text-indigo-300" />
+      <div className="flex h-full flex-col items-center justify-center text-center gap-3 relative z-[1]">
+        <Icon className="h-12 w-12" style={{ color: BRAND.accentSoft }} />
         <h3 className="text-xl font-semibold">{data.title}</h3>
         <p className="opacity-80 max-w-[28ch]">{data.desc}</p>
 
-        <span className="mt-3 text-xs opacity-60 select-none">
-          Hover to flip
+        {/* متن درخواستی روی فرانت (بزرگ‌تر) */}
+        <span className="mt-3 text-sm font-medium tracking-wide opacity-70 select-none">
+          More details
         </span>
       </div>
+
+      {/* Glow پایین-راست (accent) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-60px] bottom-[-60px] w-[260px] h-[260px] rounded-full opacity-25 blur-2xl"
+        style={{
+          background: `radial-gradient(50% 50% at 50% 50%, ${BRAND.accentSoft} 0%, rgba(96,165,250,0) 60%)`,
+        }}
+      />
     </article>
   );
 
+  // ===== Back (بدون دکمه/فوتر؛ تایتل واضح‌تر با آبی برند)
   const Back = (
     <article
-      className="relative h-full p-6 rounded-2xl
-                 bg-base-100/95 text-base-content backdrop-blur
-                 ring-1 ring-indigo-700/30 shadow-xl"
+      className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
       aria-label={`${data.title} back`}
+      style={{
+        boxShadow: `0 0 0 1px rgba(59,130,246,0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
+      }}
     >
-      <div className="h-full flex flex-col items-center justify-center text-center">
-        <h4 className="text-lg font-semibold">{data.title}</h4>
-        <p className="mt-2 opacity-80 max-w-[34ch]">
-          {data.longDesc ||
-            "We keep it simple and reliable — so you can trust us to get it done right."}
-        </p>
+      <div className="flex h-full flex-col">
+        {/* Header */}
+        <div className="px-6 pt-6 text-center">
+          <h4
+            className="text-[1.125rem] leading-6 font-semibold"
+            style={{ color: BRAND.accent }}
+          >
+            {data.title}
+          </h4>
+        </div>
 
-        {data.bullets?.length > 0 && (
-          <ul className="mt-3 space-y-1.5 text-sm opacity-90 text-left mx-auto max-w-xs">
-            {data.bullets.map((b, i) => (
-              <li key={i}>— {b}</li>
-            ))}
-          </ul>
-        )}
-
-        {/* فقط Open details نگه‌داشته شد */}
-        <button
-          className="btn btn-sm btn-primary mt-5"
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpen?.({
-              title: data.title,
-              text:
-                data.longDesc ||
-                "We keep it simple and reliable — so you can trust us to get it done right.",
-              list: data.bullets || [],
-            });
-          }}
+        {/* Body: اسکرول فقط اگر لازم باشد */}
+        <div
+          ref={bodyRef}
+          className={`grow px-6 mt-2 pb-6 ${
+            needsScroll
+              ? "overflow-y-auto overscroll-contain"
+              : "overflow-hidden"
+          }`}
+          style={{ scrollbarWidth: "thin" }}
         >
-          Open details
-        </button>
+          <p className="opacity-80">
+            {data.longDesc ||
+              "We keep it simple and reliable — so you can trust us to get it done right."}
+          </p>
+
+          {data.bullets?.length > 0 && (
+            <ul className="mt-3 space-y-1.5 text-sm opacity-90">
+              {data.bullets.map((b, i) => (
+                <li key={i}>— {b}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </article>
   );
