@@ -253,6 +253,7 @@
 //     </div>
 //   );
 // }
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { testimonials as DATA } from "../data/content.js";
 
@@ -261,8 +262,9 @@ const cx = (...a) => a.filter(Boolean).join(" ");
 export default function Testimonials3DPro() {
   const items = useMemo(() => (Array.isArray(DATA) ? DATA : []), []);
   const len = items.length;
+  if (!len) return null;
 
-  // viewport: 1 (mobile) or 3 (md+)
+  // ===== Layout: 1 (mobile) or 3 (md+)
   const [perView, setPerView] = useState(3);
   useEffect(() => {
     const onResize = () => setPerView(window.innerWidth >= 768 ? 3 : 1);
@@ -271,66 +273,82 @@ export default function Testimonials3DPro() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Build an extended array with head/tail clones for infinite loop
+  // ===== Extended array: [cloneTail, ...base, cloneHead]
   const base = useMemo(() => items, [items]);
-  const extended = useMemo(() => {
-    if (!len) return [];
-    return [base[len - 1], ...base, base[0]]; // [cloneTail, ...real..., cloneHead]
-  }, [base, len]);
+  const extended = useMemo(
+    () => [base[len - 1], ...base, base[0]],
+    [base, len]
+  );
 
-  // Current position inside extended (1..len)
+  // ===== Position state (virtual): 1..len  (0 و len+1 کُلن‌ها هستند)
   const [pos, setPos] = useState(1);
-  const [hover, setHover] = useState(false);
-  const [transitioning, setTransitioning] = useState(true);
-  const railRef = useRef(null);
+  const posRef = useRef(pos);
+  posRef.current = pos;
 
-  // Autoplay (pause on hover)
+  // برای جلوگیری از تداخل تیکِ autoplay موقع snap
+  const snappingRef = useRef(false);
+
+  // فلگ ترنزیشن (برای اسنپ بدون انیمیشن)
+  const [transitioning, setTransitioning] = useState(true);
+
+  // Hover = pause
+  const [hover, setHover] = useState(false);
+
+  // ===== Helpers
+  const normalize = (p) => ((p - 1 + len) % len) + 1; // -> 1..len
+  const clampGhost = (p) => Math.max(0, Math.min(len + 1, p)); // -> 0..len+1
+
+  // ===== Autoplay (بدون تداخل با snap)
   useEffect(() => {
     if (hover || len < 2) return;
-    const id = setInterval(() => setPos((p) => p + 1), 4200);
+    const id = setInterval(() => {
+      if (snappingRef.current) return; // یک فریم بعد از snap تیک نزن
+      setPos((p) => clampGhost(p + 1));
+    }, 4200);
     return () => clearInterval(id);
   }, [hover, len]);
 
-  // Smooth transition flag when pos changes (for snap fix)
-  useEffect(() => setTransitioning(true), [pos]);
+  // هر تغییر pos => ترنزیشن روشن باشد (به‌جز دقیقاً قبل از snap)
+  useEffect(() => {
+    setTransitioning(true);
+  }, [pos]);
 
-  // Seamless loop correction
-  const onTransitionEnd = () => {
-    if (pos === 0) {
-      setTransitioning(false); // disable transition to snap instantly
-      setPos(len);
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setTransitioning(true))
-      );
-    } else if (pos === len + 1) {
-      setTransitioning(false);
-      setPos(1);
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setTransitioning(true))
-      );
+  // ===== Seamless loop (اسنپ بی‌وقفه)
+  const railRef = useRef(null);
+  const onTransitionEnd = (e) => {
+    if (!railRef.current || e.target !== railRef.current) return; // فقط ریل
+    if (pos === 0 || pos === len + 1) {
+      snappingRef.current = true; // جلوی تداخل autoplay را بگیر
+      setTransitioning(false); // بدون انیمیشن اسنپ کن
+      const target = pos === 0 ? len : 1;
+      // دو تا rAF برای تضمین اعمال transform بدون transition
+      requestAnimationFrame(() => {
+        setPos(target);
+        requestAnimationFrame(() => {
+          setTransitioning(true);
+          // یک rAF دیگر تا بعد از فعال شدن transition، اجازه autoplay بده
+          requestAnimationFrame(() => (snappingRef.current = false));
+        });
+      });
     }
   };
 
-  // Geometry
-  const step = perView === 1 ? 100 : 100 / 3; // 100% or 33.333%
-  const translatePct = pos * step - 50 + step / 2;
+  // ===== Geometry
+  const step = perView === 1 ? 100 : 100 / 3; // 100% یا 33.333%
+  // translate بر اساس pos روی extended (0..len+1) محاسبه می‌شود
+  const pGhost = clampGhost(pos);
+  const translatePct = pGhost * step - 50 + step / 2;
 
-  if (!len) return null;
-
-  // Center the clicked card immediately (no step-by-step shifting)
-  const handleClick = (i) => setPos(i);
-
-  const next = () => setPos((p) => p + 1);
-  const prev = () => setPos((p) => p - 1);
-  const goTo = (i) => setPos(i + 1); // dots -> 0..len-1 to 1..len
+  // ===== Controls
+  const next = () => setPos((p) => clampGhost(p + 1));
+  const prev = () => setPos((p) => clampGhost(p - 1));
+  const handleClick = (i) => setPos(clampGhost(i)); // i همان ایندکس extended است
+  const goTo = (i) => setPos(clampGhost(i + 1)); // dots: 0..len-1 -> 1..len
 
   return (
     <section id="testimonials" className="py-20 bg-base-200">
       <div className="container mx-auto px-4 max-w-6xl">
         <header className="text-center mb-10">
-          {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3">
-            <span className="i-dot" /> Loved by clients
-          </div> */}
           <h2 className="text-4xl font-bold tracking-tight">
             What Clients Say
           </h2>
@@ -372,11 +390,11 @@ export default function Testimonials3DPro() {
                 style={{ transform: `translateX(-${translatePct}%)` }}
               >
                 {extended.map((t, i) => {
-                  const isCenter = i === pos;
-                  const d = i - pos; // relative distance from center
+                  const isCenter = i === pGhost;
+                  const d = i - pGhost; // relative to center on extended
                   const abs = Math.abs(d);
 
-                  // 3D transforms per distance (like the pure CSS gallery)
+                  // 3D transforms
                   const depth = [10, 8.5, 5.6, 2.5, 0.6];
                   const rot = [0, 35, 40, 30, 15];
                   const z = abs < depth.length ? depth[abs] : 0.2;
@@ -417,7 +435,7 @@ export default function Testimonials3DPro() {
                     <article
                       key={i}
                       className={cx(
-                        "shrink-0 px-3 md:px-4", // inner spacing instead of gap
+                        "shrink-0 px-3 md:px-4",
                         perView === 1 ? "w-full" : "w-1/3"
                       )}
                     >
@@ -436,7 +454,7 @@ export default function Testimonials3DPro() {
                           transform: `translateZ(calc(var(--index) * ${z})) rotateY(${ry}deg) scale(${scale})`,
                         }}
                       >
-                        {/* Backdrop image from avatar (optional) */}
+                        {/* Backdrop */}
                         <div
                           className="absolute inset-0 rounded-2xl bg-cover bg-center"
                           style={{
@@ -445,11 +463,9 @@ export default function Testimonials3DPro() {
                               : "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)",
                           }}
                         />
-
-                        {/* Gloss overlay */}
+                        {/* Gloss */}
                         <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-black/40 via-black/25 to-black/55" />
-
-                        {/* Content card */}
+                        {/* Card */}
                         <div
                           className={cx(
                             "relative z-10 card h-full bg-base-100/85 border border-white/10",
@@ -477,7 +493,6 @@ export default function Testimonials3DPro() {
                             <p>{t?.text}</p>
                           </blockquote>
 
-                          {/* Accent meter */}
                           <div
                             className={cx(
                               "mt-6 h-[3px] rounded-full",
@@ -491,7 +506,7 @@ export default function Testimonials3DPro() {
                 })}
               </div>
 
-              {/* Edge fade masks */}
+              {/* Edge fade */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-base-200 to-transparent" />
               <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-base-200 to-transparent" />
             </div>
@@ -500,7 +515,7 @@ export default function Testimonials3DPro() {
           {/* Dots */}
           <div className="flex items-center justify-center gap-2 mt-8">
             {base.map((_, i) => {
-              const current = pos > len ? 1 : pos < 1 ? len : pos; // normalize
+              const current = normalize(pos);
               const active = i + 1 === current;
               return (
                 <button
@@ -520,7 +535,7 @@ export default function Testimonials3DPro() {
         </div>
       </div>
 
-      {/* Component-scoped styles */}
+      {/* Styles */}
       <style>{`
         :root{ --index: calc(1vw + 1vh); }
         .t3d-rail{ perspective: calc(var(--index) * 35); }
