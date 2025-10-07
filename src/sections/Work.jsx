@@ -117,7 +117,8 @@
 //     </section>
 //   );
 // }
-// work.js (or Work.jsx)
+//////////////////////////////////////////////////////////////////////////////
+
 import { useCallback, useEffect, useState } from "react";
 import { Instagram, Globe, Link as LinkIcon, X } from "lucide-react";
 import { work } from "../data/content.js";
@@ -126,10 +127,9 @@ const INSTAGRAM_URL = "https://instagram.com/milink.ca";
 const PORTFOLIO_URL = "https://miladweb.com";
 
 /* ===========================
-   Simple Modal (inline)
+   Modal (inline)
 =========================== */
 function Modal({ isOpen, onClose, item }) {
-  // Close on ESC
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -148,15 +148,12 @@ function Modal({ isOpen, onClose, item }) {
       aria-modal="true"
       role="dialog"
     >
-      {/* Backdrop */}
       <button
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-label="Close modal"
       />
-      {/* Dialog */}
       <div className="relative z-10 w-[min(1000px,92vw)] max-h-[92vh] rounded-2xl overflow-hidden bg-base-100 shadow-2xl ring-1 ring-white/10">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-base-300">
           <h3 className="text-lg font-bold">{title}</h3>
           <button
@@ -167,8 +164,6 @@ function Modal({ isOpen, onClose, item }) {
             <X size={18} />
           </button>
         </div>
-
-        {/* Media */}
         <div className="relative bg-black">
           <img
             src={img}
@@ -176,8 +171,6 @@ function Modal({ isOpen, onClose, item }) {
             className="w-full h-auto max-h-[62vh] object-contain"
           />
         </div>
-
-        {/* Footer – centered CTA */}
         <div className="px-4 md:px-6 py-5 grid place-items-center">
           <a
             href={href}
@@ -224,20 +217,13 @@ export default function Work() {
           </p>
         </div>
 
-        {/* Desktop: horizontal accordion cards */}
+        {/* Desktop: horizontal accordion cards (بدون تغییر) */}
         <div className="mt-10 hidden lg:block">
           <div className="mx-auto flex gap-3 h-[380px] lg:h-[420px] xl:h-[460px] max-w-[1200px] px-4">
             {work.map((w) => (
               <div
                 key={w.id}
-                className="
-                  group relative min-w-[70px] h-full
-                  rounded-[30px] overflow-hidden
-                  flex items-end
-                  [flex-grow:1] hover:[flex-grow:7]
-                  transition-[flex-grow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ring-1 ring-primary/10 cursor-pointer
-                "
+                className="group relative min-w-[70px] h-full rounded-[30px] overflow-hidden flex items-end [flex-grow:1] hover:[flex-grow:7] transition-[flex-grow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ring-1 ring-primary/10 cursor-pointer"
                 onClick={() =>
                   onOpen({
                     title: w.title,
@@ -249,40 +235,21 @@ export default function Work() {
                 aria-label={`Open ${w.title}`}
                 role="button"
               >
-                {/* Background */}
                 <img
                   src={w.cover}
                   alt={w.title}
                   className="absolute inset-0 w-full h-full object-cover brightness-[0.40] transition duration-300 group-hover:brightness-100"
                   loading="lazy"
                 />
-
-                {/* Bottom gradient */}
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-black/70 pointer-events-none" />
-
-                {/* Bottom content — icon always visible; title only on hover */}
-                <div
-                  className="
-                    absolute left-2 right-2 bottom-5 z-10
-                    flex items-center gap-3
-                    transition-all duration-300
-                    group-hover:inset-5 group-hover:top-auto
-                  "
-                >
+                <div className="absolute left-2 right-2 bottom-5 z-10 flex items-center gap-3 transition-all duration-300 group-hover:inset-5 group-hover:top-auto">
                   {w.liveUrl && (
                     <a
                       href={w.liveUrl}
                       target="_blank"
                       rel="noreferrer noopener"
                       onClick={(e) => e.stopPropagation()}
-                      className="
-                        shrink-0 size-[50px]
-                        rounded-full border border-white
-                        grid place-items-center
-                        transition-colors duration-300
-                        group-hover:border-emerald-300
-                        bg-black/10 backdrop-blur-[1px]
-                      "
+                      className="shrink-0 size-[50px] rounded-full border border-white grid place-items-center transition-colors duration-300 group-hover:border-emerald-300 bg-black/10 backdrop-blur-[1px]"
                       aria-label={`${w.title} live link`}
                     >
                       <LinkIcon
@@ -291,15 +258,8 @@ export default function Work() {
                       />
                     </a>
                   )}
-
-                  <h3
-                    className="
-                      text-lg font-bold text-white drop-shadow
-                      translate-y-8 opacity-0
-                      group-hover:translate-y-0 group-hover:opacity-100
-                      transition-all duration-500 ease-out
-                    "
-                  >
+                  {/* فقط Title روی Hover در دسکتاپ */}
+                  <h3 className="text-lg font-bold text-white drop-shadow translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                     {w.title}
                   </h3>
                 </div>
@@ -308,63 +268,57 @@ export default function Work() {
           </div>
         </div>
 
-        {/* Mobile/Tablet: grid */}
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:hidden">
+        {/* Mobile/Tablet: ستونی تمیز با کانتنت پایین همیشه visible */}
+        <div className="mt-10 grid gap-6 grid-cols-1 sm:grid-cols-1 lg:hidden">
           {work.map((w) => (
             <article
               key={w.id}
-              className="rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-base-300/80 hover:bg-base-200 transition"
+              className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-base-300/80 hover:bg-base-200 transition"
+              role="button"
+              aria-label={`Open ${w.title}`}
+              onClick={() =>
+                onOpen({
+                  title: w.title,
+                  text: w.summary,
+                  img: w.cover,
+                  liveUrl: w.liveUrl,
+                })
+              }
             >
-              <figure
-                className="aspect-video overflow-hidden cursor-pointer group"
-                onClick={() =>
-                  onOpen({
-                    title: w.title,
-                    text: w.summary,
-                    img: w.cover,
-                    liveUrl: w.liveUrl,
-                  })
-                }
-              >
+              {/* تصویر بلندتر برای موبایل */}
+              <div className="relative">
                 <img
                   src={w.cover}
                   alt={w.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-[240px] sm:h-[260px] object-cover"
                   loading="lazy"
                 />
-              </figure>
-
-              <div className="p-4 flex items-end gap-3">
-                {w.liveUrl && (
-                  <a
-                    href={w.liveUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="shrink-0 size-[46px] rounded-full border border-white/90 hover:border-emerald-300 grid place-items-center bg-black/5 transition-colors duration-300"
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={`${w.title} live link`}
-                  >
-                    <LinkIcon size={20} className="text-white" />
-                  </a>
-                )}
-
-                {/* Title only on hover (for consistency with desktop group hover) */}
-                <h3
-                  className="
-                    text-lg font-bold
-                    translate-y-4 opacity-0
-                    group-hover:translate-y-0 group-hover:opacity-100
-                    transition-all duration-500 ease-out
-                  "
-                >
-                  {w.title}
-                </h3>
+                {/* گرادیان پایین برای کنتراست */}
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-black/70 pointer-events-none" />
+                {/* پایین تصویر: آیکون لینک + Title (همیشه نمایش) */}
+                <div className="absolute inset-x-0 bottom-0 p-4 flex items-center gap-3">
+                  {w.liveUrl && (
+                    <a
+                      href={w.liveUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      onClick={(e) => e.stopPropagation()}
+                      className="shrink-0 size-[44px] rounded-full border border-white/90 grid place-items-center bg-black/10 backdrop-blur-[1px]"
+                      aria-label={`${w.title} live link`}
+                    >
+                      <LinkIcon size={20} className="text-white" />
+                    </a>
+                  )}
+                  <h3 className="text-base font-bold text-white drop-shadow">
+                    {w.title}
+                  </h3>
+                </div>
               </div>
             </article>
           ))}
         </div>
 
-        {/* CTA footer (Instagram / Portfolio) */}
+        {/* CTA footer */}
         <div className="mt-8">
           <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/10 shadow-soft">
             <div className="card-body items-center text-center">
@@ -374,7 +328,6 @@ export default function Work() {
               <p className="opacity-80 max-w-xl">
                 Browse full galleries, recent launches, and behind-the-scenes.
               </p>
-
               <div className="card-actions mt-4 flex gap-3">
                 <a
                   href={INSTAGRAM_URL}
@@ -393,14 +346,13 @@ export default function Work() {
                   <Globe size={18} /> Full Portfolio
                 </a>
               </div>
-
               <div className="mt-4 h-0.5 w-24 bg-primary/70 rounded-full" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Inline Modal */}
+      {/* Modal */}
       <Modal isOpen={open} onClose={onClose} item={item} />
     </section>
   );
