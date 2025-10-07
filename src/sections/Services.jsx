@@ -99,7 +99,7 @@ const BRAND = {
   baseVia: "#0a0f1a",
   baseTo: "#0e1b33",
   accent: "#3b82f6", // main blue
-  accentSoft: "#60a5fa", // softer blue
+  accentSoft: "#60a5fa", // soft blue for icons/glow
 };
 
 /* ===== Icon map ===== */
@@ -112,30 +112,55 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-/* ===== Stable hover flip (با state) */
-function FlippyHover({ front, back, className = "" }) {
-  const [hovered, setHovered] = useState(false);
+/* ===== Flip wrapper: hover (desktop) + tap (mobile), بدون jitter ===== */
+function FlippyInteractive({ front, back, className = "" }) {
+  const [flipped, setFlipped] = useState(false);
 
   return (
     <div
       className={`relative ${className}`}
-      style={{ perspective: "1200px" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      style={{ perspective: "1200px", WebkitPerspective: "1200px" }}
+      onMouseEnter={() => setFlipped(true)}
+      onMouseLeave={() => setFlipped(false)}
+      onTouchStart={(e) => {
+        // tap toggle روی موبایل
+        e.stopPropagation();
+        setFlipped((v) => !v);
+      }}
     >
       <motion.div
-        animate={{ rotateY: hovered ? 180 : 0 }}
+        animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full h-full rounded-2xl
-                   [transform-style:preserve-3d] transform-gpu will-change-transform"
+        className="relative w-full h-full rounded-2xl"
+        style={{
+          transformStyle: "preserve-3d",
+          WebkitTransformStyle: "preserve-3d",
+          willChange: "transform",
+        }}
       >
         {/* Front */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden"
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(0deg) translateZ(0)",
+            WebkitTransform: "rotateY(0deg) translateZ(0)",
+          }}
+        >
           {front}
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-2xl overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden"
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg) translateZ(0.1px)",
+            WebkitTransform: "rotateY(180deg) translateZ(0.1px)",
+          }}
+        >
           {back}
         </div>
       </motion.div>
@@ -152,15 +177,13 @@ const badgeMotion = {
 function ServiceCard({ data }) {
   const Icon = iconMap[data.icon] || CodeBracketIcon;
 
-  /* اندازه‌گیری داینامیک اسکرول داخل پشت کارت */
+  // داینامیک: فقط اگر محتوا بلند شد اسکرول فعال شود
   const bodyRef = useRef(null);
   const [needsScroll, setNeedsScroll] = useState(false);
-
   useEffect(() => {
     const check = () => {
       const el = bodyRef.current;
-      if (!el) return;
-      setNeedsScroll(el.scrollHeight > el.clientHeight + 2);
+      if (el) setNeedsScroll(el.scrollHeight > el.clientHeight + 2);
     };
     check();
     const ro = new ResizeObserver(check);
@@ -172,7 +195,7 @@ function ServiceCard({ data }) {
     };
   }, []);
 
-  /* Front (گرادیان قبلی + Glow پایین راست) */
+  /* Front: گرادیان قبلی + glow پایین راست */
   const Front = (
     <article
       className="relative h-full p-6 rounded-2xl text-slate-100 shadow-md ring-1"
@@ -186,7 +209,7 @@ function ServiceCard({ data }) {
       {data.badge && (
         <motion.span
           {...badgeMotion}
-          className="badge absolute right-3 top-3 text-slate-900 pointer-events-none"
+          className="badge absolute right-3 top-3 text-slate-900"
           style={{ backgroundColor: BRAND.accent, borderColor: "transparent" }}
         >
           {data.badge}
@@ -198,7 +221,7 @@ function ServiceCard({ data }) {
         <h3 className="text-xl font-semibold">{data.title}</h3>
         <p className="opacity-80 max-w-[28ch]">{data.desc}</p>
 
-        {/* متن درخواستی: رنگ آبی برند */}
+        {/* More details با رنگ آبی برند */}
         <span
           className="mt-3 text-sm font-medium tracking-wide select-none"
           style={{ color: BRAND.accent }}
@@ -207,7 +230,7 @@ function ServiceCard({ data }) {
         </span>
       </div>
 
-      {/* Glow پایین-راست */}
+      {/* Glow پایین راست */}
       <div
         aria-hidden
         className="pointer-events-none absolute right-[-60px] bottom-[-60px] w-[260px] h-[260px] rounded-full opacity-25 blur-2xl"
@@ -218,7 +241,7 @@ function ServiceCard({ data }) {
     </article>
   );
 
-  /* Back (بدون دکمه/فوتر؛ عنوان آبی و برجسته) */
+  /* Back: بدون دکمه؛ تیتر بولدتر و آبی */
   const Back = (
     <article
       className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
@@ -228,17 +251,15 @@ function ServiceCard({ data }) {
       }}
     >
       <div className="flex h-full flex-col">
-        {/* Header */}
         <div className="px-6 pt-6 text-center">
           <h4
-            className="text-[1.2rem] leading-6 font-semibold"
+            className="text-[1.2rem] leading-6 font-semibold tracking-wide"
             style={{ color: BRAND.accent }}
           >
             {data.title}
           </h4>
         </div>
 
-        {/* Body: اسکرول فقط در صورت نیاز */}
         <div
           ref={bodyRef}
           className={`grow px-6 mt-2 pb-6 ${
@@ -266,7 +287,7 @@ function ServiceCard({ data }) {
   );
 
   return (
-    <FlippyHover
+    <FlippyInteractive
       className="h-[320px] sm:h-[340px] md:h-[360px]"
       front={Front}
       back={Back}
