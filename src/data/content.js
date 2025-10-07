@@ -136,42 +136,86 @@ export const work = [
   },
 ];
 
+// export const pricing = [
+//   {
+//     name: "Starter",
+//     priceLabel: "Contact us for a quote",
+//     tagline: "A simple one-page website to get your business online fast.",
+//     items: [
+//       "One-page website",
+//       "Mobile-friendly design",
+//       "Basic SEO setup",
+//       "2 rounds of revisions",
+//     ],
+//   },
+//   {
+//     name: "Growth",
+//     popular: true,
+//     badge: "Most Popular",
+//     priceLabel: "Contact us for a quote",
+//     tagline:
+//       "A professional multi-page site designed to bring you leads and growth.",
+//     items: [
+//       "5–7 custom pages (Home, Services, About, Contact…)",
+//       "SEO setup for better Google ranking",
+//       "Lead capture forms (emails, signups)",
+//       "Basic analytics to track visitors",
+//     ],
+//   },
+//   {
+//     name: "Scale",
+//     priceLabel: "Contact us for a quote",
+//     tagline:
+//       "A custom website with advanced features, CMS, and integrations for bigger businesses.",
+//     items: [
+//       "Custom pages and layouts",
+//       "Blog or CMS included",
+//       "Integrations (CRM, payments, tools)",
+//       "Conversion optimization (better sales)",
+//     ],
+//   },
+// ];
+
 export const pricing = [
   {
-    name: "Starter",
+    name: "Essential",
     priceLabel: "Contact us for a quote",
-    tagline: "A simple one-page website to get your business online fast.",
+    tagline:
+      "A polished one-page site to launch your online presence with confidence.",
     items: [
-      "One-page website",
-      "Mobile-friendly design",
-      "Basic SEO setup",
-      "2 rounds of revisions",
+      "Modern, responsive design that looks great on all devices",
+      "Fast-loading pages with clean structure",
+      "Foundational SEO so customers can find you on Google",
+      "Contact form with built-in spam protection",
+      "Two rounds of design refinements",
     ],
   },
   {
-    name: "Growth",
+    name: "Professional",
     popular: true,
     badge: "Most Popular",
     priceLabel: "Contact us for a quote",
     tagline:
-      "A professional multi-page site designed to bring you leads and growth.",
+      "A multi-page, conversion-ready website designed to grow your business.",
     items: [
-      "5–7 custom pages (Home, Services, About, Contact…)",
-      "SEO setup for better Google ranking",
-      "Lead capture forms (emails, signups)",
-      "Basic analytics to track visitors",
+      "5–10 custom pages (Home, Services, About, Blog, Contact…)",
+      "SEO optimization for higher Google visibility",
+      "Lead capture forms (inquiries, newsletter signups) with CRM handoff",
+      "Blog or CMS setup for easy content publishing",
+      "Integrated analytics for visitor insights",
     ],
   },
   {
-    name: "Scale",
+    name: "Enterprise",
     priceLabel: "Contact us for a quote",
     tagline:
-      "A custom website with advanced features, CMS, and integrations for bigger businesses.",
+      "A fully tailored solution with ecommerce and advanced integrations.",
     items: [
-      "Custom pages and layouts",
-      "Blog or CMS included",
-      "Integrations (CRM, payments, tools)",
-      "Conversion optimization (better sales)",
+      "Unlimited custom pages and scalable design system",
+      "Full ecommerce setup (Shopify/WooCommerce): products, checkout, payments",
+      "Advanced integrations (CRM, ERP, APIs, automation)",
+      "Multi-language support and performance optimization",
+      "Security audits, priority support, and SLA",
     ],
   },
 ];
