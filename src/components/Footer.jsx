@@ -10,7 +10,7 @@ export default function Footer() {
   const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
 
   return (
-    <footer className="py-10 border-t border-base-200">
+    <footer className="py-10 border-t border-base-200 bg-base-200">
       <div className="container flex flex-col items-center text-center gap-4">
         {/* Brand & Contact Info */}
         <div>

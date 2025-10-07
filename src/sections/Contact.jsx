@@ -93,7 +93,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-20 bg-base-200">
+    <section id="contact" className="py-20 ">
       <h2 className="text-center mb-10">Contact Us</h2>
 
       <div className="container mx-auto grid gap-12 lg:grid-cols-2">
