@@ -155,16 +155,16 @@ export default function Hero({ onOpenLightbox }) {
             </motion.div>
 
             <motion.div
-              className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm"
+              className="mt-6 flex items-center justify-center gap-2 text-[12px] sm:text-[13px] flex-nowrap whitespace-nowrap"
               variants={fadeIn}
             >
-              <span className="rounded-box bg-base-200 px-4 py-2">
+              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
                 Web Design
               </span>
-              <span className="rounded-box bg-base-200 px-4 py-2">
+              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
                 E-Commerce
               </span>
-              <span className="rounded-box bg-base-200 px-4 py-2">
+              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
                 SEO-Ready
               </span>
             </motion.div>
