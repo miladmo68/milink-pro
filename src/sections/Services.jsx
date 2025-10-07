@@ -79,7 +79,6 @@
 //     </section>
 //   );
 // }
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -94,16 +93,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { services } from "../data/content.js";
 
-/* ===== Brand palette (tuned to your site) ===== */
+/* ===== Brand palette ===== */
 const BRAND = {
   baseFrom: "#0b1220",
   baseVia: "#0a0f1a",
   baseTo: "#0e1b33",
   accent: "#3b82f6", // main blue
-  accentSoft: "#60a5fa", // softer blue for icons/glow
+  accentSoft: "#60a5fa", // softer blue
 };
 
-// Icon map
+/* ===== Icon map ===== */
 const iconMap = {
   CodeBracketIcon,
   DevicePhoneMobileIcon,
@@ -113,26 +112,30 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-// ===== Hover-only flip (بدون state → بدون jitter)
+/* ===== Stable hover flip (با state) */
 function FlippyHover({ front, back, className = "" }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
-      className={`group relative ${className}`}
+      className={`relative ${className}`}
       style={{ perspective: "1200px" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <motion.div
-        whileHover={{ rotateY: 180 }}
+        animate={{ rotateY: hovered ? 180 : 0 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative w-full h-full rounded-2xl
                    [transform-style:preserve-3d] transform-gpu will-change-transform"
       >
         {/* Front */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden">
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden pointer-events-none">
           {front}
         </div>
 
         {/* Back */}
-        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-2xl overflow-hidden">
+        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-2xl overflow-hidden pointer-events-none">
           {back}
         </div>
       </motion.div>
@@ -140,16 +143,16 @@ function FlippyHover({ front, back, className = "" }) {
   );
 }
 
-// Badge motion (Popular / In-Demand / High-Pro)
+/* ===== Badge motion (Popular / In-Demand / High-Pro) ===== */
 const badgeMotion = {
   animate: { y: [0, -2, 0], scale: [1, 1.06, 1] },
   transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
 };
 
-function ServiceCard({ data, onOpen }) {
+function ServiceCard({ data }) {
   const Icon = iconMap[data.icon] || CodeBracketIcon;
 
-  // اندازه‌گیری داینامیک برای اسکرول پشت کارت
+  /* اندازه‌گیری داینامیک اسکرول داخل پشت کارت */
   const bodyRef = useRef(null);
   const [needsScroll, setNeedsScroll] = useState(false);
 
@@ -169,7 +172,7 @@ function ServiceCard({ data, onOpen }) {
     };
   }, []);
 
-  // ===== Front (گرادیان قبلی + تون اصلاح‌شده + Glow پایین‌راست)
+  /* Front (گرادیان قبلی + Glow پایین راست) */
   const Front = (
     <article
       className="relative h-full p-6 rounded-2xl text-slate-100 shadow-md ring-1"
@@ -183,7 +186,7 @@ function ServiceCard({ data, onOpen }) {
       {data.badge && (
         <motion.span
           {...badgeMotion}
-          className="badge absolute right-3 top-3 text-slate-900"
+          className="badge absolute right-3 top-3 text-slate-900 pointer-events-none"
           style={{ backgroundColor: BRAND.accent, borderColor: "transparent" }}
         >
           {data.badge}
@@ -195,13 +198,16 @@ function ServiceCard({ data, onOpen }) {
         <h3 className="text-xl font-semibold">{data.title}</h3>
         <p className="opacity-80 max-w-[28ch]">{data.desc}</p>
 
-        {/* متن درخواستی روی فرانت (بزرگ‌تر) */}
-        <span className="mt-3 text-sm font-medium tracking-wide opacity-70 select-none">
+        {/* متن درخواستی: رنگ آبی برند */}
+        <span
+          className="mt-3 text-sm font-medium tracking-wide select-none"
+          style={{ color: BRAND.accent }}
+        >
           More details
         </span>
       </div>
 
-      {/* Glow پایین-راست (accent) */}
+      {/* Glow پایین-راست */}
       <div
         aria-hidden
         className="pointer-events-none absolute right-[-60px] bottom-[-60px] w-[260px] h-[260px] rounded-full opacity-25 blur-2xl"
@@ -212,7 +218,7 @@ function ServiceCard({ data, onOpen }) {
     </article>
   );
 
-  // ===== Back (بدون دکمه/فوتر؛ تایتل واضح‌تر با آبی برند)
+  /* Back (بدون دکمه/فوتر؛ عنوان آبی و برجسته) */
   const Back = (
     <article
       className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
@@ -225,14 +231,14 @@ function ServiceCard({ data, onOpen }) {
         {/* Header */}
         <div className="px-6 pt-6 text-center">
           <h4
-            className="text-[1.125rem] leading-6 font-semibold"
+            className="text-[1.2rem] leading-6 font-semibold"
             style={{ color: BRAND.accent }}
           >
             {data.title}
           </h4>
         </div>
 
-        {/* Body: اسکرول فقط اگر لازم باشد */}
+        {/* Body: اسکرول فقط در صورت نیاز */}
         <div
           ref={bodyRef}
           className={`grow px-6 mt-2 pb-6 ${
@@ -268,7 +274,7 @@ function ServiceCard({ data, onOpen }) {
   );
 }
 
-export default function Services({ onOpen }) {
+export default function Services() {
   return (
     <section id="services" className="py-20 bg-base-100">
       <div className="container mx-auto text-center">
@@ -277,7 +283,7 @@ export default function Services({ onOpen }) {
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((s) => (
-            <ServiceCard key={s.id} data={s} onOpen={onOpen} />
+            <ServiceCard key={s.id} data={s} />
           ))}
         </div>
       </div>
