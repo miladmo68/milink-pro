@@ -117,7 +117,6 @@
 //     </section>
 //   );
 // }
-//////////////////////////////////////////////////////////////////////////////
 
 import { useCallback, useEffect, useState } from "react";
 import { Instagram, Globe, Link as LinkIcon, X } from "lucide-react";
@@ -217,9 +216,18 @@ export default function Work() {
           </p>
         </div>
 
-        {/* Desktop: horizontal accordion cards (بدون تغییر) */}
+        {/* Desktop: horizontal accordion cards */}
         <div className="mt-10 hidden lg:block">
-          <div className="mx-auto flex gap-3 h-[380px] lg:h-[420px] xl:h-[460px] max-w-[1200px] px-4">
+          <div
+            className="
+              mx-auto flex gap-3
+              h-[420px]          /* قبلاً 380px بود */
+              lg:h-[480px]       /* قبلاً 420px بود */
+              xl:h-[540px]       /* قبلاً 460px بود */
+              max-w-[1200px]
+              px-4
+            "
+          >
             {work.map((w) => (
               <div
                 key={w.id}
@@ -258,7 +266,6 @@ export default function Work() {
                       />
                     </a>
                   )}
-                  {/* فقط Title روی Hover در دسکتاپ */}
                   <h3 className="text-lg font-bold text-white drop-shadow translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                     {w.title}
                   </h3>
@@ -268,7 +275,7 @@ export default function Work() {
           </div>
         </div>
 
-        {/* Mobile/Tablet: ستونی تمیز با کانتنت پایین همیشه visible */}
+        {/* Mobile/Tablet */}
         <div className="mt-10 grid gap-6 grid-cols-1 sm:grid-cols-1 lg:hidden">
           {work.map((w) => (
             <article
@@ -285,7 +292,6 @@ export default function Work() {
                 })
               }
             >
-              {/* تصویر بلندتر برای موبایل */}
               <div className="relative">
                 <img
                   src={w.cover}
@@ -293,9 +299,7 @@ export default function Work() {
                   className="w-full h-[240px] sm:h-[260px] object-cover"
                   loading="lazy"
                 />
-                {/* گرادیان پایین برای کنتراست */}
                 <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-black/70 pointer-events-none" />
-                {/* پایین تصویر: آیکون لینک + Title (همیشه نمایش) */}
                 <div className="absolute inset-x-0 bottom-0 p-4 flex items-center gap-3">
                   {w.liveUrl && (
                     <a
