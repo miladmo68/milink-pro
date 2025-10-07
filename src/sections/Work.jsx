@@ -204,7 +204,7 @@ export default function Work() {
   }, []);
 
   return (
-    <section id="work" className="py-20">
+    <section id="work" className="py-20 bg-base-200">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center">
