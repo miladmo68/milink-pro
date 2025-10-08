@@ -11,7 +11,7 @@ export default function LogoFancy({
   // متون (عادی و هاور)
   idleTitle = "MILINK",
   idleSubtitle = "DIGITAL AGENCY",
-  hoverTitle = "Design • Build • Grow",
+  hoverTitle = "Design • Lunch • Scale",
 
   // استایل‌ها
   gradientClass = "gradient-text",
