@@ -1,261 +1,12 @@
-// import { useEffect, useMemo, useRef, useState } from "react";
-// import { testimonials as DATA } from "../data/content.js";
-
-// const cx = (...a) => a.filter(Boolean).join(" ");
-
-// export default function Testimonials() {
-//   const items = useMemo(() => (Array.isArray(DATA) ? DATA : []), []);
-//   const len = items.length || 1;
-
-//   const [perView, setPerView] = useState(3); // 1 (mobile) or 3 (md+)
-//   const [pos, setPos] = useState(1); // center index within `extended`
-//   const [hover, setHover] = useState(false);
-//   const [transitioning, setTransitioning] = useState(true);
-
-//   // --- Responsiveness
-//   useEffect(() => {
-//     const onResize = () => setPerView(window.innerWidth >= 768 ? 3 : 1);
-//     onResize();
-//     window.addEventListener("resize", onResize);
-//     return () => window.removeEventListener("resize", onResize);
-//   }, []);
-
-//   const base = useMemo(() => items, [items]);
-
-//   // --- Two clones (head & tail) to make looping seamless
-//   const extended = useMemo(() => {
-//     if (!len) return [];
-//     return [base[len - 1], ...base, base[0]]; // [cloneTail, ...real..., cloneHead]
-//   }, [base, len]);
-
-//   const next = () => setPos((p) => p + 1);
-//   const prev = () => setPos((p) => p - 1);
-//   const goTo = (i) => setPos(i + 1); // i: 0..len-1 -> pos: 1..len
-
-//   // --- Autoplay (pause on hover)
-//   useEffect(() => {
-//     if (hover || len < 2) return;
-//     const id = setInterval(() => next(), 4500);
-//     return () => clearInterval(id);
-//   }, [hover, len]);
-
-//   // --- Re-enable transition when pos changes
-//   useEffect(() => {
-//     setTransitioning(true);
-//   }, [pos]);
-
-//   // --- Fix loop at boundaries without visual jump
-//   const onTransitionEnd = () => {
-//     if (pos === 0) {
-//       // jumped before first -> snap to last real
-//       setTransitioning(false);
-//       setPos(len);
-//       requestAnimationFrame(() =>
-//         requestAnimationFrame(() => setTransitioning(true))
-//       );
-//     } else if (pos === len + 1) {
-//       // jumped after last -> snap to first real
-//       setTransitioning(false);
-//       setPos(1);
-//       requestAnimationFrame(() =>
-//         requestAnimationFrame(() => setTransitioning(true))
-//       );
-//     }
-//   };
-
-//   // --- Geometry
-//   // Use percentage widths with NO flex `gap` to keep math exact.
-//   // Each slide width in % (mobile=100, desktop=33.3333)
-//   const step = perView === 1 ? 100 : 100 / 3;
-//   // Center the current card: left_i - translate = 50 - step/2  => translate = left_i - (50 - step/2)
-//   const translatePct = pos * step - 50 + step / 2; // pos is index in `extended`
-
-//   if (!items.length) return null;
-
-//   return (
-//     <section id="testimonials" className="py-20 bg-base-200">
-//       <div className="container mx-auto px-4 max-w-6xl">
-//         <h2 className="text-4xl font-bold text-center mb-3">
-//           What Clients Say
-//         </h2>
-//         <p className="text-center opacity-70 mb-10">
-//           Trusted voices from real clients.
-//         </p>
-
-//         <div
-//           className="relative"
-//           onMouseEnter={() => setHover(true)}
-//           onMouseLeave={() => setHover(false)}
-//         >
-//           <button
-//             aria-label="Previous"
-//             onClick={prev}
-//             className="btn btn-circle btn-ghost absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-base-100/70 backdrop-blur shadow hover:scale-105"
-//           >
-//             ‹
-//           </button>
-//           <button
-//             aria-label="Next"
-//             onClick={next}
-//             className="btn btn-circle btn-ghost absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-base-100/70 backdrop-blur shadow hover:scale-105"
-//           >
-//             ›
-//           </button>
-
-//           <div className="overflow-hidden px-6 md:px-12">
-//             <div className="relative">
-//               <div
-//                 onTransitionEnd={onTransitionEnd}
-//                 className={cx(
-//                   // IMPORTANT: remove `gap` so translate math stays exact
-//                   "flex will-change-transform",
-//                   transitioning
-//                     ? "transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)]"
-//                     : "transition-none"
-//                 )}
-//                 style={{ transform: `translateX(-${translatePct}%)` }}
-//               >
-//                 {extended.map((t, i) => {
-//                   const isCenter = i === pos;
-//                   const isLeft = i === pos - 1;
-//                   const isRight = i === pos + 1;
-
-//                   const scale =
-//                     perView === 1
-//                       ? isCenter
-//                         ? "scale-105"
-//                         : "scale-95"
-//                       : isCenter
-//                       ? "scale-105"
-//                       : isLeft || isRight
-//                       ? "scale-95"
-//                       : "scale-90";
-
-//                   const opacity =
-//                     perView === 1
-//                       ? isCenter
-//                         ? "opacity-100"
-//                         : "opacity-80"
-//                       : isCenter
-//                       ? "opacity-100"
-//                       : isLeft || isRight
-//                       ? "opacity-85"
-//                       : "opacity-60";
-
-//                   const ring = isCenter
-//                     ? "ring-1 ring-primary/30 border-primary/20 shadow-2xl"
-//                     : "";
-
-//                   return (
-//                     <article
-//                       key={i}
-//                       className={cx(
-//                         // Widths (no external gap). Add inner padding for spacing.
-//                         "shrink-0 px-3 md:px-4", // visual spacing
-//                         perView === 1 ? "w-full" : "w-1/3",
-//                         "transition-all duration-700 ease-out"
-//                       )}
-//                     >
-//                       <div
-//                         className={cx(
-//                           "card h-full mx-auto bg-base-100 p-8 border border-transparent shadow-xl",
-//                           "transition-all duration-700 ease-out",
-//                           scale,
-//                           opacity,
-//                           ring
-//                         )}
-//                       >
-//                         <div className="flex items-center gap-4 mb-5">
-//                           <Avatar src={t?.avatar} name={t?.name} />
-//                           <div>
-//                             <h4 className="font-bold text-lg">{t?.name}</h4>
-//                             <p className="text-sm opacity-70">
-//                               {t?.role}
-//                               {t?.company ? ` • ${t.company}` : ""}
-//                             </p>
-//                           </div>
-//                         </div>
-
-//                         <blockquote
-//                           className={cx(
-//                             "relative text-left leading-relaxed text-base sm:text-lg",
-//                             isCenter ? "italic" : ""
-//                           )}
-//                         >
-//                           <span className="absolute -top-6 left-0 text-6xl leading-none opacity-10 select-none">
-//                             “
-//                           </span>
-//                           <p>{t?.text}</p>
-//                         </blockquote>
-
-//                         <div
-//                           className={cx(
-//                             "mt-8 h-1 rounded-full",
-//                             isCenter ? "bg-primary" : "bg-base-300"
-//                           )}
-//                         />
-//                       </div>
-//                     </article>
-//                   );
-//                 })}
-//               </div>
-
-//               {/* Edge fade masks */}
-//               <div className="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-base-200 to-transparent" />
-//               <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-base-200 to-transparent" />
-//             </div>
-//           </div>
-
-//           {/* Dots */}
-//           <div className="flex items-center justify-center gap-2 mt-8">
-//             {items.map((_, i) => {
-//               const current = pos > len ? 1 : pos < 1 ? len : pos; // normalize
-//               const active = i + 1 === current;
-//               return (
-//                 <button
-//                   key={i}
-//                   onClick={() => goTo(i)}
-//                   aria-label={`Go to ${i + 1}`}
-//                   className={cx(
-//                     "h-2 rounded-full transition-all",
-//                     active ? "w-6 bg-primary" : "w-2 bg-base-300"
-//                   )}
-//                 />
-//               );
-//             })}
-//           </div>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function Avatar({ src, name = "" }) {
-//   if (!src) {
-//     const initials = (name || "?")
-//       .split(" ")
-//       .map((n) => n[0]?.toUpperCase())
-//       .slice(0, 2)
-//       .join("");
-//     return (
-//       <div className="avatar placeholder">
-//         <div className="w-14 rounded-full bg-base-300 text-base-content">
-//           <span className="text-sm">{initials}</span>
-//         </div>
-//       </div>
-//     );
-//   }
-//   return (
-//     <div className="avatar">
-//       <div className="w-14 rounded-full ring ring-primary/20 ring-offset-2 ring-offset-base-100 overflow-hidden">
-//         <img src={src} alt={name} loading="lazy" />
-//       </div>
-//     </div>
-//   );
-// }
-
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { testimonials as DATA } from "../data/content.js";
+
+/**
+ * Testimonials3DPro – Clean Professional v3 (Color-polished)
+ * - کارت‌ها هم‌اندازه؛ کارت وسط کمی بزرگ‌تر
+ * - پالت لوکس آبی تیره + اکنت آبی روشن، کاملاً مینیمال و باکلاس
+ * - گرادیان قاب لطیف، دات‌های گرادیانی، پس‌زمینه رنگی ملایم
+ */
 
 const cx = (...a) => a.filter(Boolean).join(" ");
 
@@ -263,6 +14,17 @@ export default function Testimonials3DPro() {
   const items = useMemo(() => (Array.isArray(DATA) ? DATA : []), []);
   const len = items.length;
   if (!len) return null;
+
+  // ===== Brand
+  const BRAND = {
+    rgb: "23 37 84", // primary dark blue: "23 37 84"
+    comma: "23, 37, 84",
+    hex: "#172554",
+    accentRGB: "56 189 248", // sky-400 style accent
+    accentComma: "56, 189, 248",
+  };
+
+  const REDUCED = usePrefersReducedMotion();
 
   // ===== Layout: 1 (mobile) or 3 (md+)
   const [perView, setPerView] = useState(3);
@@ -273,6 +35,15 @@ export default function Testimonials3DPro() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Visibility pause
+  const [pageVisible, setPageVisible] = useState(true);
+  useEffect(() => {
+    const onVis = () => setPageVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", onVis);
+    onVis();
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
   // ===== Extended array: [cloneTail, ...base, cloneHead]
   const base = useMemo(() => items, [items]);
   const extended = useMemo(
@@ -280,53 +51,42 @@ export default function Testimonials3DPro() {
     [base, len]
   );
 
-  // ===== Position state (virtual): 1..len  (0 و len+1 کُلن‌ها هستند)
+  // ===== Position state (virtual): 1..len  (0 & len+1 ghosts)
   const [pos, setPos] = useState(1);
   const posRef = useRef(pos);
   posRef.current = pos;
 
-  // برای جلوگیری از تداخل تیکِ autoplay موقع snap
   const snappingRef = useRef(false);
-
-  // فلگ ترنزیشن (برای اسنپ بدون انیمیشن)
   const [transitioning, setTransitioning] = useState(true);
-
-  // Hover = pause
   const [hover, setHover] = useState(false);
 
-  // ===== Helpers
   const normalize = (p) => ((p - 1 + len) % len) + 1; // -> 1..len
   const clampGhost = (p) => Math.max(0, Math.min(len + 1, p)); // -> 0..len+1
 
-  // ===== Autoplay (بدون تداخل با snap)
+  // ===== Autoplay
   useEffect(() => {
-    if (hover || len < 2) return;
+    if (REDUCED || hover || len < 2 || !pageVisible) return;
     const id = setInterval(() => {
-      if (snappingRef.current) return; // یک فریم بعد از snap تیک نزن
+      if (snappingRef.current) return;
       setPos((p) => clampGhost(p + 1));
-    }, 4200);
+    }, 5200);
     return () => clearInterval(id);
-  }, [hover, len]);
+  }, [REDUCED, hover, len, pageVisible]);
 
-  // هر تغییر pos => ترنزیشن روشن باشد (به‌جز دقیقاً قبل از snap)
-  useEffect(() => {
-    setTransitioning(true);
-  }, [pos]);
+  useEffect(() => setTransitioning(true), [pos]);
 
-  // ===== Seamless loop (اسنپ بی‌وقفه)
+  // ===== Seamless loop
   const railRef = useRef(null);
   const onTransitionEnd = (e) => {
-    if (!railRef.current || e.target !== railRef.current) return; // فقط ریل
+    if (!railRef.current || e.target !== railRef.current) return;
     if (pos === 0 || pos === len + 1) {
-      snappingRef.current = true; // جلوی تداخل autoplay را بگیر
-      setTransitioning(false); // بدون انیمیشن اسنپ کن
+      snappingRef.current = true;
+      setTransitioning(false);
       const target = pos === 0 ? len : 1;
-      // دو تا rAF برای تضمین اعمال transform بدون transition
       requestAnimationFrame(() => {
         setPos(target);
         requestAnimationFrame(() => {
           setTransitioning(true);
-          // یک rAF دیگر تا بعد از فعال شدن transition، اجازه autoplay بده
           requestAnimationFrame(() => (snappingRef.current = false));
         });
       });
@@ -335,21 +95,40 @@ export default function Testimonials3DPro() {
 
   // ===== Geometry
   const step = perView === 1 ? 100 : 100 / 3; // 100% یا 33.333%
-  // translate بر اساس pos روی extended (0..len+1) محاسبه می‌شود
   const pGhost = clampGhost(pos);
   const translatePct = pGhost * step - 50 + step / 2;
 
   // ===== Controls
-  const next = () => setPos((p) => clampGhost(p + 1));
-  const prev = () => setPos((p) => clampGhost(p - 1));
-  const handleClick = (i) => setPos(clampGhost(i)); // i همان ایندکس extended است
-  const goTo = (i) => setPos(clampGhost(i + 1)); // dots: 0..len-1 -> 1..len
+  const next = useCallback(() => setPos((p) => clampGhost(p + 1)), []);
+  const prev = useCallback(() => setPos((p) => clampGhost(p - 1)), []);
+  const handleClick = (i) => setPos(clampGhost(i));
+  const goTo = (i) => setPos(clampGhost(i + 1));
+
+  // Keyboard
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [next, prev]);
 
   return (
-    <section id="testimonials" className="py-20 bg-base-200">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <header className="text-center mb-10">
-          <h2 className="text-4xl font-bold tracking-tight">
+    <section
+      id="testimonials"
+      className="relative py-20 bg-base-200"
+      style={{
+        ["--brand"]: BRAND.rgb,
+        ["--card-h"]: "clamp(300px, 36vw, 380px)",
+      }}
+      aria-label="Client testimonials"
+    >
+      <DecorBG brandComma={BRAND.comma} accentComma={BRAND.accentComma} />
+
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+        <header className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
             What Clients Say
           </h2>
           <p className="opacity-70 mt-2">Real feedback, real outcomes.</p>
@@ -376,66 +155,57 @@ export default function Testimonials3DPro() {
             ›
           </button>
 
-          <div className="overflow-hidden px-4 md:px-10">
+          <div className="overflow-hidden px-3 md:px-10">
             <div className="relative">
+              {/* accent خط بسیار نرم */}
+              <div
+                className="pointer-events-none absolute -top-2 left-8 right-8 h-px"
+                style={{
+                  background: `linear-gradient(90deg, rgba(${BRAND.comma}, 0.35), rgba(${BRAND.accentComma}, 0.35), transparent)`,
+                }}
+              />
+
               <div
                 ref={railRef}
                 onTransitionEnd={onTransitionEnd}
                 className={cx(
                   "flex t3d-rail will-change-transform",
-                  transitioning
-                    ? "transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)]"
+                  transitioning && !REDUCED
+                    ? "transition-transform duration-600 ease-[cubic-bezier(.22,.61,.36,1)]"
                     : "transition-none"
                 )}
                 style={{ transform: `translateX(-${translatePct}%)` }}
               >
                 {extended.map((t, i) => {
                   const isCenter = i === pGhost;
-                  const d = i - pGhost; // relative to center on extended
+                  const d = i - pGhost;
                   const abs = Math.abs(d);
 
-                  // 3D transforms
-                  const depth = [10, 8.5, 5.6, 2.5, 0.6];
-                  const rot = [0, 35, 40, 30, 15];
-                  const z = abs < depth.length ? depth[abs] : 0.2;
+                  // 3D بسیار لطیف + مقیاس یک‌ذره بزرگ‌تر برای کارت وسط
+                  const depth = REDUCED ? [0, 0] : [5, 2.5, 1];
+                  const rot = REDUCED ? [0, 0] : [0, 8, 4];
+                  const z = abs < depth.length ? depth[abs] : 0.5;
                   const ry =
                     d === 0
                       ? 0
                       : d > 0
-                      ? rot[Math.min(abs, 4)]
-                      : -rot[Math.min(abs, 4)];
+                      ? rot[Math.min(abs, 2)]
+                      : -rot[Math.min(abs, 2)];
 
                   const scale =
                     perView === 1
                       ? abs === 0
                         ? 1.03
-                        : abs === 1
-                        ? 0.96
-                        : 0.92
+                        : 1
                       : abs === 0
-                      ? 1.04
-                      : abs === 1
-                      ? 0.97
-                      : 0.93;
-
-                  const opacity =
-                    perView === 1
-                      ? abs === 0
-                        ? 1
-                        : abs === 1
-                        ? 0.9
-                        : 0.7
-                      : abs === 0
-                      ? 1
-                      : abs === 1
-                      ? 0.88
-                      : 0.6;
+                      ? 1.06
+                      : 1;
 
                   return (
                     <article
                       key={i}
                       className={cx(
-                        "shrink-0 px-3 md:px-4",
+                        "shrink-0 px-2.5 md:px-4",
                         perView === 1 ? "w-full" : "w-1/3"
                       )}
                     >
@@ -444,61 +214,92 @@ export default function Testimonials3DPro() {
                         aria-label={`Open testimonial ${i}`}
                         onClick={() => handleClick(i)}
                         className={cx(
-                          "item group relative block w-full overflow-visible rounded-2xl outline-none",
-                          "transition-[filter,transform] duration-700"
+                          "group relative block w-full overflow-visible rounded-2xl outline-none",
+                          "transition-transform duration-600"
                         )}
                         style={{
-                          filter: `grayscale(${abs === 0 ? 0 : 1}) brightness(${
-                            abs === 0 ? 1 : 0.55
-                          })`,
                           transform: `translateZ(calc(var(--index) * ${z})) rotateY(${ry}deg) scale(${scale})`,
                         }}
                       >
-                        {/* Backdrop */}
+                        {/* قاب گرادیانی ظریف + کارت مینیمال */}
                         <div
-                          className="absolute inset-0 rounded-2xl bg-cover bg-center"
+                          className="relative rounded-2xl p-[1px]"
                           style={{
-                            backgroundImage: t?.avatar
-                              ? `url(${t.avatar})`
-                              : "linear-gradient(135deg, #1f2937 0%, #0f172a 100%)",
+                            background: isCenter
+                              ? `linear-gradient(135deg, rgba(${BRAND.comma}, 0.85), rgba(${BRAND.accentComma}, 0.8))`
+                              : `linear-gradient(135deg, rgba(${BRAND.comma}, 0.18), rgba(${BRAND.accentComma}, 0.16))`,
+                            boxShadow: isCenter
+                              ? `0 24px 80px -24px rgba(${BRAND.comma}, 0.55)`
+                              : `0 16px 50px -28px rgba(0,0,0,.35)`,
                           }}
-                        />
-                        {/* Gloss */}
-                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-black/40 via-black/25 to-black/55" />
-                        {/* Card */}
-                        <div
-                          className={cx(
-                            "relative z-10 card h-full bg-base-100/85 border border-white/10",
-                            "shadow-[0_10px_40px_-10px_rgba(0,0,0,.4)] p-6 md:p-8 rounded-2xl backdrop-blur"
-                          )}
-                          style={{ opacity }}
                         >
-                          <div className="flex items-center gap-4 mb-5">
-                            <Avatar src={t?.avatar} name={t?.name} />
-                            <div>
-                              <h4 className="font-semibold text-lg leading-tight">
-                                {t?.name}
-                              </h4>
-                              <p className="text-xs md:text-sm opacity-70">
-                                {t?.role}
-                                {t?.company ? ` • ${t.company}` : ""}
-                              </p>
-                            </div>
-                          </div>
-
-                          <blockquote className="relative text-left leading-relaxed text-base md:text-lg">
-                            <span className="quote absolute -top-6 left-0 text-6xl leading-none opacity-10 select-none">
-                              “
-                            </span>
-                            <p>{t?.text}</p>
-                          </blockquote>
-
                           <div
                             className={cx(
-                              "mt-6 h-[3px] rounded-full",
-                              isCenter ? "bg-primary" : "bg-base-300"
+                              "relative z-10 rounded-2xl border bg-base-100",
+                              "border-white/10 shadow-[0_10px_30px_-12px_rgba(0,0,0,.30)]"
                             )}
-                          />
+                            style={{ minHeight: "var(--card-h)" }}
+                          >
+                            {/* نوار بالا */}
+                            <div
+                              className="h-[3px] rounded-t-2xl"
+                              style={{
+                                background: isCenter
+                                  ? `linear-gradient(90deg, rgba(${BRAND.comma}, 1), rgba(${BRAND.accentComma}, .95))`
+                                  : `linear-gradient(90deg, rgba(${BRAND.comma}, .25), rgba(${BRAND.accentComma}, .25))`,
+                              }}
+                            />
+
+                            {/* محتوا */}
+                            <div className="p-6 md:p-8 grid grid-rows-[auto,1fr,auto] h-[calc(var(--card-h)-12px)]">
+                              <div className="flex items-center gap-4">
+                                <Avatar
+                                  src={t?.avatar}
+                                  name={t?.name}
+                                  brandComma={BRAND.comma}
+                                  accentComma={BRAND.accentComma}
+                                />
+                                <div>
+                                  <h4 className="font-semibold text-lg md:text-xl leading-tight">
+                                    {t?.name}
+                                  </h4>
+                                  <p className="text-xs md:text-sm text-base-content/70">
+                                    {t?.role}
+                                    {t?.company ? ` • ${t.company}` : ""}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <blockquote className="mt-4 text-left leading-8 md:leading-8 text-[15px] md:text-[17px] text-base-content/90 relative">
+                                <span
+                                  className="absolute -top-6 left-0 text-5xl leading-none select-none"
+                                  style={{
+                                    color: `rgba(${BRAND.accentComma}, .22)`,
+                                  }}
+                                >
+                                  “
+                                </span>
+                                <p
+                                  style={{
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: perView === 1 ? 9 : 7,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {t?.text}
+                                </p>
+                              </blockquote>
+
+                              {/* فوتر */}
+                              <div
+                                className="mt-6 h-[2px] rounded-full"
+                                style={{
+                                  background: `linear-gradient(90deg, rgba(${BRAND.comma}, .22), rgba(${BRAND.accentComma}, .35))`,
+                                }}
+                              />
+                            </div>
+                          </div>
                         </div>
                       </button>
                     </article>
@@ -506,9 +307,9 @@ export default function Testimonials3DPro() {
                 })}
               </div>
 
-              {/* Edge fade */}
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-base-200 to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-base-200 to-transparent" />
+              {/* Edge fades */}
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-28 bg-gradient-to-r from-base-200 to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-28 bg-gradient-to-l from-base-200 to-transparent" />
             </div>
           </div>
 
@@ -524,10 +325,16 @@ export default function Testimonials3DPro() {
                   aria-label={`Go to ${i + 1}`}
                   className={cx(
                     "h-2 rounded-full transition-all",
-                    active
-                      ? "w-7 bg-primary"
-                      : "w-2 bg-base-300 hover:bg-base-400"
+                    active ? "w-8" : "w-3"
                   )}
+                  style={{
+                    background: active
+                      ? `linear-gradient(90deg, rgba(${BRAND.comma}, 1), rgba(${BRAND.accentComma}, .95))`
+                      : `rgba(0,0,0,.18)`,
+                    boxShadow: active
+                      ? `0 0 0 2px rgba(255,255,255,.25)`
+                      : "none",
+                  }}
                 />
               );
             })}
@@ -538,18 +345,47 @@ export default function Testimonials3DPro() {
       {/* Styles */}
       <style>{`
         :root{ --index: calc(1vw + 1vh); }
-        .t3d-rail{ perspective: calc(var(--index) * 35); }
-        .i-dot { width:.5rem; height:.5rem; border-radius:999px; background: currentColor; display:inline-block; }
-        .nav{ opacity:.9 }
-        @media (max-width: 767px){
-          :root{ --index: calc(1.5vw + 1.5vh); }
-        }
+        .t3d-rail{ perspective: calc(var(--index) * 26); }
+        .nav{ opacity:.95 }
+        @media (max-width: 767px){ :root{ --index: calc(1.5vw + 1.5vh); } }
       `}</style>
     </section>
   );
 }
 
-function Avatar({ src, name = "" }) {
+function DecorBG({ brandComma = "23, 37, 84", accentComma = "56, 189, 248" }) {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      {/* soft grid */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px,#fff 1px,transparent 1.2px)",
+          backgroundSize: "18px 18px",
+        }}
+      />
+      {/* angled color wash */}
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: `linear-gradient(135deg, rgba(${brandComma}, .22) 0%, rgba(${brandComma}, 0) 40%), linear-gradient(315deg, rgba(${accentComma}, .18) 10%, rgba(${accentComma}, 0) 60%)`,
+          maskImage:
+            "radial-gradient(80% 55% at 50% -10%, #000 40%, transparent 70%)",
+          WebkitMaskImage:
+            "radial-gradient(80% 55% at 50% -10%, #000 40%, transparent 70%)",
+        }}
+      />
+    </div>
+  );
+}
+
+function Avatar({
+  src,
+  name = "",
+  brandComma = "23, 37, 84",
+  accentComma = "56, 189, 248",
+}) {
   if (!src) {
     const initials = (name || "?")
       .split(" ")
@@ -566,9 +402,26 @@ function Avatar({ src, name = "" }) {
   }
   return (
     <div className="avatar">
-      <div className="w-12 md:w-14 rounded-full ring ring-primary/20 ring-offset-2 ring-offset-base-100 overflow-hidden">
+      <div
+        className="w-12 md:w-14 rounded-full ring ring-offset-2 ring-offset-base-100 overflow-hidden"
+        style={{
+          boxShadow: `0 0 0 2px rgba(${brandComma}, 0.22), 0 0 0 5px rgba(${accentComma}, 0.12)`,
+        }}
+      >
         <img src={src} alt={name} loading="lazy" />
       </div>
     </div>
   );
+}
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(media.matches);
+    onChange();
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+  return reduced;
 }
