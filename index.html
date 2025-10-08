@@ -18,10 +18,11 @@
     <title>MILINK — Design • Build • Grow</title>
     <meta
       name="description"
-      content="Milink builds fast, premium websites and e-commerce for ambitious brands. React/Next.js, SEO-first, analytics-driven."
+      content="Our services include Web Design and Development, E-Commerce Solutions (Shopify, WordPress), SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Performance-optimized websites built with React/Next.js."
     />
     <meta name="theme-color" content="#0b1220" />
 
+    <!-- Open Graph -->
     <meta property="og:site_name" content="MILINK" />
     <meta property="og:title" content="MILINK — Design • Build • Grow" />
     <meta
@@ -29,10 +30,7 @@
       content="Premium websites & e-commerce. React/Next.js, SEO-first."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://milink.ca" />
-    <meta property="og:image" content="https://milink.ca/logo1.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:url" content="https://milink.ca/" />
     <meta property="og:image" content="https://milink.ca/og-cover.jpg" />
     <meta
       property="og:image:secure_url"
@@ -42,40 +40,11 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
-    <link rel="canonical" href="https://milink.ca" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
 
-    <script>
-      window.__THEME_MAP__ = { light: "light", dark: "dark" };
-      window.__DEFAULT_MODE__ = "dark";
-      window.__LEGACY_KEY__ = "milink-theme";
-      window.__MODE_KEY__ = "milink-theme-mode";
-    </script>
-    <script>
-      (function () {
-        try {
-          var MAP = window.__THEME_MAP__ || { light: "light", dark: "dark" };
-          var MODE_KEY = window.__MODE_KEY__ || "milink-theme-mode";
-          var LEGACY_KEY = window.__LEGACY_KEY__ || "milink-theme";
-          var DEFAULT_MODE = window.__DEFAULT_MODE__ || "dark";
-          var mode =
-            localStorage.getItem(MODE_KEY) ||
-            localStorage.getItem(LEGACY_KEY) ||
-            DEFAULT_MODE;
-          if (!localStorage.getItem(MODE_KEY))
-            localStorage.setItem(MODE_KEY, mode);
-          var physical = MAP[mode] || MAP[DEFAULT_MODE] || "light";
-          document.documentElement.setAttribute("data-theme", physical);
-          document.documentElement.classList.toggle(
-            "mode-dark",
-            mode === "dark"
-          );
-          document.documentElement.classList.toggle(
-            "mode-light",
-            mode === "light"
-          );
-        } catch (e) {}
-      })();
-    </script>
+    <!-- Canonical -->
+    <link rel="canonical" href="https://milink.ca/" />
   </head>
   <body>
     <div id="root"></div>
