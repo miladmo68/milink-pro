@@ -2,26 +2,51 @@
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <link href="https://fonts.cdnfonts.com/css/mundial" rel="stylesheet" />
 
-    <title>MILINK</title>
+    <!-- Favicon + Apple Touch -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/logo1.png" />
+
+    <!-- Title & Description -->
+    <title>MILINK — Design • Build • Grow</title>
+    <meta
+      name="description"
+      content="Milink builds fast, premium websites and e-commerce for ambitious brands. React/Next.js, SEO-first, analytics-driven."
+    />
+    <meta name="theme-color" content="#0b1220" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="MILINK" />
+    <meta property="og:title" content="MILINK — Design • Build • Grow" />
+    <meta
+      property="og:description"
+      content="Premium websites & e-commerce. React/Next.js, SEO-first."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://milink.ca" />
+    <meta property="og:image" content="/logo1.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://milink.ca" />
 
     <script>
-      window.__THEME_MAP__ = {
-        light: "light",
-        dark: "dark",
-      };
+      window.__THEME_MAP__ = { light: "light", dark: "dark" };
       window.__DEFAULT_MODE__ = "dark";
       window.__LEGACY_KEY__ = "milink-theme";
       window.__MODE_KEY__ = "milink-theme-mode";
     </script>
-
     <script>
       (function () {
         try {
@@ -29,16 +54,12 @@
           var MODE_KEY = window.__MODE_KEY__ || "milink-theme-mode";
           var LEGACY_KEY = window.__LEGACY_KEY__ || "milink-theme";
           var DEFAULT_MODE = window.__DEFAULT_MODE__ || "dark";
-
           var mode =
             localStorage.getItem(MODE_KEY) ||
             localStorage.getItem(LEGACY_KEY) ||
             DEFAULT_MODE;
-
-          if (!localStorage.getItem(MODE_KEY)) {
+          if (!localStorage.getItem(MODE_KEY))
             localStorage.setItem(MODE_KEY, mode);
-          }
-
           var physical = MAP[mode] || MAP[DEFAULT_MODE] || "light";
           document.documentElement.setAttribute("data-theme", physical);
           document.documentElement.classList.toggle(
