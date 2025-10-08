@@ -39,7 +39,7 @@ export default function Navbar() {
               idleAlt="MILINK Logo"
               idleTitle="MILINK"
               idleSubtitle="DIGITAL AGENCY"
-              hoverTitle="Design • Build • Grow"
+              hoverTitle="Design • Launch • Scale"
               gradientClass="gradient-text"
               iconGap={0}
               blockShiftY={1}
