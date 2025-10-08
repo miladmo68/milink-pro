@@ -6,7 +6,7 @@
 //     <section
 //       id="pricing"
 //       className="relative py-20"
-//       style={{ ["--brand"]: "59 130 246" }} // rgb(59,130,246)
+//       style={{ ["--brand"]: "59 130 246" }} // rgb(59,130,246) — آبی اصلی سایت
 //     >
 //       {/* ===== Background ===== */}
 //       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
@@ -32,38 +32,54 @@
 //             const isPopular = !!p.popular;
 //             const isPro = (p.name || "").toLowerCase() === "professional";
 
-//             // outer frame with gradient border (brand color)
-//             const frame =
-//               "group relative overflow-hidden rounded-2xl p-[1px] transition-transform duration-300";
-//             const border =
-//               "before:absolute before:inset-0 before:-z-10 before:rounded-2xl " +
-//               "before:opacity-90 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.7),rgba(59,130,246,0.25),transparent_220deg)]";
+//             // ===== Frame & Border (پررنگ‌تر و ضخیم‌تر فقط برای Pro) =====
+//             const frameBase =
+//               "group relative overflow-hidden rounded-2xl transition-transform duration-300";
+//             const framePadding = isPro ? "p-[2px] md:p-[3px]" : "p-[1px]";
+
+//             // گرادیان بوردِر — برای Pro تیرگی و شدت بیشتر
+//             const borderBase =
+//               "before:absolute before:inset-0 before:-z-10 before:rounded-2xl";
+//             const borderGradient = isPro
+//               ? // پررنگ‌تر (دارک بلو)، Opacity بالاتر و زاویه کانونی کمی تندتر
+//                 "before:opacity-100 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.95),rgba(59,130,246,0.55)_140deg,transparent_240deg)]"
+//               : "before:opacity-90 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.7),rgba(59,130,246,0.25),transparent_220deg)]";
 
 //             // base lift
 //             const lift = isPopular
 //               ? "md:scale-[1.02] hover:md:scale-[1.04]"
 //               : "hover:-translate-y-1";
 
-//             // Professional glow (bolder)
+//             // Professional glow (تقویت رینگ در حالت عادی)
 //             const proGlow = isPro
 //               ? " z-[1] md:scale-[1.08] hover:md:scale-[1.1] " +
-//                 " ring-4 ring-[rgb(var(--brand)/0.75)] " +
+//                 // رینگ ضخیم‌تر و تیره‌تر (بدون وابستگی به hover)
+//                 " ring-6 ring-[rgb(var(--brand)/0.9)] " +
+//                 // شِدو همان قبلی
 //                 " [box-shadow:0_0_100px_-10px_rgba(59,130,246,0.75)] " +
 //                 " after:absolute after:inset-[-14%] after:-z-20 after:rounded-[32px] after:blur-3xl " +
 //                 " after:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(59,130,246,0.3),transparent_70%)]"
 //               : "";
 
-//             const cardOuter = `${frame} ${border} ${lift} ${proGlow}`;
+//             const cardOuter = [
+//               frameBase,
+//               framePadding,
+//               borderBase,
+//               borderGradient,
+//               lift,
+//               proGlow,
+//               "max-w-sm mx-auto",
+//             ].join(" ");
 
 //             return (
-//               <article key={i} className={`${cardOuter} max-w-sm mx-auto`}>
+//               <article key={i} className={cardOuter}>
 //                 {/* inner glass card */}
 //                 <div
 //                   className={
 //                     "relative h-full rounded-2xl bg-base-200/70 backdrop-blur-sm " +
 //                     "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] " +
 //                     "transition-transform flex flex-col justify-between " +
-//                     "min-h-[500px] md:min-h-[580px]" // بلندتر
+//                     "min-h-[500px] md:min-h-[580px]"
 //                   }
 //                 >
 //                   {/* ambient glow (stronger for Professional) */}
@@ -196,7 +212,6 @@
 //     </section>
 //   );
 // }
-
 import { pricing } from "../data/content.js";
 import { Check } from "lucide-react"; // optional
 
@@ -231,17 +246,17 @@ export default function Pricing() {
             const isPopular = !!p.popular;
             const isPro = (p.name || "").toLowerCase() === "professional";
 
-            // ===== Frame & Border (پررنگ‌تر و ضخیم‌تر فقط برای Pro) =====
+            // ===== Frame & Border (فقط Pro) =====
             const frameBase =
               "group relative overflow-hidden rounded-2xl transition-transform duration-300";
             const framePadding = isPro ? "p-[2px] md:p-[3px]" : "p-[1px]";
 
-            // گرادیان بوردِر — برای Pro تیرگی و شدت بیشتر
             const borderBase =
               "before:absolute before:inset-0 before:-z-10 before:rounded-2xl";
+
+            // تغییر فقط این بخش: شروع از بالا، تمرکز گوشهٔ بالا-چپ، قوس پررنگ بلندتر
             const borderGradient = isPro
-              ? // پررنگ‌تر (دارک بلو)، Opacity بالاتر و زاویه کانونی کمی تندتر
-                "before:opacity-100 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.95),rgba(59,130,246,0.55)_140deg,transparent_240deg)]"
+              ? "before:opacity-100 before:bg-[conic-gradient(from_-60deg_at_0%_0%,rgba(59,130,246,0.95)_0deg,rgba(59,130,246,0.60)_210deg,transparent_330deg)]"
               : "before:opacity-90 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.7),rgba(59,130,246,0.25),transparent_220deg)]";
 
             // base lift
@@ -249,12 +264,10 @@ export default function Pricing() {
               ? "md:scale-[1.02] hover:md:scale-[1.04]"
               : "hover:-translate-y-1";
 
-            // Professional glow (تقویت رینگ در حالت عادی)
+            // Professional glow (بدون تغییر)
             const proGlow = isPro
               ? " z-[1] md:scale-[1.08] hover:md:scale-[1.1] " +
-                // رینگ ضخیم‌تر و تیره‌تر (بدون وابستگی به hover)
                 " ring-6 ring-[rgb(var(--brand)/0.9)] " +
-                // شِدو همان قبلی
                 " [box-shadow:0_0_100px_-10px_rgba(59,130,246,0.75)] " +
                 " after:absolute after:inset-[-14%] after:-z-20 after:rounded-[32px] after:blur-3xl " +
                 " after:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(59,130,246,0.3),transparent_70%)]"
@@ -281,7 +294,7 @@ export default function Pricing() {
                     "min-h-[500px] md:min-h-[580px]"
                   }
                 >
-                  {/* ambient glow (stronger for Professional) */}
+                  {/* ambient glow (بدون تغییر) */}
                   <div aria-hidden className="absolute inset-0 -z-10">
                     <div
                       className={`absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_30%,#000,transparent_75%)] ${
