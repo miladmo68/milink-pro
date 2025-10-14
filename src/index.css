@@ -284,7 +284,7 @@ body {
     content: "";
     @apply absolute inset-0 pointer-events-none mix-blend-screen;
     background: #fff;
-    opacity: 0.52;
+    opacity: 0.1;
     z-index: 2;
   }
 }
@@ -293,7 +293,7 @@ body {
     content: "";
     @apply absolute inset-0 pointer-events-none mix-blend-screen;
     background: #fff;
-    opacity: 0.46;
+    opacity: 0.1;
     z-index: 2;
   }
   /* سفیدتر شدن بالای هدر (درخواست قبلی) */
