@@ -7,6 +7,7 @@ import Work from "./sections/Work.jsx";
 import Pricing from "./sections/Pricing.jsx";
 import Testimonials from "./sections/Testimonials.jsx";
 import FAQ from "./sections/FAQ.jsx";
+import Contact from "./sections/Contact.jsx";
 import { useState, Suspense, lazy } from "react";
 
 import SEO from "./components/SEO.jsx";
@@ -87,6 +88,7 @@ export default function App() {
         <section id="contact" aria-label="Contact">
           <h2 className="sr-only">Contact</h2>
           {/* اگر Contact در sections/Contact.jsx هست و خودش هدر دارد، همین کافی است */}
+          <Contact />
         </section>
       </main>
 
