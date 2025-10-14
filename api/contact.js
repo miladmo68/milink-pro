@@ -26,6 +26,7 @@ export default async function handler(req, res) {
     await transporter.sendMail({
       from: `"${name}" <${process.env.SMTP_USER}>`,
       to: process.env.TO_EMAIL,
+      cc: ccList.length ? ccList : undefined,
       subject: `New message from website — ${name}`,
       text: `From: ${name} <${email}>\n\n${message}`,
       html: `<p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
