@@ -340,7 +340,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile burger */}
-          <div className="md:hidden ml-auto mr-[8px]">
+          <div className="md:hidden ml-auto mr-[10px]">
             <BurgerButton onClick={() => setOpen(true)} />
           </div>
         </div>
