@@ -121,24 +121,83 @@ function BurgerButton({ onClick }) {
 }
 
 /* =========================
-   Social Icon helper
+   Social Icon helper  (MILINK Blue / fixed sheen)
 ========================= */
 function SocialIcon({ href, label, type }) {
+  const isExternal = href.startsWith("http");
+
+  // رنگ‌های آبی برند
+  const glow1 = "rgba(0,96,255,0.55)"; // #0060FF
+  const glow2 = "rgba(59,130,246,0.45)"; // #3B82F6
+  const edge = "rgba(255,255,255,0.14)";
+
   return (
     <a
       href={href}
-      target={href.startsWith("http") ? "_blank" : undefined}
-      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
       aria-label={label}
-      className="grid h-11 w-11 place-items-center rounded-full"
+      className="relative grid h-11 w-11 place-items-center rounded-full overflow-visible select-none"
       style={{
-        border: "1px solid rgba(255,255,255,0.12)",
+        border: `1px solid ${edge}`,
         background:
-          "linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03))",
-        boxShadow: "0 10px 22px rgba(0,0,0,0.35)",
-        backdropFilter: "blur(6px)",
+          "radial-gradient(120% 120% at 0% 0%, rgba(59,130,246,0.25), rgba(0,0,0,0) 60%), radial-gradient(120% 120% at 80% 20%, rgba(0,96,255,0.25), rgba(0,0,0,0) 70%), rgba(15,23,42,0.78)",
+        boxShadow: `0 10px 22px rgba(0,0,0,0.35), 0 0 18px ${glow1}, 0 0 36px ${glow2}`,
+        backdropFilter: "blur(6px) saturate(160%)",
+        WebkitBackdropFilter: "blur(6px) saturate(160%)",
+        transition: "transform .2s ease, box-shadow .25s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-1px) scale(1.04)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "none";
       }}
     >
+      {/* Glow دوری نرم */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-full"
+        style={{
+          boxShadow: `0 0 22px ${glow1}, 0 0 34px ${glow2}`,
+          opacity: 0.9,
+          filter: "blur(0.2px)",
+        }}
+      />
+
+      {/* ⬇️ حلقه‌ی داخلی + CLIP برای sheen (جلوگیری از خط بیرونی) */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-[2px] rounded-full overflow-hidden"
+        style={{
+          border: "1px solid rgba(255,255,255,0.10)",
+          background:
+            "radial-gradient(circle at 35% 30%, rgba(255,255,255,0.10), rgba(255,255,255,0.02) 55%, rgba(255,255,255,0) 70%)",
+        }}
+      >
+        {/* Sheen فقط داخل دایره و پیش‌فرض نامرئی */}
+        <span
+          className="milink-sheen absolute -inset-3 rounded-full"
+          style={{
+            background:
+              "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%)",
+            transform: "translateX(-140%) rotate(8deg)",
+            filter: "blur(2px)",
+            opacity: 0, // ✅ دیگر خطی دیده نمی‌شود
+            transition: "transform .7s ease, opacity .3s ease",
+          }}
+        />
+      </span>
+
+      {/* فقط همین کامپوننت را هدف می‌گیرد */}
+      <style>{`
+        a[aria-label="${label}"]:hover .milink-sheen {
+          transform: translateX(120%) rotate(8deg);
+          opacity: 1;
+        }
+      `}</style>
+
+      {/* آیکون‌ها (سفید) ــ همان سایز قبلی */}
       {type === "ig" && (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <rect
@@ -147,29 +206,29 @@ function SocialIcon({ href, label, type }) {
             width="18"
             height="18"
             rx="5"
-            stroke="rgba(255,255,255,0.85)"
+            stroke="rgba(255,255,255,0.90)"
             strokeWidth="1.5"
           />
           <circle
             cx="12"
             cy="12"
             r="3.5"
-            stroke="rgba(255,255,255,0.85)"
+            stroke="rgba(255,255,255,0.90)"
             strokeWidth="1.5"
           />
-          <circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.85)" />
+          <circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.92)" />
         </svg>
       )}
       {type === "wa" && (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
-            d="M5 19l1.3-3.2A7 7 0 1119 12a7 7 0 01-10.9 5.8L5 19z"
-            stroke="rgba(255,255,255,0.85)"
+            d="M5 19l1.3-3.2A7 7 0 1119 12 7 7 0 018.1 17.8L5 19z"
+            stroke="rgba(255,255,255,0.90)"
             strokeWidth="1.5"
           />
           <path
             d="M10.2 8.8c.3-.2.5-.2.6 0l1.1 1.3c.1.1.1.3 0 .5l-.5.6c.4.7 1 1.3 1.7 1.7l.6-.5c.2-.1.4-.1.5 0l1.3 1.1c.2.1.2.3 0 .6-.6.8-1.6 1.1-2.5.8-1.7-.6-3-1.9-3.6-3.6-.3-.9 0-1.9.8-2.5z"
-            fill="rgba(255,255,255,0.85)"
+            fill="rgba(255,255,255,0.92)"
           />
         </svg>
       )}
@@ -181,12 +240,12 @@ function SocialIcon({ href, label, type }) {
             width="18"
             height="14"
             rx="2"
-            stroke="rgba(255,255,255,0.85)"
+            stroke="rgba(255,255,255,0.90)"
             strokeWidth="1.5"
           />
           <path
             d="M4 7l8 6 8-6"
-            stroke="rgba(255,255,255,0.85)"
+            stroke="rgba(255,255,255,0.90)"
             strokeWidth="1.5"
             strokeLinecap="round"
           />
@@ -196,7 +255,7 @@ function SocialIcon({ href, label, type }) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
             d="M13.5 21v-7h2.2l.3-2.6h-2.5V9.2c0-.8.2-1.2 1.2-1.2h1.3V5.6c-.6-.1-1.3-.2-1.9-.2-2 0-3.4 1.2-3.4 3.5v1.5H8.8V14h2V21h2.7z"
-            fill="rgba(255,255,255,0.85)"
+            fill="rgba(255,255,255,0.92)"
           />
         </svg>
       )}
