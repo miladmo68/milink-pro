@@ -108,10 +108,10 @@ export default function Hero({ onOpenLightbox }) {
 
       {/* ===== Foreground ===== */}
       <div className="relative z-10">
-        <div className="container grid items-center gap-10 md:grid-cols-2 py-10 md:py-14">
+        <div className="container grid items-center gap-10 md:grid-cols-2 py-20 md:py-14">
           {/* Left — به حالت قبلی برگشت: left-aligned در دسکتاپ */}
           <motion.div
-            className="flex flex-col items-center text-center md:items-start md:text-left"
+            className="flex flex-col mt-8 md:mt-0 items-center text-center md:items-start md:text-left"
             variants={parent}
             initial="hidden"
             animate="visible"
