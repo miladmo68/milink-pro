@@ -75,7 +75,7 @@ function CTAButton({
 /* =========================
    Burger Button (Mobile)
 ========================= */
-const BRAND = { blueGlow: "rgba(0,96,255,0.22)" };
+const BRAND = { blueGlow: "rgba(0,107,206,0.45)" };
 
 function BurgerButton({ onClick }) {
   return (
@@ -340,7 +340,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile burger */}
-          <div className="md:hidden ml-auto">
+          <div className="md:hidden ml-auto mr-[8px]">
             <BurgerButton onClick={() => setOpen(true)} />
           </div>
         </div>
