@@ -3,43 +3,42 @@ import { motion, AnimatePresence } from "framer-motion";
 
 /* ===========================
    Hero Section (Left-aligned text + Smooth SVG Slider)
+   - موشن‌ها: fade-in-up با تأخیر پلکانی مثل فایل نمونه
+   - دکمه‌ها: گلس+گلو با رنگ آبی برند (rgb(0,96,255))
+   - موبایل: فاصله عمودی کمی بیشتر تا متن بیاد پایین‌تر
 =========================== */
 export default function Hero({ onOpenLightbox }) {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
 
-  // ===== Motion variants (نرم و ملایم) =====
+  // ===== Motion variants (fade-in-up مثل نمونه) =====
   const parent = {
     hidden: {},
-    visible: { transition: { delayChildren: 0.25, staggerChildren: 0.18 } },
+    visible: { transition: { staggerChildren: 0.2 } },
   };
-  const fromTop = {
-    hidden: { opacity: 0, y: -60 },
-    visible: {
+
+  // از custom برای تعیین delay هر آیتم استفاده می‌کنیم
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.7, ease: "easeOut" },
-    },
+      transition: {
+        duration: 1.0,
+        ease: [0.4, 0, 0.2, 1],
+        delay,
+      },
+    }),
   };
-  const fromBottom = {
-    hidden: { opacity: 0, y: 60 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: "easeOut" },
-    },
-  };
-  const fadeIn = {
+
+  const fadeInRow = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-  };
-  const fadeInWithCTA = {
-    hidden: { opacity: 0 },
-    visible: {
+    visible: (delay = 0) => ({
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut", delay: 0.6 },
-    },
+      transition: { duration: 0.6, ease: "easeOut", delay },
+    }),
   };
+
   const fromRight = {
     hidden: { opacity: 0, x: 60 },
     visible: {
@@ -76,8 +75,7 @@ export default function Hero({ onOpenLightbox }) {
         {!fallback ? (
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover [object-position:60%_50%]     
-            sm:[object-position:center] "
+            className="absolute inset-0 h-full w-full object-cover [object-position:60%_50%] sm:[object-position:center]"
             src="/assets/video/hero.mp4"
             autoPlay
             muted
@@ -108,25 +106,29 @@ export default function Hero({ onOpenLightbox }) {
 
       {/* ===== Foreground ===== */}
       <div className="relative z-10">
-        <div className="container grid items-center gap-10 md:grid-cols-2 py-20 md:py-14">
-          {/* Left — به حالت قبلی برگشت: left-aligned در دسکتاپ */}
+        <div className="container grid items-center gap-10 md:grid-cols-2 py-24 md:py-14">
+          {/* Left — متن و CTA ها (left-aligned در دسکتاپ) */}
           <motion.div
-            className="flex flex-col mt-8 md:mt-0 items-center text-center md:items-start md:text-left"
+            className="flex flex-col mt-12 md:mt-0 items-center text-center md:items-start md:text-left"
             variants={parent}
             initial="hidden"
             animate="visible"
           >
+            {/* eyebrow/badge */}
             <motion.div
               className="badge badge-primary badge-lg mb-6"
-              variants={fadeInWithCTA}
+              variants={fadeUp}
+              custom={0.2}
               whileHover={{ scale: 1.06 }}
             >
               Milink Digital Agency
             </motion.div>
 
+            {/* عنوان اصلی */}
             <motion.h1
               className="leading-tight mb-5 md:mb-6"
-              variants={fromTop}
+              variants={fadeUp}
+              custom={0.4}
             >
               Build <br className="block md:hidden" />
               <span className="text-primary">Your Digital</span>{" "}
@@ -134,29 +136,71 @@ export default function Hero({ onOpenLightbox }) {
               Presence
             </motion.h1>
 
+            {/* توضیح */}
             <motion.p
               className="mt-1 md:mt-2 mb-8 md:mb-10 text-lg opacity-90 max-w-prose md:max-w-xl"
-              variants={fromBottom}
+              variants={fadeUp}
+              custom={0.6}
             >
               High-performing websites, premium branding, and digital strategies
               that convert visitors into customers.
             </motion.p>
 
+            {/* CTA ها — گلس + گلو به رنگ آبی برند */}
             <motion.div
               className="flex flex-col sm:flex-row gap-3"
-              variants={fadeIn}
+              variants={fadeUp}
+              custom={0.8}
             >
-              <a href="#contact" className="btn btn-primary">
+              <a
+                href="#contact"
+                className="
+                  inline-flex items-center justify-center
+                  px-5 py-3 rounded-full font-semibold leading-none
+                  border-2
+                  text-white
+                  bg-white/15 backdrop-blur-md
+                  transition
+                  hover:-translate-y-[3px] hover:scale-[1.03]
+                  shadow-[0_20px_40px_rgba(0,0,0,0.4)]
+                  hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
+                  border-white/40
+                  ring-1 ring-[rgba(0,96,255,0.35)]
+                "
+                style={{
+                  boxShadow:
+                    "0 25px 60px rgba(0,0,0,0.75), 0 0 30px rgba(0,96,255,0.45)",
+                  background:
+                    "radial-gradient(circle at 0% 0%, rgba(0,96,255,0.28) 0%, rgba(0,0,0,0) 70%), rgba(0,96,255,0.22)",
+                  borderColor: "rgba(0,96,255,0.5)",
+                }}
+              >
                 Get a Quote
               </a>
-              <a href="#work" className="btn btn-ghost">
+
+              <a
+                href="#work"
+                className="
+                  inline-flex items-center justify-center
+                  px-5 py-3 rounded-full font-semibold leading-none
+                  border-2 border-white/40
+                  text-white
+                  bg-white/12 backdrop-blur-md
+                  transition
+                  hover:-translate-y-[3px] hover:scale-[1.03]
+                  shadow-[0_20px_40px_rgba(0,0,0,0.4)]
+                  hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
+                "
+              >
                 See our work
               </a>
             </motion.div>
 
+            {/* چیپ‌های سرویس */}
             <motion.div
               className="mt-6 flex items-center justify-center gap-2 text-[12px] sm:text-[13px] flex-nowrap whitespace-nowrap"
-              variants={fadeIn}
+              variants={fadeInRow}
+              custom={1.0}
             >
               <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
                 Web Design
@@ -177,7 +221,7 @@ export default function Hero({ onOpenLightbox }) {
               onOpenLightbox={onOpenLightbox}
               variants={fromRight}
               autoPlay
-              interval={3500} // ← کوتاه‌تر و استاندارد
+              interval={3500}
             />
           </div>
         </div>
@@ -199,9 +243,8 @@ function MediaSlider({
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-  // ---- فقط تغییرِ مربوط به تایمر (setTimeout به جای setInterval)
+  // ---- تایمر: setTimeout (کنترل‌شده و ریست بعد از هر ناوبری)
   const timerRef = useRef(null);
-
   const clearTimer = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -209,20 +252,22 @@ function MediaSlider({
     }
   };
 
+  const scheduleNext = useCallback(() => {
+    if (!autoPlay) return;
+    clearTimer();
+    timerRef.current = setTimeout(() => {
+      setDirection(1);
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, interval);
+  }, [autoPlay, interval, slides.length]);
+
   const goTo = useCallback(
     (i) => {
       setDirection(i > index ? 1 : -1);
-      setIndex(() => {
-        const ni = (i + slides.length) % slides.length;
-        return ni;
-      });
-      scheduleNext(); // بعد از هر ناوبری (اتومات/دستی) تایمر از نو تنظیم شود
+      setIndex(() => (i + slides.length) % slides.length);
+      scheduleNext();
     },
-    // scheduleNext پایین تعریف شده؛ eslint ممکنه اخطارِ ترتیب بده، ولی در runtime مشکلی نیست
-    // چون هر سه تابع در یک render تعریف می‌شوند.
-    // اگر strict بخواهی: می‌توانیم nextRef بسازیم. فعلاً ساده نگه می‌داریم.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [index, slides.length]
+    [index, slides.length, scheduleNext]
   );
 
   const next = useCallback(
@@ -234,14 +279,6 @@ function MediaSlider({
     [index, slides.length, goTo]
   );
 
-  const scheduleNext = useCallback(() => {
-    if (!autoPlay) return;
-    clearTimer();
-    timerRef.current = setTimeout(() => {
-      next(); // بعد از interval فقط یک‌بار جلو بره
-    }, interval);
-  }, [autoPlay, interval, next]);
-
   useEffect(() => {
     scheduleNext();
     return () => clearTimer();
@@ -250,18 +287,18 @@ function MediaSlider({
   const pause = () => clearTimer();
   const resume = () => scheduleNext();
 
-  // انیمیشن ورود/خروج — ملایم
+  // انیمیشن ورود/خروج — عمودی (شبیه fade-up)
   const slideVariants = {
-    enter: (dir) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+    enter: (dir) => ({ y: dir > 0 ? 30 : -30, opacity: 0 }),
     center: {
-      x: 0,
+      y: 0,
       opacity: 1,
-      transition: { duration: 0.65, ease: "easeOut" },
+      transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
     },
     exit: (dir) => ({
-      x: dir > 0 ? -40 : 40,
+      y: dir > 0 ? -20 : 20,
       opacity: 0,
-      transition: { duration: 0.55, ease: "easeIn" },
+      transition: { duration: 0.6, ease: "easeIn" },
     }),
   };
 
@@ -285,10 +322,10 @@ function MediaSlider({
           ring-1 ring-base-content/10
         "
       >
-        {/* gradient & glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-200/30 to-primary/10" />
+        {/* gradient & glow (Blue) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-200/30 to-[rgba(0,96,255,0.15)]" />
         <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_40%,white,transparent)]">
-          <div className="absolute inset-0 bg-primary/20 blur-3xl" />
+          <div className="absolute inset-0 bg-[rgba(0,96,255,0.25)] blur-3xl" />
         </div>
 
         {/* slide */}
@@ -313,8 +350,8 @@ function MediaSlider({
           </AnimatePresence>
         </div>
 
-        {/* ring */}
-        <div className="pointer-events-none absolute -inset-px rounded-3xl ring-1 ring-primary/30" />
+        {/* ring (Blue) */}
+        <div className="pointer-events-none absolute -inset-px rounded-3xl ring-1 ring-[rgba(0,96,255,0.35)]" />
 
         {/* controls */}
         <button
@@ -334,14 +371,16 @@ function MediaSlider({
           ›
         </button>
 
-        {/* dots */}
+        {/* dots (Blue active) */}
         <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
           {[0, 1, 2, 3].map((i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
               className={`h-2.5 rounded-full transition-all ${
-                i === index ? "w-6 bg-primary" : "w-2.5 bg-base-content/40"
+                i === index
+                  ? "w-6 bg-[rgb(0,96,255)]"
+                  : "w-2.5 bg-base-content/40"
               }`}
               aria-label={`Go to slide ${i + 1}`}
               title={`Slide ${i + 1}`}
@@ -369,7 +408,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
     } catch {}
   };
 
-  // پالت رنگ
+  // پالت رنگ (همون قبلی)
   const palettes = {
     web: {
       screen: ["#1e293bE6", "#38bdf8D9"],
@@ -396,7 +435,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
 
   return (
     <div className="w-full h-full relative">
-      {/* متنِ داخل قاب — دقیقاً وسط‌چین */}
+      {/* متن داخل قاب — وسط‌چین */}
       {(title || subtitle) && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-center">
           <div className="badge badge-outline">{title}</div>
@@ -447,7 +486,6 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
         />
 
         {/* قاب و نمایشگر */}
-
         <rect
           x="200"
           y="140"
@@ -503,7 +541,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
           />
         </g>
 
-        {/* محتوای مرتبط هر اسلاید */}
+        {/* محتوای هر اسلاید */}
         {type === "web" && (
           <>
             {/* header */}
@@ -585,7 +623,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
               rx="14"
               fill="rgba(0,0,0,0.15)"
             />
-            {/* services cards */}
+            {/* cards */}
             {[0, 1, 2].map((i) => (
               <rect
                 key={i}
@@ -627,7 +665,7 @@ function MediaCardSVG({ onOpenLightbox, type = "web", title, subtitle }) {
               rx="8"
               fill="rgba(0,0,0,0.08)"
             />
-            {/* product grid */}
+            {/* grid */}
             {[0, 1, 2].map((row) =>
               [0, 1, 2].map((col) => (
                 <g key={`${row}-${col}`}>
