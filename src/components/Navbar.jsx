@@ -336,7 +336,7 @@ export default function Navbar() {
           {/* Right cluster */}
           <div className="ml-auto hidden md:flex items-center gap-3">
             <ThemeToggle />
-            <CTAButton />
+            <CTAButton mobileGlow />
           </div>
 
           {/* Mobile burger */}
