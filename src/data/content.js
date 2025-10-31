@@ -154,7 +154,7 @@ export const work = [
     id: "p3",
     title: "Kind Steps",
     summary: "Therapy & behavioral services site designed for families.",
-    cover: "/assets/img/KindSteps.png",
+    cover: "/assets/img/kindsteps.png",
     liveUrl: "https://kindsteps.ca/",
   },
   {
