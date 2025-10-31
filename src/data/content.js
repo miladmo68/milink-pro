@@ -91,6 +91,50 @@ export const services = [
   },
 ];
 
+// export const work = [
+//   {
+//     id: "p1",
+//     title: "Intershine",
+//     summary: "Cleaning services website with a modern, clear layout.",
+//     cover: "/assets/img/intershine.png",
+//     liveUrl: "https://intershine.ca",
+//   },
+//   {
+//     id: "p2",
+//     title: "Fair Construction",
+//     summary: "Construction company site with project showcases.",
+//     cover: "/assets/img/fairconstruction.jpg",
+//     liveUrl: "https://fairconstruction.ca",
+//   },
+//   {
+//     id: "p3",
+//     title: "Sky Contracting Inc",
+//     summary: "Renovation & cabinetry site highlighting services.",
+//     cover: "/assets/img/sky.jpg",
+//     liveUrl: "https://skyinc.ca",
+//   },
+//   {
+//     id: "p4",
+//     title: "Zarsa Gold",
+//     summary: "Jewelry e-commerce site built for elegance and trust.",
+//     cover: "/assets/img/zarsagold.png",
+//     liveUrl: "https://zarsa2.vercel.app/",
+//   },
+//   {
+//     id: "p5",
+//     title: "Tarahan Choob",
+//     summary: "Cabinetry & office furniture design/build studio.",
+//     cover: "/assets/img/tarahanchoob.jpg",
+//     liveUrl: "#",
+//   },
+//   {
+//     id: "p6",
+//     title: "Jahan Ariya",
+//     summary: "Metalworks & industrial hardware fabrication.",
+//     cover: "/assets/img/jahanariya.jpg",
+//     liveUrl: "#",
+//   },
+// ];
 export const work = [
   {
     id: "p1",
@@ -108,10 +152,10 @@ export const work = [
   },
   {
     id: "p3",
-    title: "Sky Contracting Inc",
-    summary: "Renovation & cabinetry site highlighting services.",
-    cover: "/assets/img/sky.jpg",
-    liveUrl: "https://skyinc.ca",
+    title: "Kind Steps",
+    summary: "Therapy & behavioral services site designed for families.",
+    cover: "/assets/img/KindSteps.png",
+    liveUrl: "https://kindsteps.ca/",
   },
   {
     id: "p4",
@@ -122,59 +166,19 @@ export const work = [
   },
   {
     id: "p5",
+    title: "Sky Contracting Inc",
+    summary: "Renovation & cabinetry site highlighting services.",
+    cover: "/assets/img/sky.jpg",
+    liveUrl: "https://skyinc.ca",
+  },
+  {
+    id: "p6",
     title: "Tarahan Choob",
     summary: "Cabinetry & office furniture design/build studio.",
     cover: "/assets/img/tarahanchoob.jpg",
     liveUrl: "#",
   },
-  {
-    id: "p6",
-    title: "Jahan Ariya",
-    summary: "Metalworks & industrial hardware fabrication.",
-    cover: "/assets/img/jahanariya.jpg",
-    liveUrl: "#",
-  },
 ];
-
-// export const pricing = [
-//   {
-//     name: "Starter",
-//     priceLabel: "Contact us for a quote",
-//     tagline: "A simple one-page website to get your business online fast.",
-//     items: [
-//       "One-page website",
-//       "Mobile-friendly design",
-//       "Basic SEO setup",
-//       "2 rounds of revisions",
-//     ],
-//   },
-//   {
-//     name: "Growth",
-//     popular: true,
-//     badge: "Most Popular",
-//     priceLabel: "Contact us for a quote",
-//     tagline:
-//       "A professional multi-page site designed to bring you leads and growth.",
-//     items: [
-//       "5–7 custom pages (Home, Services, About, Contact…)",
-//       "SEO setup for better Google ranking",
-//       "Lead capture forms (emails, signups)",
-//       "Basic analytics to track visitors",
-//     ],
-//   },
-//   {
-//     name: "Scale",
-//     priceLabel: "Contact us for a quote",
-//     tagline:
-//       "A custom website with advanced features, CMS, and integrations for bigger businesses.",
-//     items: [
-//       "Custom pages and layouts",
-//       "Blog or CMS included",
-//       "Integrations (CRM, payments, tools)",
-//       "Conversion optimization (better sales)",
-//     ],
-//   },
-// ];
 
 export const pricing = [
   {
