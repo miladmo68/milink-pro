@@ -2,30 +2,30 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ===========================
-   Hero Section (Left-aligned text + Smooth SVG Slider)
-   - موشن‌ها: fade-in-up با تأخیر پلکانی مثل فایل نمونه
-   - دکمه‌ها: گلس+گلو با رنگ آبی برند (rgb(0,96,255))
-   - موبایل: فاصله عمودی کمی بیشتر تا متن بیاد پایین‌تر
+   Hero Section (revised)
+   - fade-in-up + repeat on scroll (viewport trigger)
+   - soft ease, smoother duration
 =========================== */
 export default function Hero({ onOpenLightbox }) {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
 
-  // ===== Motion variants (fade-in-up مثل نمونه) =====
+  /* ===== Variants ===== */
   const parent = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } },
+    visible: {
+      transition: { staggerChildren: 0.2 },
+    },
   };
 
-  // از custom برای تعیین delay هر آیتم استفاده می‌کنیم
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1.0,
-        ease: [0.4, 0, 0.2, 1],
+        duration: 0.9,
+        ease: [0.25, 1, 0.5, 1], // نرم‌تر
         delay,
       },
     }),
@@ -35,7 +35,7 @@ export default function Hero({ onOpenLightbox }) {
     hidden: { opacity: 0 },
     visible: (delay = 0) => ({
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut", delay },
+      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1], delay },
     }),
   };
 
@@ -44,11 +44,11 @@ export default function Hero({ onOpenLightbox }) {
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.7, ease: "easeOut", delay: 0.25 },
+      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.25 },
     },
   };
 
-  // اسلایدها (تیتر/ساب‌تایتل مرتبط)
+  /* ===== Slides ===== */
   const slides = [
     {
       type: "web",
@@ -70,7 +70,7 @@ export default function Hero({ onOpenLightbox }) {
 
   return (
     <section id="home" className="relative z-0 bg-transparent">
-      {/* ===== Background Stack ===== */}
+      {/* ===== Background ===== */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         {!fallback ? (
           <video
@@ -107,14 +107,14 @@ export default function Hero({ onOpenLightbox }) {
       {/* ===== Foreground ===== */}
       <div className="relative z-10">
         <div className="container grid items-center gap-10 md:grid-cols-2 py-24 md:py-14">
-          {/* Left — متن و CTA ها (left-aligned در دسکتاپ) */}
+          {/* Left text / CTA */}
           <motion.div
             className="flex flex-col mt-12 md:mt-0 items-center text-center md:items-start md:text-left"
             variants={parent}
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: false, amount: 0.25 }}
           >
-            {/* eyebrow/badge */}
             <motion.div
               className="badge badge-primary badge-lg mb-6"
               variants={fadeUp}
@@ -124,7 +124,6 @@ export default function Hero({ onOpenLightbox }) {
               Milink Digital Agency
             </motion.div>
 
-            {/* عنوان اصلی */}
             <motion.h1
               className="leading-tight mb-5 md:mb-6"
               variants={fadeUp}
@@ -136,7 +135,6 @@ export default function Hero({ onOpenLightbox }) {
               Presence
             </motion.h1>
 
-            {/* توضیح */}
             <motion.p
               className="mt-1 md:mt-2 mb-8 md:mb-10 text-lg opacity-90 max-w-prose md:max-w-xl"
               variants={fadeUp}
@@ -146,7 +144,6 @@ export default function Hero({ onOpenLightbox }) {
               that convert visitors into customers.
             </motion.p>
 
-            {/* CTA ها — گلس + گلو به رنگ آبی برند */}
             <motion.div
               className="flex flex-col sm:flex-row gap-3"
               variants={fadeUp}
@@ -157,15 +154,11 @@ export default function Hero({ onOpenLightbox }) {
                 className="
                   inline-flex items-center justify-center
                   px-5 py-3 rounded-full font-semibold leading-none
-                  border-2
-                  text-white
-                  bg-white/15 backdrop-blur-md
-                  transition
-                  hover:-translate-y-[3px] hover:scale-[1.03]
+                  border-2 text-white bg-white/15 backdrop-blur-md
+                  transition hover:-translate-y-[3px] hover:scale-[1.03]
                   shadow-[0_20px_40px_rgba(0,0,0,0.4)]
                   hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
-                  border-white/40
-                  ring-1 ring-[rgba(0,96,255,0.35)]
+                  border-white/40 ring-1 ring-[rgba(0,96,255,0.35)]
                 "
                 style={{
                   boxShadow:
@@ -183,11 +176,9 @@ export default function Hero({ onOpenLightbox }) {
                 className="
                   inline-flex items-center justify-center
                   px-5 py-3 rounded-full font-semibold leading-none
-                  border-2 border-white/40
-                  text-white
+                  border-2 border-white/40 text-white
                   bg-white/12 backdrop-blur-md
-                  transition
-                  hover:-translate-y-[3px] hover:scale-[1.03]
+                  transition hover:-translate-y-[3px] hover:scale-[1.03]
                   shadow-[0_20px_40px_rgba(0,0,0,0.4)]
                   hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
                 "
@@ -196,7 +187,6 @@ export default function Hero({ onOpenLightbox }) {
               </a>
             </motion.div>
 
-            {/* چیپ‌های سرویس */}
             <motion.div
               className="mt-6 flex items-center justify-center gap-2 text-[12px] sm:text-[13px] flex-nowrap whitespace-nowrap"
               variants={fadeInRow}
@@ -214,16 +204,21 @@ export default function Hero({ onOpenLightbox }) {
             </motion.div>
           </motion.div>
 
-          {/* Right — Slider (SVG) */}
-          <div className="hidden md:block">
+          {/* Right side — Slider */}
+          <motion.div
+            className="hidden md:block"
+            variants={fromRight}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, amount: 0.3 }}
+          >
             <MediaSlider
               slides={slides}
               onOpenLightbox={onOpenLightbox}
-              variants={fromRight}
               autoPlay
               interval={3500}
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -236,20 +231,15 @@ export default function Hero({ onOpenLightbox }) {
 function MediaSlider({
   slides,
   onOpenLightbox,
-  variants,
   autoPlay = true,
   interval = 3500,
 }) {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-  // ---- تایمر: setTimeout (کنترل‌شده و ریست بعد از هر ناوبری)
   const timerRef = useRef(null);
   const clearTimer = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   const scheduleNext = useCallback(() => {
@@ -287,13 +277,12 @@ function MediaSlider({
   const pause = () => clearTimer();
   const resume = () => scheduleNext();
 
-  // انیمیشن ورود/خروج — عمودی (شبیه fade-up)
   const slideVariants = {
     enter: (dir) => ({ y: dir > 0 ? 30 : -30, opacity: 0 }),
     center: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
+      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] },
     },
     exit: (dir) => ({
       y: dir > 0 ? -20 : 20,
@@ -305,24 +294,20 @@ function MediaSlider({
   return (
     <motion.div
       className="relative flex justify-center md:justify-end my-6 md:my-8"
-      variants={variants}
-      initial="hidden"
-      animate="visible"
       onMouseEnter={pause}
       onMouseLeave={resume}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: false, amount: 0.4 }}
     >
       <div
         className="
-          relative
-          w-full md:w-auto
-          min-h-[280px] sm:min-h-[620px]
-          aspect-[4/5]
-          rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
+          relative w-full md:w-auto min-h-[280px] sm:min-h-[620px]
+          aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-base-200/60
           max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg
           ring-1 ring-base-content/10
         "
       >
-        {/* gradient & glow (Blue) */}
         <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-200/30 to-[rgba(0,96,255,0.15)]" />
         <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_40%,white,transparent)]">
           <div className="absolute inset-0 bg-[rgba(0,96,255,0.25)] blur-3xl" />
@@ -350,15 +335,12 @@ function MediaSlider({
           </AnimatePresence>
         </div>
 
-        {/* ring (Blue) */}
+        {/* ring + controls + dots */}
         <div className="pointer-events-none absolute -inset-px rounded-3xl ring-1 ring-[rgba(0,96,255,0.35)]" />
-
-        {/* controls */}
         <button
           className="btn btn-sm btn-ghost absolute left-2 top-1/2 -translate-y-1/2"
           onClick={prev}
           aria-label="Previous"
-          title="Previous"
         >
           ‹
         </button>
@@ -366,12 +348,10 @@ function MediaSlider({
           className="btn btn-sm btn-ghost absolute right-2 top-1/2 -translate-y-1/2"
           onClick={next}
           aria-label="Next"
-          title="Next"
         >
           ›
         </button>
 
-        {/* dots (Blue active) */}
         <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
           {[0, 1, 2, 3].map((i) => (
             <button
@@ -383,7 +363,6 @@ function MediaSlider({
                   : "w-2.5 bg-base-content/40"
               }`}
               aria-label={`Go to slide ${i + 1}`}
-              title={`Slide ${i + 1}`}
             />
           ))}
         </div>

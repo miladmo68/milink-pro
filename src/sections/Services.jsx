@@ -1,88 +1,5 @@
-// import {
-//   CodeBracketIcon,
-//   DevicePhoneMobileIcon,
-//   MagnifyingGlassIcon,
-//   ShoppingCartIcon,
-//   WrenchScrewdriverIcon,
-//   PaintBrushIcon,
-// } from "@heroicons/react/24/outline";
-// import { services } from "../data/content.js";
-
-// // Map icon name strings from content.js to actual components
-// const iconMap = {
-//   CodeBracketIcon,
-//   DevicePhoneMobileIcon,
-//   MagnifyingGlassIcon,
-//   ShoppingCartIcon,
-//   WrenchScrewdriverIcon,
-//   PaintBrushIcon,
-// };
-
-// function ServiceCard({ data, onOpen }) {
-//   const Icon = iconMap[data.icon] || CodeBracketIcon;
-
-//   return (
-//     <article className="relative card bg-base-300/70 p-6 shadow-md rounded-2xl ring-1 ring-primary/10 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-primary/40 focus-within:ring-primary/50">
-//       {data.badge && (
-//         <span className="badge badge-primary absolute right-3 top-3 motion-safe:animate-pulse hover:motion-safe:animate-none">
-//           {data.badge}
-//         </span>
-//       )}
-
-//       <div className="flex flex-col items-start gap-3 text-left">
-//         <Icon className="h-12 w-12 text-primary" />
-//         <h3 className="text-xl font-semibold">{data.title}</h3>
-//         <p className="opacity-80">{data.desc}</p>
-
-//         {data.bullets?.length > 0 && (
-//           <ul className="mt-2 space-y-2 text-sm opacity-90">
-//             {data.bullets.map((b, i) => (
-//               <li key={i}>• {b}</li>
-//             ))}
-//           </ul>
-//         )}
-
-//         <div className="mt-4 w-full flex justify-end">
-//           <button
-//             className="btn btn-sm"
-//             onClick={() =>
-//               onOpen?.({
-//                 title: data.title,
-//                 text:
-//                   data.longDesc ||
-//                   "We keep it simple and reliable — so you can trust us to get it done right.",
-//                 list: data.bullets || [],
-//               })
-//             }
-//           >
-//             Read more
-//           </button>
-//         </div>
-//       </div>
-//     </article>
-//   );
-// }
-
-// export default function Services({ onOpen }) {
-//   return (
-//     <section id="services" className="py-20 bg-base-100">
-//       <div className="container mx-auto text-center">
-//         <h2 className="text-4xl font-bold">Our Services</h2>
-//         <p className="opacity-80 mt-1">Design • Build • Grow</p>
-
-//         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {services.map((s) => (
-//             <ServiceCard key={s.id} data={s} onOpen={onOpen} />
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-"use client";
-
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
   CodeBracketIcon,
   DevicePhoneMobileIcon,
@@ -91,18 +8,20 @@ import {
   WrenchScrewdriverIcon,
   PaintBrushIcon,
 } from "@heroicons/react/24/outline";
-import { services } from "../data/content.js";
 
-/* ===== Brand palette ===== */
+import { services } from "../data/content.js";
+import { Reveal } from "../components/scroll-reveal.jsx";
+
+/* ===== Brand palette (همان قبلی) ===== */
 const BRAND = {
   baseFrom: "#0b1220",
   baseVia: "#0a0f1a",
   baseTo: "#0e1b33",
-  accent: "#3b82f6", // main blue
-  accentSoft: "#60a5fa", // soft blue for icons/glow
+  accent: "#3b82f6",
+  accentSoft: "#60a5fa",
 };
 
-/* ===== Icon map ===== */
+/* ===== Icons map ===== */
 const iconMap = {
   CodeBracketIcon,
   DevicePhoneMobileIcon,
@@ -112,7 +31,45 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-/* ===== Flip wrapper: hover (desktop) + tap (mobile), بدون jitter ===== */
+/* ===== Motion variants: دقیقاً مثل Work، ورود/خروج نرم ===== */
+const itemVariants = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+/* ===== کارت را دوجهته کنترل می‌کند: وقتی در دید است → show، وقتی خارج شد → hidden ===== */
+function InOutItem({ children, index = 0, delayStep = 0.06 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, {
+    // مثل Work: کمی که کارت وارد شد تریگر بزن
+    amount: 0.18,
+    margin: "-10% 0% -10% 0%",
+  });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={inView ? "show" : "hidden"}
+      variants={itemVariants}
+      transition={{
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+        delay: index * delayStep, // دونه‌دونه
+      }}
+      className="will-change-transform"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ===== FlippyInteractive (بدون تغییر ظاهری) ===== */
 function FlippyInteractive({ front, back, className = "" }) {
   const [flipped, setFlipped] = useState(false);
 
@@ -123,7 +80,6 @@ function FlippyInteractive({ front, back, className = "" }) {
       onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
       onTouchStart={(e) => {
-        // tap toggle روی موبایل
         e.stopPropagation();
         setFlipped((v) => !v);
       }}
@@ -168,16 +124,17 @@ function FlippyInteractive({ front, back, className = "" }) {
   );
 }
 
-/* ===== Badge motion (Popular / In-Demand / High-Pro) ===== */
+/* ===== Badge motion (بدون تغییر) ===== */
 const badgeMotion = {
   animate: { y: [0, -2, 0], scale: [1, 1.06, 1] },
   transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
 };
 
+/* ===== ServiceCard (دیزاین دست‌نخورده) ===== */
 function ServiceCard({ data }) {
   const Icon = iconMap[data.icon] || CodeBracketIcon;
 
-  // داینامیک: فقط اگر محتوا بلند شد اسکرول فعال شود
+  // فعال فقط وقتی پشت کارت متن زیادی داشت
   const bodyRef = useRef(null);
   const [needsScroll, setNeedsScroll] = useState(false);
   useEffect(() => {
@@ -195,7 +152,6 @@ function ServiceCard({ data }) {
     };
   }, []);
 
-  /* Front: گرادیان قبلی + glow پایین راست */
   const Front = (
     <article
       className="relative h-full p-6 rounded-2xl text-slate-100 shadow-md ring-1"
@@ -221,7 +177,6 @@ function ServiceCard({ data }) {
         <h3 className="text-xl font-semibold">{data.title}</h3>
         <p className="opacity-80 max-w-[28ch]">{data.desc}</p>
 
-        {/* More details با رنگ آبی برند */}
         <span
           className="mt-3 text-sm font-medium tracking-wide select-none"
           style={{ color: BRAND.accent }}
@@ -241,7 +196,6 @@ function ServiceCard({ data }) {
     </article>
   );
 
-  /* Back: بدون دکمه؛ تیتر بولدتر و آبی */
   const Back = (
     <article
       className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
@@ -295,17 +249,34 @@ function ServiceCard({ data }) {
   );
 }
 
+/* ===== Services Section ===== */
 export default function Services() {
   return (
     <section id="services" className="py-20 bg-base-100">
-      <div className="container mx-auto text-center">
-        <h2 className="text-4xl font-bold">Our Services</h2>
-        <p className="opacity-80 mt-1">Design • Build • Grow</p>
+      <div className="container mx-auto px-4">
+        {/* Header (بدون تغییر) */}
+        <div className="max-w-3xl mx-auto text-center">
+          <Reveal from="up" distance={20}>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+              Our Services
+            </h2>
+          </Reveal>
+          <Reveal from="up" distance={16} delay={0.05}>
+            <p className="opacity-80 mt-2">Design • Build • Grow</p>
+          </Reveal>
+        </div>
 
+        {/* Grid — فقط هر کارت داخل InOutItem پیچیده شده تا ورود/خروج مستقل داشته باشه */}
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((s) => (
-            <ServiceCard key={s.id} data={s} />
+          {services.map((s, i) => (
+            <InOutItem key={s.id} index={i}>
+              <ServiceCard data={s} />
+            </InOutItem>
           ))}
+        </div>
+
+        <div className="mt-10 grid place-items-center">
+          <div className="h-0.5 w-24 bg-primary/70 rounded-full" />
         </div>
       </div>
     </section>

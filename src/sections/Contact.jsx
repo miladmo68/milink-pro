@@ -6,6 +6,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Instagram } from "lucide-react";
+import { Reveal, RevealStagger, SlideIn, SectionHeader } from "../components/scroll-reveal.jsx";
 
 export default function Contact() {
   // Fields
@@ -94,8 +95,9 @@ export default function Contact() {
 
   return (
     <section id="contact" className="py-20 ">
-      <h2 className="text-center mb-10">Contact Us</h2>
+      <Reveal from="up" distance={20}><h2 className="text-center mb-10">Contact Us</h2></Reveal>
 
+        <Reveal from="up" distance={24}>
       <div className="container mx-auto grid gap-12 lg:grid-cols-2">
         {/* LEFT: Get in Touch */}
         <div className="bg-base-100 shadow-lg rounded-2xl p-8 space-y-8">
@@ -185,6 +187,8 @@ export default function Contact() {
         {/* RIGHT: Send a Message */}
         <div className="bg-base-100 shadow-lg rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
+    
+
             <h2 className="text-3xl font-bold mb-2">Send a Message</h2>
 
             {/* Honeypot */}
@@ -279,9 +283,12 @@ export default function Contact() {
             >
               {loading ? "Sending..." : "Send Message"}
             </button>
-          </form>
+          
+    
+  </form>
         </div>
       </div>
+        </Reveal>
     </section>
   );
 }

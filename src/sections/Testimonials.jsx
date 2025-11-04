@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { testimonials as DATA } from "../data/content.js";
+import { Reveal, RevealStagger, SlideIn, SectionHeader } from "../components/scroll-reveal.jsx";
 
 /**
  * Testimonials3DPro – Clean Professional v3 (Color-polished)
@@ -128,9 +129,9 @@ export default function Testimonials3DPro() {
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <header className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+          <Reveal from="up" distance={20}><h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
             What Clients Say
-          </h2>
+          </h2></Reveal>
           <p className="opacity-70 mt-2">Real feedback, real outcomes.</p>
         </header>
 
@@ -251,7 +252,7 @@ export default function Testimonials3DPro() {
                             />
 
                             {/* محتوا */}
-                            <div className="p-6 md:p-8 grid grid-rows-[auto,1fr,auto] h-[calc(var(--card-h)-12px)]">
+                            <RevealStagger className="p-6 md:p-8 grid grid-rows-[auto,1fr,auto] h-[calc(var(--card-h)-12px)]">
                               <div className="flex items-center gap-4">
                                 <Avatar
                                   src={t?.avatar}
@@ -298,7 +299,7 @@ export default function Testimonials3DPro() {
                                   background: `linear-gradient(90deg, rgba(${BRAND.comma}, .22), rgba(${BRAND.accentComma}, .35))`,
                                 }}
                               />
-                            </div>
+                            </RevealStagger>
                           </div>
                         </div>
                       </button>
