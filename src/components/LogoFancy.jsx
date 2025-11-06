@@ -74,11 +74,11 @@ export default function LogoFancy({
       style={{ gap: `${iconGap}px` }}
     >
       {/* آیکون */}
-      <div className="relative h-9 w-auto md:h-12 self-center">
+      <div className="relative h-12 w-auto md:h-16 lg:h-20 self-center -translate-y-[1px]">
         <img
           src={idleSrc}
           alt={idleAlt}
-          className="h-11 w-auto md:h-14 pointer-events-none"
+          className="h-14 w-auto sm:h-16 md:h-[84px] lg:h-[96px] xl:h-[104px] pointer-events-none"
           draggable="false"
         />
       </div>
