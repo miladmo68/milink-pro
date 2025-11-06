@@ -74,11 +74,18 @@ export default function LogoFancy({
       style={{ gap: `${iconGap}px` }}
     >
       {/* آیکون */}
-      <div className="relative h-12 w-auto md:h-16 lg:h-20 self-center -translate-y-[1px]">
+      <div className="relative h-12 w-auto md:h-16 lg:h-16 self-center -translate-y-[1px]">
         <img
           src={idleSrc}
           alt={idleAlt}
-          className="h-14 w-auto sm:h-16 md:h-[84px] lg:h-[96px] xl:h-[104px] pointer-events-none"
+          className="
+      h-14          /* ✅ mobile = بزرگ */
+      sm:h-16       /* mobile large */
+      md:h-16       /* ✅ tablet = desktop */
+      lg:h-16       /* ✅ desktop = tablet */
+      xl:h-20       /* big desktop */
+      pointer-events-none
+    "
           draggable="false"
         />
       </div>
