@@ -235,7 +235,7 @@ export default function Work() {
         </div>
 
         {/* CTA footer */}
-        <Reveal from="up" distance={18} delay={0.04} once={false}>
+        {/* <Reveal from="up" distance={18} delay={0.04} once={false}>
           <div className="mt-8">
             <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/10 shadow-soft">
               <div className="card-body items-center text-center">
@@ -263,6 +263,45 @@ export default function Work() {
                     <Globe size={18} /> Full Portfolio
                   </a>
                 </div>
+                <div className="mt-4 h-0.5 w-24 bg-primary/70 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </Reveal> */}
+        {/* CTA footer */}
+        <Reveal from="up" distance={18} delay={0.04} once={false}>
+          <div className="mt-8">
+            <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/10 shadow-soft transition-all duration-500 hover:shadow-lg hover:ring-primary/20">
+              <div className="card-body items-center text-center">
+                <h3 className="text-xl md:text-2xl font-extrabold">
+                  See More Work
+                </h3>
+                <p className="opacity-80 max-w-xl">
+                  Browse full galleries, recent launches, and behind-the-scenes.
+                </p>
+
+                <div className="card-actions mt-4 flex gap-3">
+                  {/* Instagram Button */}
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="btn btn-outline flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_12px_rgba(219,39,119,0.4)] hover:border-pink-500 hover:text-pink-500"
+                  >
+                    <Instagram size={18} /> Instagram
+                  </a>
+
+                  {/* Portfolio Button */}
+                  <a
+                    href={PORTFOLIO_URL}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="btn btn-primary flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_16px_rgba(99,102,241,0.6)]"
+                  >
+                    <Globe size={18} /> Full Portfolio
+                  </a>
+                </div>
+
                 <div className="mt-4 h-0.5 w-24 bg-primary/70 rounded-full" />
               </div>
             </div>
