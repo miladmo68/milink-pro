@@ -19,6 +19,7 @@
 //     "inset 0 1px 3px rgba(255,255,255,0.65), 0 4px 14px rgba(0,96,255,0.25)";
 //   const glowShadow =
 //     "inset 0 0 0 1px rgba(0,96,255,0.85), inset 0 6px 18px rgba(0,96,255,0.15), 0 0 16px rgba(0,96,255,0.45), 0 10px 30px rgba(0,96,255,0.28)";
+
 //   return (
 //     <motion.a
 //       href="#contact"
@@ -114,7 +115,7 @@
 // }
 
 // /* =========================
-//    Social Icon helper (unchanged)
+//    Social Icon helper
 // ========================= */
 // function SocialIcon({ href, label, type }) {
 //   const isExternal = href.startsWith("http");
@@ -247,6 +248,15 @@
 //   const [scrolled, setScrolled] = useState(false);
 //   const lockScrollY = useRef(0);
 
+//   // Active hash
+//   const [activeHash, setActiveHash] = useState("#home");
+//   useEffect(() => {
+//     const setFromHash = () => setActiveHash(window.location.hash || "#home");
+//     setFromHash();
+//     window.addEventListener("hashchange", setFromHash);
+//     return () => window.removeEventListener("hashchange", setFromHash);
+//   }, []);
+
 //   useEffect(() => {
 //     const onScroll = () => setScrolled(window.scrollY > 12);
 //     window.addEventListener("scroll", onScroll, { passive: true });
@@ -284,7 +294,7 @@
 //   const navH = open ? baseHeight + nav.length * 44 : baseHeight;
 //   const LOGO_BOX_WIDTH = 260;
 
-//   // پس‌زمینه‌ی موبایل: تیره و شکیل (فقط موبایل)
+//   // Mobile bg (unchanged)
 //   const MOBILE_PILL_BG =
 //     "radial-gradient(160% 140% at 85% 20%, rgba(0,118,255,0.10) 0%, rgba(0,118,255,0) 60%), linear-gradient(180deg, rgba(26,30,40,0.92), rgba(14,18,28,0.88))";
 
@@ -301,18 +311,28 @@
 //     },
 //   };
 
+//   // ✅ Desktop hover رنگی (همون که تو کدت بود)
+//   const linkBase =
+//     "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-white/75 hover:text-white transition";
+//   const linkUnderline =
+//     "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-full " +
+//     "after:bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.95),rgba(0,96,255,0.95),transparent)] " +
+//     "after:scale-x-0 after:origin-right after:transition-transform after:duration-300 after:blur-[0.2px] " +
+//     "hover:after:scale-x-100 hover:after:origin-left";
+//   const linkActive =
+//     "text-white after:scale-x-100 after:origin-left drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
+
 //   return (
 //     <>
 //       <header
-//         className={`fixed inset-x-0 top-0 z-50 transition-all pt-3
-//   ${
-//     SITE.enableStickyBlur && scrolled
-//       ? "backdrop-blur bg-transparent shadow-[0_10px_28px_-18px_rgba(59,130,246,0.55)]"
-//       : "bg-transparent"
-//   }`}
+//         className={`fixed inset-x-0 top-0 z-50 transition-all pt-3 ${
+//           SITE.enableStickyBlur && scrolled
+//             ? "backdrop-blur-xl bg-transparent"
+//             : "bg-transparent"
+//         }`}
 //         style={{ height: baseHeight }}
 //       >
-//         {/* ========== Desktop (بدون تغییر) ========== */}
+//         {/* ========== Desktop (NO pill — like old) ========== */}
 //         <div className="container navbar hidden md:flex items-center gap-6 h-[72px]">
 //           <div className="flex items-center gap-1">
 //             <div
@@ -333,31 +353,34 @@
 //               />
 //             </div>
 
-//             <nav className="hidden md:flex items-center gap-6 ml-0">
-//               {nav.map((n, i) => (
-//                 <a
-//                   key={i}
-//                   href={n.href}
-//                   className="relative inline-flex items-center
-//                     after:content-[''] after:absolute after:-bottom-1 after:left-0
-//                     after:h-[1.5px] after:w-full after:bg-current
-//                     after:scale-x-0 after:origin-right
-//                     after:transition-transform after:duration-300
-//                     hover:after:scale-x-100 hover:after:origin-left"
-//                 >
-//                   {n.label}
-//                 </a>
-//               ))}
+//             <nav className="hidden md:flex items-center gap-7 ml-1">
+//               {nav.map((n, i) => {
+//                 const isActive = activeHash === n.href;
+//                 return (
+//                   <a
+//                     key={i}
+//                     href={n.href}
+//                     className={`${linkBase} ${linkUnderline} ${
+//                       isActive ? linkActive : ""
+//                     }`}
+//                     onClick={() => setActiveHash(n.href)}
+//                   >
+//                     {n.label}
+//                   </a>
+//                 );
+//               })}
 //             </nav>
 //           </div>
 
+//           {/* ✅ divider برگشته */}
 //           <div className="ml-auto hidden md:flex items-center gap-3">
 //             <ThemeToggle />
+//             <div className="w-px h-7 bg-white/10" />
 //             <CTAButton mobileGlow />
 //           </div>
 //         </div>
 
-//         {/* ========== Mobile (فقط اینجا «پیل» تیره) ========== */}
+//         {/* ========== Mobile (unchanged pill) ========== */}
 //         <div className="md:hidden px-3 py-3">
 //           <div
 //             className="flex items-center gap-3 rounded-[28px] px-4 py-3 relative overflow-hidden ring-1"
@@ -367,11 +390,9 @@
 //               border: "1px solid rgba(255,255,255,0.10)",
 //               boxShadow:
 //                 "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgba(0,118,255,0.20), inset 0 1px 2px rgba(255,255,255,0.06)",
-
 //               backdropFilter: "blur(12px)",
 //             }}
 //           >
-//             {/* لوگو موبایل */}
 //             <div className="shrink-0">
 //               <LogoFancy
 //                 className="flex items-center font-[sans-serif]"
@@ -393,7 +414,7 @@
 //           </div>
 //         </div>
 
-//         {/* ====== Mobile overlay + drawer (منو باز/بسته) ====== */}
+//         {/* ====== Mobile overlay + drawer ====== */}
 //         <AnimatePresence>
 //           {open && (
 //             <>
@@ -619,17 +640,13 @@
 //         </AnimatePresence>
 //       </header>
 
-//       {/* Spacer */}
-//       {/* <div style={{ height: navH }} aria-hidden="true" /> */}
-//       <div
-//         className="hidden md:block"
-//         style={{ height: navH }}
-//         aria-hidden="true"
-//       />
+//       {/* Spacer (desktop only) */}
+//       <div className="hidden md:block" style={{ height: navH }} aria-hidden />
 //     </>
 //   );
 // }
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useRef, useState, useMemo } from "react";
 import { nav } from "../data/content.js";
 import { SITE } from "../config/siteConfig.js";
 import ThemeToggle from "./ThemeToggle.jsx";
@@ -656,17 +673,17 @@ function CTAButton({
       href="#contact"
       onClick={onClick}
       whileHover={{
-        y: -2,
-        scale: 1.03,
+        y: -1,
+        scale: 1.02,
         backgroundColor: "rgba(245, 248, 255, 0.68)",
         backgroundImage:
           "radial-gradient(circle at center, rgba(0,96,255,0.08) 0%, transparent 70%)",
         boxShadow:
-          "inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 22px rgba(0,96,255,0.33), 0 0 14px rgba(0,96,255,0.22)",
+          "inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 22px rgba(0,96,255,0.30), 0 0 14px rgba(0,96,255,0.18)",
         borderColor: borderless ? "transparent" : "#0060FF",
         filter: "brightness(1.02) saturate(1.05)",
       }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.985 }}
       transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.6 }}
       className={`relative inline-flex select-none items-center gap-2 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60 ${
         wide ? "w-full justify-center px-4 py-3" : "px-4 py-2"
@@ -881,6 +898,13 @@ export default function Navbar() {
 
   // Active hash
   const [activeHash, setActiveHash] = useState("#home");
+
+  // ✅ ScrollSpy map
+  const navHrefs = useMemo(() => nav.map((n) => n.href), []);
+  const observerRef = useRef(null);
+  const rafRef = useRef(null);
+
+  // hashchange (fallback)
   useEffect(() => {
     const setFromHash = () => setActiveHash(window.location.hash || "#home");
     setFromHash();
@@ -888,11 +912,58 @@ export default function Navbar() {
     return () => window.removeEventListener("hashchange", setFromHash);
   }, []);
 
+  // scrolled
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // ✅ Scroll spy with IntersectionObserver
+  useEffect(() => {
+    if (!navHrefs.length) return;
+
+    const ids = navHrefs
+      .filter((h) => h && h.startsWith("#"))
+      .map((h) => h.slice(1));
+
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
+
+    if (!els.length) return;
+
+    const updateActive = (hash) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => setActiveHash(hash));
+    };
+
+    observerRef.current?.disconnect?.();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort(
+            (a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0)
+          );
+
+        if (visible[0]?.target?.id) {
+          updateActive(`#${visible[0].target.id}`);
+        }
+      },
+      {
+        root: null,
+        threshold: [0.12, 0.22, 0.35, 0.5, 0.65],
+        rootMargin: "-20% 0px -55% 0px",
+      }
+    );
+
+    els.forEach((el) => observerRef.current.observe(el));
+
+    return () => {
+      observerRef.current?.disconnect?.();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [navHrefs]);
 
   // Lock scroll when mobile menu is open
   useEffect(() => {
@@ -942,7 +1013,7 @@ export default function Navbar() {
     },
   };
 
-  // ✅ Desktop hover رنگی (همون که تو کدت بود)
+  // ✅ Desktop link styles
   const linkBase =
     "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-white/75 hover:text-white transition";
   const linkUnderline =
@@ -950,8 +1021,15 @@ export default function Navbar() {
     "after:bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.95),rgba(0,96,255,0.95),transparent)] " +
     "after:scale-x-0 after:origin-right after:transition-transform after:duration-300 after:blur-[0.2px] " +
     "hover:after:scale-x-100 hover:after:origin-left";
-  const linkActive =
-    "text-white after:scale-x-100 after:origin-left drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
+  const linkActive = "text-white drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
+
+  /* ======================================================
+     ✅ Desktop "pill on scroll" DISABLED:
+     - No background/border/shadow/blur changes on scroll
+  ====================================================== */
+  const DESKTOP_BAR_BG = "transparent";
+  const DESKTOP_BAR_BORDER = "1px solid transparent";
+  const DESKTOP_BAR_SHADOW = "none";
 
   return (
     <>
@@ -964,50 +1042,103 @@ export default function Navbar() {
         style={{ height: baseHeight }}
       >
         {/* ========== Desktop (NO pill — like old) ========== */}
-        <div className="container navbar hidden md:flex items-center gap-6 h-[72px]">
-          <div className="flex items-center gap-1">
-            <div
-              className="hidden md:block shrink-0 overflow-hidden m-0 p-0 leading-none"
-              style={{ width: LOGO_BOX_WIDTH, transform: "translateY(1px)" }}
-            >
-              <LogoFancy
-                className="flex items-center font-[sans-serif] m-0 p-0 leading-none w-full"
-                idleSrc="/logo.png"
-                idleAlt="MILINK Logo"
-                idleTitle="MILINK"
-                idleSubtitle="DIGITAL AGENCY"
-                hoverTitle="Design • Launch • Scale"
-                gradientClass="gradient-text"
-                iconGap={0}
-                blockShiftY={1}
-                hoverCenterShiftY={+1}
-              />
+        <div className="container hidden md:flex items-center gap-6">
+          {/* ✅ Desktop inner bar */}
+          <div
+            className="w-full flex items-center gap-6 px-4"
+            style={{
+              height: scrolled ? 64 : 72,
+              background: DESKTOP_BAR_BG,
+              border: DESKTOP_BAR_BORDER,
+              boxShadow: DESKTOP_BAR_SHADOW,
+
+              // ✅ important: no blur on desktop bar
+              backdropFilter: "none",
+              WebkitBackdropFilter: "none",
+
+              transition:
+                "height .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease",
+            }}
+          >
+            <div className="flex items-center gap-1">
+              <div
+                className="hidden md:block shrink-0 overflow-hidden m-0 p-0 leading-none"
+                style={{ width: LOGO_BOX_WIDTH, transform: "translateY(1px)" }}
+              >
+                <LogoFancy
+                  className="flex items-center font-[sans-serif] m-0 p-0 leading-none w-full"
+                  idleSrc="/logo.png"
+                  idleAlt="MILINK Logo"
+                  idleTitle="MILINK"
+                  idleSubtitle="DIGITAL AGENCY"
+                  hoverTitle="Design • Launch • Scale"
+                  gradientClass="gradient-text"
+                  iconGap={0}
+                  blockShiftY={1}
+                  hoverCenterShiftY={+1}
+                />
+              </div>
+
+              {/* ✅ NAV with animated indicator */}
+              <nav className="hidden md:flex items-center gap-7 ml-1 relative">
+                {nav.map((n, i) => {
+                  const isActive = activeHash === n.href;
+
+                  return (
+                    <a
+                      key={i}
+                      href={n.href}
+                      className={`${linkBase} ${linkUnderline} ${
+                        isActive ? linkActive : ""
+                      }`}
+                      onClick={() => setActiveHash(n.href)}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {isActive && (
+                        <motion.span
+                          layoutId="nav-indicator"
+                          className="absolute -bottom-[11px] left-0 right-0 h-[3px] rounded-full"
+                          transition={{
+                            type: "spring",
+                            stiffness: 520,
+                            damping: 38,
+                            mass: 0.6,
+                          }}
+                          style={{
+                            background:
+                              "linear-gradient(90deg, rgba(56,189,248,0.00), rgba(56,189,248,0.95), rgba(0,96,255,0.95), rgba(56,189,248,0.00))",
+                            boxShadow:
+                              "0 0 18px rgba(0,96,255,0.30), 0 10px 26px rgba(0,96,255,0.18)",
+                            filter: "blur(0.1px)",
+                          }}
+                        />
+                      )}
+                      {n.label}
+                    </a>
+                  );
+                })}
+              </nav>
             </div>
 
-            <nav className="hidden md:flex items-center gap-7 ml-1">
-              {nav.map((n, i) => {
-                const isActive = activeHash === n.href;
-                return (
-                  <a
-                    key={i}
-                    href={n.href}
-                    className={`${linkBase} ${linkUnderline} ${
-                      isActive ? linkActive : ""
-                    }`}
-                    onClick={() => setActiveHash(n.href)}
-                  >
-                    {n.label}
-                  </a>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* ✅ divider برگشته */}
-          <div className="ml-auto hidden md:flex items-center gap-3">
-            <ThemeToggle />
-            <div className="w-px h-7 bg-white/10" />
-            <CTAButton mobileGlow />
+            {/* ✅ Right side (glass group) */}
+            <div className="ml-auto hidden md:flex items-center gap-3">
+              <div
+                className="flex items-center gap-3 rounded-full px-3 py-2"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  boxShadow:
+                    "inset 0 1px 2px rgba(255,255,255,0.06), 0 14px 30px rgba(0,0,0,0.22)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                }}
+              >
+                <ThemeToggle />
+                <div className="w-px h-7 bg-white/10" />
+                <CTAButton mobileGlow />
+              </div>
+            </div>
           </div>
         </div>
 
