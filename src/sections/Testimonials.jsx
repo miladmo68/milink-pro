@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { testimonials as DATA } from "../data/content.js";
-import { Reveal, RevealStagger, SlideIn, SectionHeader } from "../components/scroll-reveal.jsx";
-
-/**
- * Testimonials3DPro – Clean Professional v3 (Color-polished)
- * - کارت‌ها هم‌اندازه؛ کارت وسط کمی بزرگ‌تر
- * - پالت لوکس آبی تیره + اکنت آبی روشن، کاملاً مینیمال و باکلاس
- * - گرادیان قاب لطیف، دات‌های گرادیانی، پس‌زمینه رنگی ملایم
- */
+import {
+  Reveal,
+  RevealStagger,
+  SlideIn,
+  SectionHeader,
+} from "../components/scroll-reveal.jsx";
 
 const cx = (...a) => a.filter(Boolean).join(" ");
 
@@ -129,9 +127,11 @@ export default function Testimonials3DPro() {
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <header className="text-center mb-12">
-          <Reveal from="up" distance={20}><h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            What Clients Say
-          </h2></Reveal>
+          <Reveal from="up" distance={20}>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+              What Clients Say
+            </h2>
+          </Reveal>
           <p className="opacity-70 mt-2">Real feedback, real outcomes.</p>
         </header>
 
