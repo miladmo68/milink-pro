@@ -21,7 +21,7 @@ body {
   @apply max-w-8xl mx-auto px-4;
 }
 
-@layer base {
+/* @layer base {
   h1,
   h2,
   h3 {
@@ -33,6 +33,30 @@ body {
   h2 {
     @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
   }
+  h3 {
+    @apply text-2xl sm:text-3xl font-bold;
+  }
+} */
+
+@layer base {
+  h1,
+  h2 {
+    font-family: theme("fontFamily.display");
+    letter-spacing: 0.04em; /* 👈 واید شدن حروف فقط برای h1 و h2 */
+  }
+
+  h3 {
+    font-family: theme("fontFamily.display");
+  }
+
+  h1 {
+    @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
+  }
+
+  h2 {
+    @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
+  }
+
   h3 {
     @apply text-2xl sm:text-3xl font-bold;
   }
