@@ -42,7 +42,7 @@ body {
   h1,
   h2 {
     font-family: theme("fontFamily.display");
-    letter-spacing: 0.04em; /* 👈 واید شدن حروف فقط برای h1 و h2 */
+    letter-spacing: 0.055em !important; /* 👈 واضح‌تر و override کامل */
   }
 
   h3 {
