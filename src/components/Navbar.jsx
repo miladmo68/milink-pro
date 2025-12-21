@@ -1122,18 +1122,7 @@ export default function Navbar() {
 
             {/* ✅ Right side (glass group) */}
             <div className="ml-auto hidden md:flex items-center gap-3">
-              <div
-                className="flex items-center gap-3 rounded-full px-3 py-2"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  boxShadow:
-                    "inset 0 1px 2px rgba(255,255,255,0.06), 0 14px 30px rgba(0,0,0,0.22)",
-                  backdropFilter: "blur(10px)",
-                  WebkitBackdropFilter: "blur(10px)",
-                }}
-              >
+              <div className="flex items-center gap-3">
                 <ThemeToggle />
                 <div className="w-px h-7 bg-white/10" />
                 <CTAButton mobileGlow />
