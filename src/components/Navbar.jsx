@@ -122,6 +122,7 @@ function SocialIcon({ href, label, type }) {
   const glow1 = "rgba(0,96,255,0.55)";
   const glow2 = "rgba(59,130,246,0.45)";
   const edge = "rgba(255,255,255,0.14)";
+
   return (
     <a
       href={href}
@@ -173,6 +174,7 @@ function SocialIcon({ href, label, type }) {
           }}
         />
       </span>
+
       <style>{`a[aria-label="${label}"]:hover .milink-sheen{transform:translateX(120%) rotate(8deg);opacity:1;}`}</style>
 
       {type === "ig" && (
@@ -196,6 +198,7 @@ function SocialIcon({ href, label, type }) {
           <circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.92)" />
         </svg>
       )}
+
       {type === "wa" && (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
@@ -209,6 +212,7 @@ function SocialIcon({ href, label, type }) {
           />
         </svg>
       )}
+
       {type === "mail" && (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <rect
@@ -228,6 +232,7 @@ function SocialIcon({ href, label, type }) {
           />
         </svg>
       )}
+
       {type === "fb" && (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
@@ -251,7 +256,7 @@ export default function Navbar() {
   // Active hash
   const [activeHash, setActiveHash] = useState("#home");
 
-  // ✅ ScrollSpy map
+  // ScrollSpy map
   const navHrefs = useMemo(() => nav.map((n) => n.href), []);
   const observerRef = useRef(null);
   const rafRef = useRef(null);
@@ -271,16 +276,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ✅ Scroll spy with IntersectionObserver
+  // Scroll spy with IntersectionObserver
   useEffect(() => {
     if (!navHrefs.length) return;
 
     const ids = navHrefs
       .filter((h) => h && h.startsWith("#"))
       .map((h) => h.slice(1));
-
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
-
     if (!els.length) return;
 
     const updateActive = (hash) => {
@@ -298,9 +301,7 @@ export default function Navbar() {
             (a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0)
           );
 
-        if (visible[0]?.target?.id) {
-          updateActive(`#${visible[0].target.id}`);
-        }
+        if (visible[0]?.target?.id) updateActive(`#${visible[0].target.id}`);
       },
       {
         root: null,
@@ -356,6 +357,7 @@ export default function Navbar() {
     hidden: {},
     show: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
   };
+
   const itemVariants = {
     hidden: { y: 10, opacity: 0 },
     show: {
@@ -365,18 +367,23 @@ export default function Navbar() {
     },
   };
 
-  // ✅ Desktop link styles
+  // ✅ Desktop link styles (DAISYUI-AWARE FIX)
+  // Works with DaisyUI data-theme because it uses CSS vars.
   const linkBase =
-    "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-white/75 hover:text-white transition";
+    "relative inline-flex items-center text-sm font-medium tracking-[0.06em] " +
+    "text-base-content/70 hover:text-base-content transition";
+
   const linkUnderline =
     "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-full " +
     "after:bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.95),rgba(0,96,255,0.95),transparent)] " +
     "after:scale-x-0 after:origin-right after:transition-transform after:duration-300 after:blur-[0.2px] " +
     "hover:after:scale-x-100 hover:after:origin-left";
-  const linkActive = "text-white drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
+
+  const linkActive =
+    "text-base-content drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
 
   /* ======================================================
-     ✅ Desktop "pill on scroll" DISABLED:
+     Desktop "pill on scroll" DISABLED:
      - No background/border/shadow/blur changes on scroll
   ====================================================== */
   const DESKTOP_BAR_BG = "transparent";
@@ -395,7 +402,7 @@ export default function Navbar() {
       >
         {/* ========== Desktop (NO pill — like old) ========== */}
         <div className="container hidden md:flex items-center gap-6">
-          {/* ✅ Desktop inner bar */}
+          {/* Desktop inner bar */}
           <div
             className="w-full flex items-center gap-6 px-4"
             style={{
@@ -404,7 +411,7 @@ export default function Navbar() {
               border: DESKTOP_BAR_BORDER,
               boxShadow: DESKTOP_BAR_SHADOW,
 
-              // ✅ important: no blur on desktop bar
+              // no blur on desktop bar
               backdropFilter: "none",
               WebkitBackdropFilter: "none",
 
@@ -431,7 +438,7 @@ export default function Navbar() {
                 />
               </div>
 
-              {/* ✅ NAV with animated indicator */}
+              {/* NAV */}
               <nav className="hidden md:flex items-center gap-7 ml-1 relative">
                 {nav.map((n, i) => {
                   const isActive = activeHash === n.href;
@@ -472,11 +479,12 @@ export default function Navbar() {
               </nav>
             </div>
 
-            {/* ✅ Right side (glass group) */}
+            {/* Right side */}
             <div className="ml-auto hidden md:flex items-center gap-3">
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-                <div className="w-px h-7 bg-white/10" />
+                {/* ✅ theme-aware divider */}
+                <div className="w-px h-7 bg-base-content/10" />
                 <CTAButton mobileGlow />
               </div>
             </div>
@@ -588,6 +596,7 @@ export default function Navbar() {
                         decoding="async"
                       />
                     </div>
+
                     <div className="leading-tight">
                       <div className="text-base font-semibold">Milink</div>
                       <div
