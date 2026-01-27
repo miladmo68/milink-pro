@@ -126,8 +126,8 @@ export default function Pricing() {
                             isPro
                               ? "bg-gradient-to-r from-[rgb(var(--brand)/0.85)] via-[rgb(var(--brand))] to-[rgb(var(--brand)/0.80)]"
                               : isPopular
-                              ? "bg-gradient-to-r from-[rgb(var(--brand))] via-[rgb(var(--brand)/0.85)] to-[rgb(var(--brand))]"
-                              : "bg-gradient-to-r from-base-content to-base-content/70"
+                                ? "bg-gradient-to-r from-[rgb(var(--brand))] via-[rgb(var(--brand)/0.85)] to-[rgb(var(--brand))]"
+                                : "bg-gradient-to-r from-base-content to-base-content/70"
                           }`}
                         >
                           {p.name}
