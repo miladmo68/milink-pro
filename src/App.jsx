@@ -77,7 +77,6 @@ export default function App() {
           <FAQ />
         </section> */}
 
-        {/* CONTACT — اگر Contact یک سکشن پایین صفحه‌ست */}
         <section id="contact" aria-label="Contact">
           <h2 className="sr-only">Contact</h2>
           {/* اگر Contact در sections/Contact.jsx هست و خودش هدر دارد، همین کافی است */}
