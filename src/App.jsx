@@ -26,7 +26,6 @@ export default function App() {
         title="MILINK — Web Design, E-Commerce, SEO & Branding in Toronto"
         description="Our services include Web Design and Development, E-Commerce Solutions (Shopify, WordPress), SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support."
         path="/" // canonical = https://milink.ca/
-        // image پیش‌فرض از SEO.jsx می‌آید (og-cover.jpg). اگر نداری: image="https://milink.ca/logo1.png"
         type="website"
       />
 
