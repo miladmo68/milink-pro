@@ -72,7 +72,6 @@ export default function App() {
           <Testimonials />
         </section>
 
-        {/* FAQ (اگه خواستی فعالش کن) */}
         {/* <section id="faq" aria-label="FAQ">
           <h2 className="sr-only">Frequently Asked Questions</h2>
           <FAQ />
