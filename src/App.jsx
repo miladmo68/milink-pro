@@ -33,12 +33,10 @@ export default function App() {
       <Navbar />
 
       <main>
-        {/* H1 واحد برای صفحه (نامرئی تا UI بهم نخوره) */}
         <h1 className="sr-only">
           MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding
         </h1>
 
-        {/* ناوبری داخلی برای حل «very few internal links» (نامرئی) */}
         <nav aria-label="Primary internal links" className="sr-only">
           <a href="#services">Our Services</a> • <a href="#work">Work</a> •{" "}
           <a href="#pricing">Pricing</a> •{" "}
@@ -46,9 +44,7 @@ export default function App() {
           <a href="#contact">Contact</a>
         </nav>
 
-        {/* HERO (اگر داخل Hero سرتیتر بصری داری، ok) */}
         <section id="hero" aria-label="Hero">
-          {/* هدر نامرئی برای ساختار هدینگ */}
           <h2 className="sr-only">Welcome to MILINK</h2>
           <Hero onOpenLightbox={(img) => setLightbox(img)} />
         </section>
@@ -56,7 +52,6 @@ export default function App() {
         {/* SERVICES */}
         <section id="services" aria-label="Our Services">
           <h2 className="sr-only">Our Services</h2>
-          {/* اگر خود Services هدر دارد، این sr-only مزاحم UI نمی‌شود اما ساختار را کامل می‌کند */}
           <Services onOpen={(payload) => setModal(payload)} />
         </section>
 
