@@ -79,7 +79,6 @@ export default function App() {
 
         <section id="contact" aria-label="Contact">
           <h2 className="sr-only">Contact</h2>
-          {/* اگر Contact در sections/Contact.jsx هست و خودش هدر دارد، همین کافی است */}
           <Contact />
         </section>
       </main>
