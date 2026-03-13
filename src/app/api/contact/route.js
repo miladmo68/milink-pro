@@ -1,15 +1,24 @@
-// api/contact.js
+import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+export async function POST(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON" },
+      { status: 400 }
+    );
   }
 
-  const { name, email, message } = req.body || {};
+  const { name, email, message } = body || {};
 
   if (!name || !email || !message) {
-    return res.status(400).json({ error: "Missing fields" });
+    return NextResponse.json(
+      { error: "Missing fields" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -33,9 +42,12 @@ export default async function handler(req, res) {
              <p>${message.replace(/\n/g, "<br/>")}</p>`,
     });
 
-    return res.status(200).json({ ok: true });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Error sending email:", err);
-    return res.status(500).json({ error: "Send failed" });
+    return NextResponse.json(
+      { error: "Send failed" },
+      { status: 500 }
+    );
   }
 }

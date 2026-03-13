@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/sections/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
 
   theme: {
     extend: {
@@ -8,17 +12,9 @@ export default {
         "8xl": "1440px",
       },
 
-      // ===== Fonts =====
       fontFamily: {
-        // قبلی خودت — کامنت شد:
-        // display: ["Mundial", "sans-serif"],
-        // body: ["Mundial", "sans-serif"],
-        // sans: ["Mundial", "sans-serif"],
-
-        // جدید:
-        // بدنه پیش‌فرض
         sans: [
-          "Inter",
+          "var(--font-inter)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
@@ -27,10 +23,9 @@ export default {
           "Arial",
           "sans-serif",
         ],
-        // هدینگ‌ (اگه خواستی هدینگ کمی متفاوت باشه)
         display: [
-          "Plus Jakarta Sans",
-          "Inter",
+          "var(--font-plus-jakarta)",
+          "var(--font-inter)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
@@ -39,9 +34,8 @@ export default {
           "Arial",
           "sans-serif",
         ],
-        // بدنه‌ی جایگزین صریح
         body: [
-          "Inter",
+          "var(--font-inter)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
@@ -50,16 +44,10 @@ export default {
           "Arial",
           "sans-serif",
         ],
-        // برای فارسی (در CSS به کمک :lang(fa) فعال می‌کنیم)
         fa: [
           "Vazirmatn",
-          "Inter",
+          "var(--font-inter)",
           "system-ui",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
           "sans-serif",
         ],
       },
