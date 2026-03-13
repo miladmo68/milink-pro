@@ -1,8 +1,15 @@
 import React from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import {
+  REVEAL_EASE,
+  REVEAL_DURATION_IN,
+  REVEAL_STAGGER,
+  REVEAL_DELAY_CHILDREN,
+} from "./scroll-reveal.jsx";
 
 export default function Footer() {
   const YEAR = new Date().getFullYear();
+  const reduced = useReducedMotion();
 
   // WhatsApp helpers
   const WA_PHONE = "14376003139"; // +1 437 600 3139 → digits only
@@ -12,23 +19,27 @@ export default function Footer() {
   const WA_LINK = `https://wa.me/${WA_PHONE}?text=${WA_TEXT}`;
   const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
 
-  // inView برای تریگر اسکرول (هر دو: موبایل و دستاپ)
   const ref = React.useRef(null);
   const inView = useInView(ref, { amount: 0.2, margin: "-10% 0% -10% 0%" });
 
-  // وریانت‌ها: والد (استگر) و هر «خط»
   const parentVariants = {
     hidden: {},
     show: {
-      transition: { staggerChildren: 0.09, delayChildren: 0.04 },
+      transition: {
+        staggerChildren: reduced ? 0 : REVEAL_STAGGER,
+        delayChildren: reduced ? 0 : REVEAL_DELAY_CHILDREN,
+      },
     },
   };
   const lineVariants = {
-    hidden: { opacity: 0, y: 16 },
+    hidden: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 16 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+      transition: {
+        duration: reduced ? 0 : REVEAL_DURATION_IN,
+        ease: REVEAL_EASE,
+      },
     },
   };
 
@@ -88,7 +99,7 @@ export default function Footer() {
   return (
     <motion.footer
       ref={ref}
-      className="py-10 border-t border-base-200 bg-base-200 will-change-transform"
+      className={`py-10 border-t border-base-200 bg-base-200 ${reduced ? "" : "will-change-transform"}`}
       initial="hidden"
       animate={inView ? "show" : "hidden"}
       variants={parentVariants}

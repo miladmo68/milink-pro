@@ -172,7 +172,7 @@ export default function Testimonials3DPro() {
                 className={cx(
                   "flex t3d-rail will-change-transform",
                   transitioning && !REDUCED
-                    ? "transition-transform duration-600 ease-[cubic-bezier(.22,.61,.36,1)]"
+                    ? `transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]`
                     : "transition-none"
                 )}
                 style={{ transform: `translateX(-${translatePct}%)` }}
@@ -216,7 +216,7 @@ export default function Testimonials3DPro() {
                         onClick={() => handleClick(i)}
                         className={cx(
                           "group relative block w-full overflow-visible rounded-2xl outline-none",
-                          "transition-transform duration-600"
+                          "transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                         )}
                         style={{
                           transform: `translateZ(calc(var(--index) * ${z})) rotateY(${ry}deg) scale(${scale})`,

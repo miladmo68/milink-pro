@@ -1,50 +1,53 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import {
+  REVEAL_EASE,
+  REVEAL_DURATION_IN,
+  REVEAL_DURATION_OUT,
+} from "../components/scroll-reveal.jsx";
 
 /* ===========================
-   Hero Section (revised)
-   - fade-in-up + repeat on scroll (viewport trigger)
-   - soft ease, smoother duration
+   Hero Section — shared motion constants, reduced-motion support
 =========================== */
 export default function Hero({ onOpenLightbox }) {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
+  const reduced = useReducedMotion();
 
-  /* ===== Variants ===== */
+  const duration = reduced ? 0 : REVEAL_DURATION_IN;
+  const ease = REVEAL_EASE;
+
+  /* ===== Variants (aligned with site motion system) ===== */
   const parent = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.2 },
+      transition: { staggerChildren: reduced ? 0 : 0.15 },
     },
   };
 
   const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 24 },
     visible: (delay = 0) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.9,
-        ease: [0.25, 1, 0.5, 1], // نرم‌تر
-        delay,
-      },
+      transition: { duration, ease, delay: reduced ? 0 : delay },
     }),
   };
 
   const fadeInRow = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: reduced ? 1 : 0 },
     visible: (delay = 0) => ({
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1], delay },
+      transition: { duration, ease, delay: reduced ? 0 : delay },
     }),
   };
 
   const fromRight = {
-    hidden: { opacity: 0, x: 60 },
+    hidden: { opacity: reduced ? 1 : 0, x: reduced ? 0 : 48 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1], delay: 0.25 },
+      transition: { duration, ease, delay: reduced ? 0 : 0.2 },
     },
   };
 
@@ -113,7 +116,7 @@ export default function Hero({ onOpenLightbox }) {
             variants={parent}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.25 }}
+            viewport={{ once: true, amount: 0.25 }}
           >
             <motion.div
               className="badge badge-primary badge-lg mb-6"
@@ -210,7 +213,7 @@ export default function Hero({ onOpenLightbox }) {
             variants={fromRight}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.3 }}
+            viewport={{ once: true, amount: 0.3 }}
           >
             <MediaSlider
               slides={slides}
@@ -234,6 +237,7 @@ function MediaSlider({
   autoPlay = true,
   interval = 3500,
 }) {
+  const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -278,16 +282,19 @@ function MediaSlider({
   const resume = () => scheduleNext();
 
   const slideVariants = {
-    enter: (dir) => ({ y: dir > 0 ? 30 : -30, opacity: 0 }),
+    enter: (dir) => ({
+      y: reduced ? 0 : dir > 0 ? 24 : -24,
+      opacity: reduced ? 1 : 0,
+    }),
     center: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] },
+      transition: { duration: reduced ? 0 : REVEAL_DURATION_IN, ease: REVEAL_EASE },
     },
     exit: (dir) => ({
-      y: dir > 0 ? -20 : 20,
-      opacity: 0,
-      transition: { duration: 0.6, ease: "easeIn" },
+      y: reduced ? 0 : dir > 0 ? -16 : 16,
+      opacity: reduced ? 1 : 0,
+      transition: { duration: reduced ? 0 : REVEAL_DURATION_OUT, ease: REVEAL_EASE },
     }),
   };
 
@@ -298,7 +305,7 @@ function MediaSlider({
       onMouseLeave={resume}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: false, amount: 0.4 }}
+      viewport={{ once: true, amount: 0.4 }}
     >
       <div
         className="

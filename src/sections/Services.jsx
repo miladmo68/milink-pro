@@ -283,7 +283,7 @@
 //   );
 // }
 import React, { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import {
   CodeBracketIcon,
   DevicePhoneMobileIcon,
@@ -294,7 +294,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { services } from "../data/content.js";
-import { Reveal } from "../components/scroll-reveal.jsx";
+import { Reveal, REVEAL_EASE, REVEAL_DURATION_IN } from "../components/scroll-reveal.jsx";
 
 /* ===== Brand palette (Dark = همان قبلی) ===== */
 const BRAND = {
@@ -326,33 +326,38 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-/* ===== Motion variants: دقیقاً مثل Work ===== */
+/* ===== Motion variants (shared constants) ===== */
 const itemVariants = {
   hidden: { opacity: 0, y: 18, scale: 0.98 },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: REVEAL_DURATION_IN, ease: REVEAL_EASE },
   },
 };
 
 function InOutItem({ children, index = 0, delayStep = 0.06 }) {
   const ref = useRef(null);
+  const reduced = useReducedMotion();
   const inView = useInView(ref, { amount: 0.18, margin: "-10% 0% -10% 0%" });
+
+  const variants = reduced
+    ? { hidden: { opacity: 1, y: 0, scale: 1 }, show: { opacity: 1, y: 0, scale: 1 } }
+    : itemVariants;
 
   return (
     <motion.div
       ref={ref}
       initial="hidden"
       animate={inView ? "show" : "hidden"}
-      variants={itemVariants}
+      variants={variants}
       transition={{
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
-        delay: index * delayStep,
+        duration: reduced ? 0 : REVEAL_DURATION_IN,
+        ease: REVEAL_EASE,
+        delay: reduced ? 0 : index * delayStep,
       }}
-      className="will-change-transform"
+      className={reduced ? undefined : "will-change-transform"}
     >
       {children}
     </motion.div>
@@ -376,7 +381,7 @@ function FlippyInteractive({ front, back, className = "" }) {
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.6, ease: REVEAL_EASE }}
         className="relative w-full h-full rounded-2xl"
         style={{
           transformStyle: "preserve-3d",

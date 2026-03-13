@@ -89,12 +89,12 @@ export default function Work() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center">
-          <Reveal from="up" distance={20} once={false}>
+          <Reveal from="up" distance={20} >
             <h2 className="text-3xl md:text-4xl font-black tracking-tight">
               Our Work
             </h2>
           </Reveal>
-          <Reveal from="up" distance={16} delay={0.05} once={false}>
+          <Reveal from="up" distance={16} delay={0.05} >
             <p className="opacity-80 mt-3">
               Custom, responsive websites built for speed, clarity, and brand
               impact. Click a thumbnail to preview; live links included.
@@ -104,7 +104,7 @@ export default function Work() {
 
         {/* Desktop: horizontal accordion cards */}
         <div className="mt-10 hidden lg:block">
-          <Reveal asChild from="up" distance={18} delay={0.04} once={false}>
+          <Reveal asChild from="up" distance={18} delay={0.04} >
             <div
               className="
                 mx-auto flex gap-3
@@ -188,7 +188,6 @@ export default function Work() {
               from="up"
               distance={16}
               delay={i * 0.04}
-              once={false}
             >
               <article
                 className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-base-300/80 hover:bg-base-200 transition"
@@ -235,7 +234,7 @@ export default function Work() {
         </div>
 
         {/* CTA footer */}
-        {/* <Reveal from="up" distance={18} delay={0.04} once={false}>
+        {/* <Reveal from="up" distance={18} delay={0.04} >
           <div className="mt-8">
             <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/10 shadow-soft">
               <div className="card-body items-center text-center">
@@ -269,7 +268,7 @@ export default function Work() {
           </div>
         </Reveal> */}
         {/* CTA footer */}
-        <Reveal from="up" distance={18} delay={0.04} once={false}>
+        <Reveal from="up" distance={18} delay={0.04} >
           <div className="mt-8">
             <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/10 shadow-soft transition-all duration-500 hover:shadow-lg hover:ring-primary/20">
               <div className="card-body items-center text-center">
