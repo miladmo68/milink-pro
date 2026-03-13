@@ -7,28 +7,23 @@ export default function LogoFancy({
   idleSrc = "/logo.png",
   idleAlt = "MILINK Logo",
 
-  // متون (عادی و هاور)
   idleTitle = "MILINK",
   idleSubtitle = "DIGITAL AGENCY",
-  hoverTitle = "Design • Launch • Scale",
+  hoverTitle = "Design . Launch . Scale",
 
-  // استایل‌ها
   gradientClass = "gradient-text",
 
-  // فاصله‌ها/چسبندگی‌ها
-  iconGap = 2, // فاصله آیکون تا متن (px)
-  blockShiftY = 0, // شیفت عمودی حالت عادی
-  hoverCenterShiftY = -1, // شیفت عمودی حالت هاور
+  iconGap = 2, 
+  blockShiftY = 0, 
+  hoverCenterShiftY = -1, 
 }) {
   const [hovered, setHovered] = useState(false);
   const labelId = useId();
 
-  // کلمات
   const tIdle = useMemo(() => idleTitle.trim().split(/\s+/), [idleTitle]);
   const tHover = useMemo(() => hoverTitle.trim().split(/\s+/), [hoverTitle]);
   const tSub = useMemo(() => idleSubtitle.trim().split(/\s+/), [idleSubtitle]);
 
-  // واریانت‌ها
   const blockV = {
     hidden: { opacity: 0, y: 8, filter: "blur(2px)" },
     show: {
@@ -57,7 +52,6 @@ export default function LogoFancy({
     },
   };
 
-  // فاصله‌ی بین کلمات (برای عادی و هاور جدا)
   const WORD_GAP_IDLE = "mr-[0.35ch]";
   const WORD_GAP_HOVER = "mr-[0.25ch]";
 
@@ -73,7 +67,6 @@ export default function LogoFancy({
       onBlur={() => setHovered(false)}
       style={{ gap: `${iconGap}px` }}
     >
-      {/* آیکون */}
       <div className="relative h-12 w-auto md:h-16 lg:h-16 self-center -translate-y-[1px]">
         <img
           src={idleSrc}
