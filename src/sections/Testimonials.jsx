@@ -14,13 +14,10 @@ export default function Testimonials3DPro() {
   const len = items.length;
   if (!len) return null;
 
-  // ===== Brand
+  // ===== Brand — values read from CSS vars in globals.css
   const BRAND = {
-    rgb: "23 37 84", // primary dark blue: "23 37 84"
-    comma: "23, 37, 84",
-    hex: "#172554",
-    accentRGB: "56 189 248", // sky-400 style accent
-    accentComma: "56, 189, 248",
+    brand: "var(--brand)",
+    accent: "var(--brand-accent)",
   };
 
   const REDUCED = usePrefersReducedMotion();
@@ -118,12 +115,11 @@ export default function Testimonials3DPro() {
       id="testimonials"
       className="relative py-20 bg-base-200"
       style={{
-        ["--brand"]: BRAND.rgb,
         ["--card-h"]: "clamp(300px, 36vw, 380px)",
       }}
       aria-label="Client testimonials"
     >
-      <DecorBG brandComma={BRAND.comma} accentComma={BRAND.accentComma} />
+      <DecorBG />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <header className="text-center mb-12">
@@ -162,7 +158,7 @@ export default function Testimonials3DPro() {
               <div
                 className="pointer-events-none absolute -top-2 left-8 right-8 h-px"
                 style={{
-                  background: `linear-gradient(90deg, rgba(${BRAND.comma}, 0.35), rgba(${BRAND.accentComma}, 0.35), transparent)`,
+                  background: `linear-gradient(90deg, rgb(var(--brand) / 0.35), rgb(var(--brand-accent) / 0.35), transparent)`,
                 }}
               />
 
@@ -227,10 +223,10 @@ export default function Testimonials3DPro() {
                           className="relative rounded-2xl p-[1px]"
                           style={{
                             background: isCenter
-                              ? `linear-gradient(135deg, rgba(${BRAND.comma}, 0.85), rgba(${BRAND.accentComma}, 0.8))`
-                              : `linear-gradient(135deg, rgba(${BRAND.comma}, 0.18), rgba(${BRAND.accentComma}, 0.16))`,
+                              ? `linear-gradient(135deg, rgb(var(--brand) / 0.85), rgb(var(--brand-accent) / 0.8))`
+                              : `linear-gradient(135deg, rgb(var(--brand) / 0.18), rgb(var(--brand-accent) / 0.16))`,
                             boxShadow: isCenter
-                              ? `0 24px 80px -24px rgba(${BRAND.comma}, 0.55)`
+                              ? `0 24px 80px -24px rgb(var(--brand) / 0.55)`
                               : `0 16px 50px -28px rgba(0,0,0,.35)`,
                           }}
                         >
@@ -246,8 +242,8 @@ export default function Testimonials3DPro() {
                               className="h-[3px] rounded-t-2xl"
                               style={{
                                 background: isCenter
-                                  ? `linear-gradient(90deg, rgba(${BRAND.comma}, 1), rgba(${BRAND.accentComma}, .95))`
-                                  : `linear-gradient(90deg, rgba(${BRAND.comma}, .25), rgba(${BRAND.accentComma}, .25))`,
+                                  ? `linear-gradient(90deg, rgb(var(--brand)), rgb(var(--brand-accent) / 0.95))`
+                                  : `linear-gradient(90deg, rgb(var(--brand) / 0.25), rgb(var(--brand-accent) / 0.25))`,
                               }}
                             />
 
@@ -257,8 +253,6 @@ export default function Testimonials3DPro() {
                                 <Avatar
                                   src={t?.avatar}
                                   name={t?.name}
-                                  brandComma={BRAND.comma}
-                                  accentComma={BRAND.accentComma}
                                 />
                                 <div>
                                   <h4 className="font-semibold text-lg md:text-xl leading-tight">
@@ -275,7 +269,7 @@ export default function Testimonials3DPro() {
                                 <span
                                   className="absolute -top-6 left-0 text-5xl leading-none select-none"
                                   style={{
-                                    color: `rgba(${BRAND.accentComma}, .22)`,
+                                    color: `rgb(var(--brand-accent) / 0.22)`,
                                   }}
                                 >
                                   “
@@ -296,7 +290,7 @@ export default function Testimonials3DPro() {
                               <div
                                 className="mt-6 h-[2px] rounded-full"
                                 style={{
-                                  background: `linear-gradient(90deg, rgba(${BRAND.comma}, .22), rgba(${BRAND.accentComma}, .35))`,
+                                  background: `linear-gradient(90deg, rgb(var(--brand) / 0.22), rgb(var(--brand-accent) / 0.35))`,
                                 }}
                               />
                             </RevealStagger>
@@ -330,7 +324,7 @@ export default function Testimonials3DPro() {
                   )}
                   style={{
                     background: active
-                      ? `linear-gradient(90deg, rgba(${BRAND.comma}, 1), rgba(${BRAND.accentComma}, .95))`
+                      ? `linear-gradient(90deg, rgb(var(--brand)), rgb(var(--brand-accent) / 0.95))`
                       : `rgba(0,0,0,.18)`,
                     boxShadow: active
                       ? `0 0 0 2px rgba(255,255,255,.25)`
@@ -354,7 +348,7 @@ export default function Testimonials3DPro() {
   );
 }
 
-function DecorBG({ brandComma = "23, 37, 84", accentComma = "56, 189, 248" }) {
+function DecorBG() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
       {/* soft grid */}
@@ -370,7 +364,7 @@ function DecorBG({ brandComma = "23, 37, 84", accentComma = "56, 189, 248" }) {
       <div
         className="absolute inset-0 opacity-30"
         style={{
-          background: `linear-gradient(135deg, rgba(${brandComma}, .22) 0%, rgba(${brandComma}, 0) 40%), linear-gradient(315deg, rgba(${accentComma}, .18) 10%, rgba(${accentComma}, 0) 60%)`,
+          background: `linear-gradient(135deg, rgb(var(--brand) / 0.22) 0%, rgb(var(--brand) / 0) 40%), linear-gradient(315deg, rgb(var(--brand-accent) / 0.18) 10%, rgb(var(--brand-accent) / 0) 60%)`,
           maskImage:
             "radial-gradient(80% 55% at 50% -10%, #000 40%, transparent 70%)",
           WebkitMaskImage:
@@ -381,12 +375,7 @@ function DecorBG({ brandComma = "23, 37, 84", accentComma = "56, 189, 248" }) {
   );
 }
 
-function Avatar({
-  src,
-  name = "",
-  brandComma = "23, 37, 84",
-  accentComma = "56, 189, 248",
-}) {
+function Avatar({ src, name = "" }) {
   if (!src) {
     const initials = (name || "?")
       .split(" ")
@@ -406,7 +395,7 @@ function Avatar({
       <div
         className="w-12 md:w-14 rounded-full ring ring-offset-2 ring-offset-base-100 overflow-hidden"
         style={{
-          boxShadow: `0 0 0 2px rgba(${brandComma}, 0.22), 0 0 0 5px rgba(${accentComma}, 0.12)`,
+          boxShadow: `0 0 0 2px rgb(var(--brand) / 0.22), 0 0 0 5px rgb(var(--brand-accent) / 0.12)`,
         }}
       >
         <img src={src} alt={name} loading="lazy" />

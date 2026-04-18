@@ -161,14 +161,14 @@ export default function Hero({ onOpenLightbox }) {
                   transition hover:-translate-y-[3px] hover:scale-[1.03]
                   shadow-[0_20px_40px_rgba(0,0,0,0.4)]
                   hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
-                  border-white/40 ring-1 ring-[rgba(0,96,255,0.35)]
+                  border-white/40 ring-1 ring-[rgb(var(--brand)/0.35)]
                 "
                 style={{
                   boxShadow:
-                    "0 25px 60px rgba(0,0,0,0.75), 0 0 30px rgba(0,96,255,0.45)",
+                    "0 25px 60px rgba(0,0,0,0.75), 0 0 30px rgb(var(--brand) / 0.45)",
                   background:
-                    "radial-gradient(circle at 0% 0%, rgba(0,96,255,0.28) 0%, rgba(0,0,0,0) 70%), rgba(0,96,255,0.22)",
-                  borderColor: "rgba(0,96,255,0.5)",
+                    "radial-gradient(circle at 0% 0%, rgb(var(--brand) / 0.28) 0%, transparent 70%), rgb(var(--brand) / 0.22)",
+                  borderColor: "rgb(var(--brand) / 0.5)",
                 }}
               >
                 Get a Quote
@@ -315,9 +315,9 @@ function MediaSlider({
           ring-1 ring-base-content/10
         "
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-200/30 to-[rgba(0,96,255,0.15)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-200/30 to-[rgb(var(--brand)/0.15)]" />
         <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_40%,white,transparent)]">
-          <div className="absolute inset-0 bg-[rgba(0,96,255,0.25)] blur-3xl" />
+          <div className="absolute inset-0 bg-[rgb(var(--brand)/0.25)] blur-3xl" />
         </div>
 
         {/* slide */}
@@ -343,7 +343,7 @@ function MediaSlider({
         </div>
 
         {/* ring + controls + dots */}
-        <div className="pointer-events-none absolute -inset-px rounded-3xl ring-1 ring-[rgba(0,96,255,0.35)]" />
+        <div className="pointer-events-none absolute -inset-px rounded-3xl ring-1 ring-[rgb(var(--brand)/0.35)]" />
         <button
           className="btn btn-sm btn-ghost absolute left-2 top-1/2 -translate-y-1/2"
           onClick={prev}
@@ -366,7 +366,7 @@ function MediaSlider({
               onClick={() => goTo(i)}
               className={`h-2.5 rounded-full transition-all ${
                 i === index
-                  ? "w-6 bg-[rgb(0,96,255)]"
+                  ? "w-6 bg-[rgb(var(--brand))]"
                   : "w-2.5 bg-base-content/40"
               }`}
               aria-label={`Go to slide ${i + 1}`}

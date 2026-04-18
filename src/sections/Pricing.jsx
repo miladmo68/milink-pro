@@ -9,7 +9,6 @@ export default function Pricing() {
     <section
       id="pricing"
       className="relative py-20"
-      style={{ ["--brand"]: "59 130 246" }} // rgb(59,130,246) — آبی اصلی سایت
     >
       {/* ===== Background ===== */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">

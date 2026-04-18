@@ -22,7 +22,7 @@ const cardVariants = {
   hover: {
     y: -4,
     boxShadow:
-      "0 20px 48px -12px rgba(30,58,138,0.26), 0 0 0 1.5px rgba(59,130,246,0.4)",
+      "0 20px 48px -12px rgb(var(--brand) / 0.26), 0 0 0 1.5px rgb(var(--brand-soft) / 0.4)",
     transition: { duration: 0.4, ease: EASE },
   },
 };
@@ -333,8 +333,8 @@ function FocusInput({ inputRef, extraClass = "", ...props }) {
     <motion.div
       animate={{
         boxShadow: focused
-          ? "0 0 0 4px rgba(30,58,138,0.1)"
-          : "0 0 0 0px rgba(30,58,138,0)",
+          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
+          : "0 0 0 0px rgb(var(--brand) / 0)",
       }}
       transition={{ duration: 0.22 }}
       className="rounded-lg"
@@ -346,7 +346,7 @@ function FocusInput({ inputRef, extraClass = "", ...props }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={`input input-bordered w-full rounded-lg transition-all duration-300 ${
-          active ? "border-blue-500" : ""
+          active ? "border-[rgb(var(--brand))]" : ""
         } ${focused ? "bg-base-200/40" : ""} ${extraClass}`}
         {...props}
       />
@@ -364,8 +364,8 @@ function FocusTextarea({ ...props }) {
     <motion.div
       animate={{
         boxShadow: focused
-          ? "0 0 0 4px rgba(30,58,138,0.1)"
-          : "0 0 0 0px rgba(30,58,138,0)",
+          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
+          : "0 0 0 0px rgb(var(--brand) / 0)",
       }}
       transition={{ duration: 0.22 }}
       className="rounded-lg"
@@ -376,7 +376,7 @@ function FocusTextarea({ ...props }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={`textarea textarea-bordered w-full rounded-lg transition-all duration-300 resize-none ${
-          active ? "border-blue-500" : ""
+          active ? "border-[rgb(var(--brand))]" : ""
         } ${focused ? "bg-base-200/40" : ""}`}
         {...props}
       />

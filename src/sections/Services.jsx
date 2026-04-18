@@ -201,7 +201,7 @@
 //       className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
 //       aria-label={`${data.title} back`}
 //       style={{
-//         boxShadow: `0 0 0 1px rgba(59,130,246,0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
+//         boxShadow: `0 0 0 1px rgb(var(--brand-soft) / 0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
 //       }}
 //     >
 //       <div className="flex h-full flex-col">
@@ -296,23 +296,23 @@ import {
 import { services } from "../data/content.js";
 import { Reveal, REVEAL_EASE, REVEAL_DURATION_IN } from "../components/scroll-reveal.jsx";
 
-/* ===== Brand palette (Dark = همان قبلی) ===== */
+/* ===== Brand palette — values driven by CSS vars in globals.css ===== */
 const BRAND = {
-  baseFrom: "#0b1220",
-  baseVia: "#0a0f1a",
-  baseTo: "#0e1b33",
-  accent: "#3b82f6",
-  accentSoft: "#60a5fa",
+  baseFrom: "rgb(var(--dark-bg))",
+  baseVia: "rgb(var(--dark-bg-deep))",
+  baseTo: "rgb(var(--dark-bg-mid))",
+  accent: "rgb(var(--brand-soft))",
+  accentSoft: "rgb(var(--brand-accent))",
 };
 
-/* ===== Light palette (فقط برای Light mode) ===== */
+/* ===== Light palette ===== */
 const BRAND_LIGHT = {
   baseFrom: "#ffffff",
   baseVia: "#f5f7ff",
   baseTo: "#eef3ff",
-  text: "#0b1220",
-  textMuted: "rgba(11,18,32,0.70)",
-  ring: "rgba(59,130,246,0.22)",
+  text: "rgb(var(--dark-bg))",
+  textMuted: "rgb(var(--dark-bg) / 0.70)",
+  ring: "rgb(var(--brand-soft) / 0.22)",
   shadow: "0 10px 28px rgba(2, 6, 23, 0.10)",
 };
 
@@ -460,10 +460,10 @@ function ServiceCard({ data, isLight }) {
           : `linear-gradient(135deg, ${BRAND.baseFrom} 0%, ${BRAND.baseVia} 55%, ${BRAND.baseTo} 100%)`,
         boxShadow: isLight
           ? `0 0 0 1px ${BRAND_LIGHT.ring}, ${BRAND_LIGHT.shadow}`
-          : `0 0 0 1px rgba(59,130,246,0.18), 0 10px 28px rgba(0,0,0,0.35)`,
+          : `0 0 0 1px rgb(var(--brand-soft) / 0.18), 0 10px 28px rgba(0,0,0,0.35)`,
         borderColor: isLight
-          ? "rgba(59,130,246,0.22)"
-          : "rgba(59,130,246,0.28)",
+          ? "rgb(var(--brand-soft) / 0.22)"
+          : "rgb(var(--brand-soft) / 0.28)",
       }}
     >
       {data.badge && (
@@ -508,7 +508,7 @@ function ServiceCard({ data, isLight }) {
       className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
       aria-label={`${data.title} back`}
       style={{
-        boxShadow: `0 0 0 1px rgba(59,130,246,0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
+        boxShadow: `0 0 0 1px rgb(var(--brand-soft) / 0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
       }}
     >
       <div className="flex h-full flex-col">

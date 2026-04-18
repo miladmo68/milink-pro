@@ -17,9 +17,9 @@ function CTAButton({
   mobileGlow = false,
 }) {
   const baseShadow =
-    "inset 0 1px 3px rgba(255,255,255,0.65), 0 4px 14px rgba(0,96,255,0.25)";
+    "inset 0 1px 3px rgba(255,255,255,0.65), 0 4px 14px rgb(var(--brand) / 0.25)";
   const glowShadow =
-    "inset 0 0 0 1px rgba(0,96,255,0.85), inset 0 6px 18px rgba(0,96,255,0.15), 0 0 16px rgba(0,96,255,0.45), 0 10px 30px rgba(0,96,255,0.28)";
+    "inset 0 0 0 1px rgb(var(--brand) / 0.85), inset 0 6px 18px rgb(var(--brand) / 0.15), 0 0 16px rgb(var(--brand) / 0.45), 0 10px 30px rgb(var(--brand) / 0.28)";
 
   return (
     <motion.a
@@ -30,10 +30,10 @@ function CTAButton({
         scale: 1.02,
         backgroundColor: "rgba(245, 248, 255, 0.68)",
         backgroundImage:
-          "radial-gradient(circle at center, rgba(0,96,255,0.08) 0%, transparent 70%)",
+          "radial-gradient(circle at center, rgb(var(--brand) / 0.08) 0%, transparent 70%)",
         boxShadow:
-          "inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 22px rgba(0,96,255,0.30), 0 0 14px rgba(0,96,255,0.18)",
-        borderColor: borderless ? "transparent" : "#0060FF",
+          "inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 22px rgb(var(--brand) / 0.30), 0 0 14px rgb(var(--brand) / 0.18)",
+        borderColor: borderless ? "transparent" : "rgb(var(--brand))",
         filter: "brightness(1.02) saturate(1.05)",
       }}
       whileTap={{ scale: 0.985 }}
@@ -42,9 +42,9 @@ function CTAButton({
         wide ? "w-full justify-center px-4 py-3" : "px-4 py-2"
       }`}
       style={{
-        color: "#0060FF",
+        color: "rgb(var(--brand))",
         background: "rgba(255,255,255,0.55)",
-        border: borderless ? "none" : "1px solid #0060FF",
+        border: borderless ? "none" : "1px solid rgb(var(--brand))",
         boxShadow: mobileGlow ? glowShadow : baseShadow,
         backgroundImage: "none",
         backdropFilter: "blur(10px)",
@@ -52,7 +52,7 @@ function CTAButton({
           "background-color .25s, background-image .25s, box-shadow .25s, border-color .25s, filter .25s",
         overflow: "visible",
         filter: mobileGlow
-          ? "drop-shadow(0 0 10px rgba(0,96,255,0.45))"
+          ? "drop-shadow(0 0 10px rgb(var(--brand) / 0.45))"
           : undefined,
       }}
     >
@@ -62,8 +62,8 @@ function CTAButton({
           width: 8,
           height: 8,
           background:
-            "radial-gradient(circle at 30% 30%, #3B82F6, #0060FF 80%)",
-          boxShadow: "0 0 10px rgba(59,130,246,0.85)",
+            "radial-gradient(circle at 30% 30%, rgb(var(--brand-soft)), rgb(var(--brand)) 80%)",
+          boxShadow: "0 0 10px rgb(var(--brand-soft) / 0.85)",
         }}
       />
       <span>Book a Call</span>
@@ -74,14 +74,10 @@ function CTAButton({
 /* =========================
    Burger Button (Light/Dark)
 ========================= */
-const BRAND = { blueGlow: "rgba(0,107,206,0.45)" };
-
 function BurgerButton({ onClick, isLight }) {
   const btnBg = isLight
-    ? // Light
-      "radial-gradient(120% 120% at 30% 20%, rgba(0,96,255,0.10), rgba(255,255,255,0.92) 55%), linear-gradient(180deg, #FFFFFF, #F2F6FF)"
-    : // Dark (your original vibe)
-      "radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 60%), linear-gradient(180deg, #0E1422, #0A101B)";
+    ? "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.10), rgba(255,255,255,0.92) 55%), linear-gradient(180deg, #FFFFFF, #F2F6FF)"
+    : `radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 60%), linear-gradient(180deg, rgb(var(--dark-bg-mid)), rgb(var(--dark-bg-deep)))`;
 
   const btnBorder = isLight
     ? "1px solid rgba(0,0,0,0.10)"
@@ -90,16 +86,16 @@ function BurgerButton({ onClick, isLight }) {
   const btnShadow = isLight
     ? `inset 0 1px 2px rgba(255,255,255,0.70),
        0 0 0 2px rgba(0,0,0,0.06),
-       0 0 0 4px rgba(0,96,255,0.18),
+       0 0 0 4px rgb(var(--brand) / 0.18),
        0 14px 34px rgba(0,0,0,0.14)`
     : `inset 0 1px 2px rgba(255,255,255,0.10),
        0 0 0 2px rgba(255,255,255,0.20),
-       0 0 0 4px ${BRAND.blueGlow},
+       0 0 0 4px rgb(var(--brand) / 0.45),
        0 16px 40px rgba(0,0,0,0.35)`;
 
   const outerGlow = isLight
-    ? "0 0 22px rgba(0,96,255,0.18)"
-    : `0 0 26px ${BRAND.blueGlow}`;
+    ? "0 0 22px rgb(var(--brand) / 0.18)"
+    : "0 0 26px rgb(var(--brand) / 0.45)";
 
   const lineBg = isLight
     ? "linear-gradient(180deg, rgba(15,23,42,0.75), rgba(15,23,42,0.55))"
@@ -107,7 +103,7 @@ function BurgerButton({ onClick, isLight }) {
 
   const lineShadow = isLight
     ? "none"
-    : "0 0 8px rgba(255,255,255,0.25), 0 0 10px rgba(0,96,255,0.12)";
+    : "0 0 8px rgba(255,255,255,0.25), 0 0 10px rgb(var(--brand) / 0.12)";
 
   const topHighlight = isLight
     ? "linear-gradient(to right, transparent, rgba(0,0,0,0.18), transparent)"
@@ -156,8 +152,8 @@ function BurgerButton({ onClick, isLight }) {
 ========================= */
 function SocialIcon({ href, label, type }) {
   const isExternal = href.startsWith("http");
-  const glow1 = "rgba(0,96,255,0.55)";
-  const glow2 = "rgba(59,130,246,0.45)";
+  const glow1 = "rgb(var(--brand) / 0.55)";
+  const glow2 = "rgb(var(--brand-soft) / 0.45)";
   const edge = "rgba(255,255,255,0.14)";
 
   return (
@@ -422,7 +418,7 @@ export default function Navbar() {
 
   const linkUnderline =
     "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-full " +
-    "after:bg-[linear-gradient(90deg,transparent,rgba(56,189,248,0.95),rgba(0,96,255,0.95),transparent)] " +
+    "after:bg-[linear-gradient(90deg,transparent,rgb(var(--brand-accent)/0.95),rgb(var(--brand)/0.95),transparent)] " +
     "after:scale-x-0 after:origin-right after:transition-transform after:duration-300 after:blur-[0.2px] " +
     "hover:after:scale-x-100 hover:after:origin-left";
 
@@ -437,15 +433,15 @@ export default function Navbar() {
 
   // âœ… Mobile TOP pill: Dark = your old one, Light = bright version
   const MOBILE_PILL_BG = isLight
-    ? "radial-gradient(160% 140% at 85% 20%, rgba(0,118,255,0.10) 0%, rgba(0,118,255,0) 60%), linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,247,255,0.86))"
-    : "radial-gradient(160% 140% at 85% 20%, rgba(0,118,255,0.10) 0%, rgba(0,118,255,0) 60%), linear-gradient(180deg, rgba(26,30,40,0.92), rgba(14,18,28,0.88))";
+    ? "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,247,255,0.86))"
+    : "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(26,30,40,0.92), rgba(14,18,28,0.88))";
 
   const MOBILE_PILL_BORDER = isLight
     ? "1px solid rgba(0,0,0,0.08)"
     : "1px solid rgba(255,255,255,0.10)";
   const MOBILE_PILL_SHADOW = isLight
-    ? "0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgba(0,118,255,0.14), inset 0 1px 2px rgba(255,255,255,0.22)"
-    : "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgba(0,118,255,0.20), inset 0 1px 2px rgba(255,255,255,0.06)";
+    ? "0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgb(var(--brand) / 0.14), inset 0 1px 2px rgba(255,255,255,0.22)"
+    : "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgb(var(--brand) / 0.20), inset 0 1px 2px rgba(255,255,255,0.06)";
 
   // âœ… Drawer BG: Dark = your old one, Light = bright version
   const DRAWER_BG = isLight
@@ -456,7 +452,7 @@ export default function Navbar() {
   const DRAWER_MUTED = isLight
     ? "rgba(11,18,32,0.62)"
     : "rgba(255,255,255,0.72)";
-  const DRAWER_BORDER = isLight ? "rgba(0,96,255,0.18)" : "rgba(0,96,255,0.25)";
+  const DRAWER_BORDER = isLight ? "rgb(var(--brand) / 0.18)" : "rgb(var(--brand) / 0.25)";
   const CARD_BG = isLight
     ? "linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02))"
     : "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))";
@@ -554,10 +550,10 @@ export default function Navbar() {
                           }}
                           style={{
                             background:
-                              "linear-gradient(90deg, rgba(56,189,248,0.00), rgba(56,189,248,0.95), rgba(0,96,255,0.95), rgba(56,189,248,0.00))",
+                              "linear-gradient(90deg, rgb(var(--brand-accent)/0), rgb(var(--brand-accent)/0.95), rgb(var(--brand)/0.95), rgb(var(--brand-accent)/0))",
                             boxShadow: isLight
-                              ? "0 0 14px rgba(0,96,255,0.18), 0 10px 22px rgba(0,96,255,0.10)"
-                              : "0 0 18px rgba(0,96,255,0.30), 0 10px 26px rgba(0,96,255,0.18)",
+                              ? "0 0 14px rgb(var(--brand) / 0.18), 0 10px 22px rgb(var(--brand) / 0.10)"
+                              : "0 0 18px rgb(var(--brand) / 0.30), 0 10px 26px rgb(var(--brand) / 0.18)",
                             filter: "blur(0.1px)",
                           }}
                         />
@@ -655,7 +651,7 @@ export default function Navbar() {
                   background: DRAWER_BG,
                   borderLeft: `1px solid ${DRAWER_BORDER}`,
                   boxShadow:
-                    "0 30px 80px rgba(0,0,0,0.45), 0 0 60px rgba(0,96,255,0.1)",
+                    "0 30px 80px rgba(0,0,0,0.45), 0 0 60px rgb(var(--brand) / 0.1)",
                   backdropFilter: "blur(18px)",
                   paddingTop: "max(16px, env(safe-area-inset-top))",
                   paddingBottom: "max(12px, env(safe-area-inset-bottom))",
@@ -681,7 +677,7 @@ export default function Navbar() {
                           : "rgba(255,255,255,0.14)",
                         background: isLight
                           ? "linear-gradient(180deg, #FFFFFF, #F3F6FF)"
-                          : "linear-gradient(180deg, #0E1524, #0B111C)",
+                          : `linear-gradient(180deg, rgb(var(--dark-bg)), rgb(var(--dark-bg-deep)))`,
                         boxShadow: isLight
                           ? "inset 0 1px 2px rgba(255,255,255,0.5), 0 10px 22px rgba(0,0,0,0.12)"
                           : "inset 0 1px 2px rgba(255,255,255,0.06), 0 10px 22px rgba(0,0,0,0.35)",
@@ -714,7 +710,7 @@ export default function Navbar() {
                         background: isLight
                           ? "radial-gradient(circle at 30% 30%, rgba(0,0,0,0.06), rgba(0,0,0,0.02))"
                           : "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), rgba(255,255,255,0.06))",
-                        boxShadow: "0 0 20px rgba(0,96,255,0.25)",
+                        boxShadow: "0 0 20px rgb(var(--brand) / 0.25)",
                       }}
                       aria-label="Close menu"
                     >
@@ -769,7 +765,7 @@ export default function Navbar() {
                           className="absolute left-0 top-0 h-full w-[3px] opacity-70"
                           style={{
                             background:
-                              "linear-gradient(180deg, rgba(0,96,255,0.8), rgba(0,96,255,0.2))",
+                              "linear-gradient(180deg, rgb(var(--brand) / 0.8), rgb(var(--brand) / 0.2))",
                           }}
                         />
                         <span
@@ -777,7 +773,7 @@ export default function Navbar() {
                           className="pointer-events-none absolute -inset-10 opacity-0 blur-2xl group-hover:opacity-100 transition-opacity duration-300"
                           style={{
                             background:
-                              "radial-gradient(140px 60px at 50% 30%, rgba(0,96,255,0.16), transparent 70%)",
+                              "radial-gradient(140px 60px at 50% 30%, rgb(var(--brand) / 0.16), transparent 70%)",
                           }}
                         />
                         <div className="relative z-10 flex items-center gap-3">
@@ -785,8 +781,8 @@ export default function Navbar() {
                             className="h-2 w-2 rounded-full"
                             style={{
                               background:
-                                "radial-gradient(circle at 40% 40%, #73A6FF, #0060FF 80%)",
-                              boxShadow: "0 0 10px rgba(0,96,255,0.55)",
+                                "radial-gradient(circle at 40% 40%, rgb(var(--brand-soft)), rgb(var(--brand)) 80%)",
+                              boxShadow: "0 0 10px rgb(var(--brand) / 0.55)",
                             }}
                           />
                           <span className="text-[15px] font-medium tracking-wide">

@@ -48,6 +48,17 @@ body {
 :root {
   --grid-size: 14px;
   --grid-size-soft: 28px;
+
+  /* === Brand color tokens (space-separated RGB channels)
+       Usage: rgb(var(--brand) / 0.5)  or  rgb(var(--brand))
+       Change ONE value here → whole site updates               */
+  --brand:        0 96 255;    /* #0060FF — primary brand blue  */
+  --brand-soft:   59 130 246;  /* #3b82f6 — softer blue         */
+  --brand-accent: 56 189 248;  /* #38bdf8 — sky/cyan accent     */
+  --brand-gold:   212 175 55;  /* #d4af37 — gold                */
+  --dark-bg:      11 18 32;    /* #0b1220 — dark surface        */
+  --dark-bg-deep: 10 15 26;    /* #0a0f1a — deep dark           */
+  --dark-bg-mid:  14 20 34;    /* #0e1422 — mid dark            */
 }
 
 /* ===== Shared mask ===== */
@@ -307,11 +318,11 @@ body {
 .gradient-text {
   background-image: linear-gradient(
     90deg,
-    #38bdf8,
-    #22d3ee,
-    #3b82f6,
-    #22d3ee,
-    #38bdf8
+    rgb(var(--brand-accent)),
+    rgb(var(--brand-accent) / 0.8),
+    rgb(var(--brand-soft)),
+    rgb(var(--brand-accent) / 0.8),
+    rgb(var(--brand-accent))
   );
   background-size: 200% 200%;
   -webkit-background-clip: text;

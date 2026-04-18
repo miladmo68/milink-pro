@@ -97,11 +97,11 @@ export default {
       {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
-          primary: "#1b62a6",
+          primary: "#0060FF",
         },
         dark: {
           ...require("daisyui/src/theming/themes")["dark"],
-          primary: "#1b62a6",
+          primary: "#0060FF",
         },
       },
     ],
