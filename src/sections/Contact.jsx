@@ -162,7 +162,7 @@ export default function Contact() {
           <div className="badge badge-outline mb-1">Contact</div>
         </Reveal>
         <Reveal from="down" distance={20} delay={0.08}>
-          <h2 className="text-4xl sm:text-5xl font-semibold">Get In Touch</h2>
+          <h2 className="text-4xl sm:text-5xl font-semibold">Get In <span className="gradient-text-static">Touch</span></h2>
         </Reveal>
         <Reveal from="down" distance={16} delay={0.16}>
           <p className="opacity-70 max-w-lg mx-auto">

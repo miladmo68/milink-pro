@@ -89,13 +89,16 @@ export default function Work() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center">
-          <Reveal from="up" distance={20} >
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">
-              Our Work
+          <Reveal from="up" distance={12}>
+            <div className="badge badge-outline mb-3 tracking-wide">Portfolio</div>
+          </Reveal>
+          <Reveal from="up" distance={20}>
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+              Our <span className="gradient-text-static">Work</span>
             </h2>
           </Reveal>
-          <Reveal from="up" distance={16} delay={0.05} >
-            <p className="opacity-80 mt-3">
+          <Reveal from="up" distance={16} delay={0.05}>
+            <p className="opacity-70 mt-3">
               Custom, responsive websites built for speed, clarity, and brand
               impact. Click a thumbnail to preview; live links included.
             </p>

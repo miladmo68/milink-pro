@@ -2,7 +2,7 @@ import { pricing } from "../data/content.js";
 import { Check } from "lucide-react"; // optional
 
 // ⬇️ فقط این خط جدید اضافه شد
-import { RevealStagger, SlideIn } from "../components/scroll-reveal.jsx";
+import { Reveal, RevealStagger, SlideIn } from "../components/scroll-reveal.jsx";
 
 export default function Pricing() {
   return (
@@ -19,8 +19,11 @@ export default function Pricing() {
       <div className="container">
         {/* ===== Header ===== */}
         <div className="text-center max-w-2xl mx-auto">
+          <Reveal from="up" distance={12}>
+            <div className="badge badge-outline mb-3 tracking-wide">Our Packages</div>
+          </Reveal>
           <h2 className="mt-3 text-3xl md:text-5xl font-extrabold tracking-tight">
-            Pricing & Packages
+            <span className="gradient-text-static">Pricing</span> &amp; Packages
           </h2>
           <p className="mt-3 text-base-content/70">
             Choose what fits now—upgrade any time as you grow.

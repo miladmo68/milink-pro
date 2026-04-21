@@ -123,12 +123,15 @@ export default function Testimonials3DPro() {
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <header className="text-center mb-12">
+          <Reveal from="up" distance={12}>
+            <div className="badge badge-outline mb-3 tracking-wide">Client Stories</div>
+          </Reveal>
           <Reveal from="up" distance={20}>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-              What Clients Say
+              What Clients <span className="gradient-text-static">Say</span>
             </h2>
           </Reveal>
-          <p className="opacity-70 mt-2">Real feedback, real outcomes.</p>
+          <p className="opacity-70 mt-3">Real feedback, real outcomes.</p>
         </header>
 
         <div
