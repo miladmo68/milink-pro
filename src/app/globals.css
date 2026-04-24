@@ -109,25 +109,25 @@ html[data-theme="dark"] body {
   --section-hero-t:     oklch(0.340 0.068 258);
   --section-hero-m:     oklch(0.278 0.056 261);
   --section-hero-b:     oklch(0.224 0.046 264);
-  /* Services: rich navy field — wide L range makes gradient clearly visible */
-  --section-services-t: oklch(0.265 0.056 264);
-  --section-services-m: oklch(0.235 0.048 267);
-  --section-services-b: oklch(0.205 0.040 269);
-  /* Work: seam-matched to services-b, own descent */
-  --section-work-t:     oklch(0.205 0.040 269);
-  --section-work-m:     oklch(0.190 0.036 268);
-  --section-work-b:     oklch(0.174 0.031 269);
-  /* Pricing: deepest well — still clearly navy, not black */
-  --section-pricing-t:  oklch(0.174 0.031 269);
-  --section-pricing-m:  oklch(0.162 0.027 271);
-  --section-pricing-b:  oklch(0.148 0.024 273);
-  /* Testimonials: real lift from pricing — mid is visibly brighter */
-  --section-quote-t:    oklch(0.162 0.028 263);
-  --section-quote-m:    oklch(0.238 0.052 261);
-  --section-quote-b:    oklch(0.196 0.038 264);
-  /* Contact: descending ramp — seam with footer locked */
-  --section-contact-t:  oklch(0.196 0.038 264);
-  --section-contact-m:  oklch(0.178 0.033 266);
+  /* Services: wide L range — top clearly lighter, gradient unmistakable */
+  --section-services-t: oklch(0.300 0.062 260);
+  --section-services-m: oklch(0.250 0.052 264);
+  --section-services-b: oklch(0.200 0.042 267);
+  /* Work: seam-matched, own visible descent */
+  --section-work-t:     oklch(0.200 0.042 267);
+  --section-work-m:     oklch(0.182 0.037 267);
+  --section-work-b:     oklch(0.166 0.032 268);
+  /* Pricing: deepest well — navy not black at all levels */
+  --section-pricing-t:  oklch(0.166 0.032 268);
+  --section-pricing-m:  oklch(0.152 0.027 270);
+  --section-pricing-b:  oklch(0.138 0.024 272);
+  /* Testimonials: strong lift — mid visibly brighter than pricing */
+  --section-quote-t:    oklch(0.155 0.028 263);
+  --section-quote-m:    oklch(0.270 0.058 260);
+  --section-quote-b:    oklch(0.210 0.044 264);
+  /* Contact: smooth ramp down — seam with footer locked */
+  --section-contact-t:  oklch(0.210 0.044 264);
+  --section-contact-m:  oklch(0.185 0.036 266);
   --section-contact-b:  oklch(0.162 0.030 268);
   --section-contact-join: oklch(0.155 0.028 268);
   /* Footer: integrated handoff, not a black block */
@@ -158,6 +158,15 @@ html[data-theme="dark"] {
   );
 }
 
+/* Force stacking context on sections so -z-10 depth divs paint inside the section, not behind it */
+html[data-theme="dark"] #services,
+html[data-theme="dark"] #work,
+html[data-theme="dark"] #pricing,
+html[data-theme="dark"] #testimonials,
+html[data-theme="dark"] #contact {
+  isolation: isolate;
+}
+
 /* Per-section depth: each block paints its own local field (body = flat canvas) */
 .section-depth-hero,
 .section-depth-services,
@@ -178,11 +187,8 @@ html[data-theme="dark"] .section-depth-hero {
   background-color: var(--section-hero-b);
 }
 html[data-theme="dark"] .section-depth-services {
-  /* Navy field — one wide top-right bloom for character */
-  background:
-    radial-gradient(70% 55% at 100% 0%, oklch(0.30 0.072 268 / 0.18) 0%, transparent 65%),
-    linear-gradient(180deg, var(--section-services-t) 0%, var(--section-services-m) 50%, var(--section-services-b) 100%);
-  background-color: var(--section-services-b);
+  /* VISIBILITY TEST — bright saturated blue to confirm layer renders */
+  background: linear-gradient(180deg, #1a3f7a 0%, #0d1f4a 100%) !important;
 }
 html[data-theme="dark"] .section-depth-work {
   /* Midtone navy — one wide left-side field bloom */
