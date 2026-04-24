@@ -432,18 +432,18 @@ export default function Navbar() {
 
   // Dark keeps improved tone via var(--nav-pill-grad); same pill structure as before (brand radial + 2-stop linear)
   const MOBILE_PILL_BG = isLight
-    ? "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,247,255,0.86))"
+    ? "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(238,245,254,0.95), rgba(228,239,252,0.91))"
     : "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), var(--nav-pill-grad)";
 
   const MOBILE_PILL_BORDER = isLight
-    ? "1px solid rgba(0,0,0,0.08)"
+    ? "1px solid rgba(13,24,41,0.14)"
     : "1px solid var(--surface-border)";
   const MOBILE_PILL_SHADOW = isLight
     ? "0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgb(var(--brand) / 0.14), inset 0 1px 2px rgba(255,255,255,0.22)"
     : "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgb(var(--brand) / 0.20), inset 0 1px 2px rgba(255,255,255,0.06)";
 
   const DRAWER_BG = isLight
-    ? "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,255,0.94))"
+    ? "linear-gradient(180deg, rgba(238,246,254,0.98), rgba(228,240,252,0.97))"
     : "var(--nav-drawer-grad)";
 
   const DRAWER_TEXT = isLight ? "#0B1220" : "var(--text-primary)";
