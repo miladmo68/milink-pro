@@ -99,10 +99,10 @@ export default {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
           primary: "#0060FF",
-          "base-100": "#ffffff",
-          "base-200": "#f3f3f6",   // barely-off-white for alt sections
-          "base-300": "#e5e5ea",   // clean borders
-          "base-content": "#111118",
+          "base-100": "#eaf1fb",   // light blue-tinted page/section canvas
+          "base-200": "#dfe8f5",   // slightly deeper alt-section tint
+          "base-300": "#c8d8ec",   // soft blue-gray border
+          "base-content": "#0d1829",  // deep navy
         },
         dark: {
           ...require("daisyui/src/theming/themes")["dark"],
