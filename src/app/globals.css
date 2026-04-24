@@ -139,22 +139,22 @@ html[data-theme="dark"] body {
   --text-muted:     oklch(0.65 0.02 265);
 }
 
-/* Nav (dark): improved tone for mobile pill + drawer (desktop row stays structurally transparent) */
+/* Nav (dark): slightly lighter pill + drawer (desktop row stays structurally transparent) */
 html[data-theme="dark"] {
   --nav-pill-grad: linear-gradient(
     180deg,
-    oklch(0.44 0.048 264 / 0.94) 0%,
-    oklch(0.32 0.04 264 / 0.9) 100%
+    oklch(0.52 0.048 264 / 0.92) 0%,
+    oklch(0.40 0.040 264 / 0.88) 100%
   );
   --nav-drawer-grad: linear-gradient(
     180deg,
-    oklch(0.4 0.044 264 / 0.98) 0%,
-    oklch(0.3 0.036 264 / 0.96) 100%
+    oklch(0.48 0.044 264 / 0.97) 0%,
+    oklch(0.37 0.036 264 / 0.95) 100%
   );
   --nav-burger-grad: linear-gradient(
     180deg,
-    oklch(0.4 0.043 264) 0%,
-    oklch(0.32 0.037 264) 100%
+    oklch(0.48 0.043 264) 0%,
+    oklch(0.40 0.037 264) 100%
   );
 }
 
@@ -187,8 +187,11 @@ html[data-theme="dark"] .section-depth-hero {
   background-color: var(--section-hero-b);
 }
 html[data-theme="dark"] .section-depth-services {
-  /* VISIBILITY TEST — bright saturated blue to confirm layer renders */
-  background: linear-gradient(180deg, #1a3f7a 0%, #0d1f4a 100%) !important;
+  /* Navy field — calmer than test, clearly not black */
+  background:
+    radial-gradient(70% 55% at 100% 0%, oklch(0.30 0.072 268 / 0.16) 0%, transparent 65%),
+    linear-gradient(180deg, var(--section-services-t) 0%, var(--section-services-m) 50%, var(--section-services-b) 100%);
+  background-color: var(--section-services-b);
 }
 html[data-theme="dark"] .section-depth-work {
   /* Midtone navy — one wide left-side field bloom */
