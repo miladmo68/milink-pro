@@ -113,25 +113,31 @@ export default function Testimonials3DPro() {
   return (
     <section
       id="testimonials"
-      className="relative py-20 bg-base-200"
+      className="relative overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
       style={{
         ["--card-h"]: "clamp(300px, 36vw, 380px)",
       }}
       aria-label="Client testimonials"
     >
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
+        aria-hidden
+      >
+        <div className="section-depth-quote" />
+      </div>
       <DecorBG />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <header className="text-center mb-12">
+        <header className="text-center mb-14 max-w-2xl mx-auto">
           <Reveal from="up" distance={12}>
-            <div className="badge badge-outline mb-3 tracking-wide">Client Stories</div>
+            <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Client Stories</div>
           </Reveal>
           <Reveal from="up" distance={20}>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
               What Clients <span className="gradient-text-static">Say</span>
             </h2>
           </Reveal>
-          <p className="opacity-70 mt-3">Real feedback, real outcomes.</p>
+          <p className="text-base-content/58 mt-4 text-sm max-w-sm mx-auto">Real feedback, real outcomes.</p>
         </header>
 
         <div
@@ -235,8 +241,8 @@ export default function Testimonials3DPro() {
                         >
                           <div
                             className={cx(
-                              "relative z-10 rounded-2xl border bg-base-100",
-                              "border-white/10 shadow-[0_10px_30px_-12px_rgba(0,0,0,.30)]"
+                              "relative z-10 rounded-2xl bg-base-100 border border-white/10 shadow-[0_10px_30px_-12px_rgba(0,0,0,.30)]",
+                              "dark:!border-0 dark:!bg-transparent dark:shadow-[0_18px_48px_-18px_rgba(0,0,0,0.5)] card-surface"
                             )}
                             style={{ minHeight: "var(--card-h)" }}
                           >
@@ -261,14 +267,14 @@ export default function Testimonials3DPro() {
                                   <h4 className="font-semibold text-lg md:text-xl leading-tight">
                                     {t?.name}
                                   </h4>
-                                  <p className="text-xs md:text-sm text-base-content/70">
+                                  <p className="text-xs md:text-sm text-base-content/75">
                                     {t?.role}
                                     {t?.company ? ` • ${t.company}` : ""}
                                   </p>
                                 </div>
                               </div>
 
-                              <blockquote className="mt-4 text-left leading-8 md:leading-8 text-[15px] md:text-[17px] text-base-content/90 relative">
+                              <blockquote className="mt-4 text-left leading-[1.7] md:leading-[1.75] text-[15px] md:text-[17px] text-base-content/92 relative">
                                 <span
                                   className="absolute -top-6 left-0 text-5xl leading-none select-none"
                                   style={{
@@ -322,17 +328,13 @@ export default function Testimonials3DPro() {
                   onClick={() => goTo(i)}
                   aria-label={`Go to ${i + 1}`}
                   className={cx(
-                    "h-2 rounded-full transition-all",
-                    active ? "w-8" : "w-3"
+                    "h-2 rounded-full transition-all duration-300",
+                    active ? "w-8" : "w-3 bg-base-content/20"
                   )}
-                  style={{
-                    background: active
-                      ? `linear-gradient(90deg, rgb(var(--brand)), rgb(var(--brand-accent) / 0.95))`
-                      : `rgba(0,0,0,.18)`,
-                    boxShadow: active
-                      ? `0 0 0 2px rgba(255,255,255,.25)`
-                      : "none",
-                  }}
+                  style={active ? {
+                    background: `linear-gradient(90deg, rgb(var(--brand)), rgb(var(--brand-accent) / 0.95))`,
+                    boxShadow: `0 0 0 2px rgba(255,255,255,.18)`,
+                  } : undefined}
                 />
               );
             })}
@@ -365,9 +367,9 @@ function DecorBG() {
       />
       {/* angled color wash */}
       <div
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-[0.18] dark:opacity-[0.14]"
         style={{
-          background: `linear-gradient(135deg, rgb(var(--brand) / 0.22) 0%, rgb(var(--brand) / 0) 40%), linear-gradient(315deg, rgb(var(--brand-accent) / 0.18) 10%, rgb(var(--brand-accent) / 0) 60%)`,
+          background: `linear-gradient(135deg, rgb(var(--brand) / 0.12) 0%, rgb(var(--brand) / 0) 40%), linear-gradient(315deg, rgb(var(--brand-accent) / 0.1) 10%, rgb(var(--brand-accent) / 0) 60%)`,
           maskImage:
             "radial-gradient(80% 55% at 50% -10%, #000 40%, transparent 70%)",
           WebkitMaskImage:

@@ -14,9 +14,9 @@ import { Reveal, REVEAL_EASE, REVEAL_DURATION_IN } from "../components/scroll-re
 
 /* ===== Brand palette — values driven by CSS vars in globals.css ===== */
 const BRAND = {
-  baseFrom: "rgb(var(--dark-bg))",
-  baseVia: "rgb(var(--dark-bg-deep))",
-  baseTo: "rgb(var(--dark-bg-mid))",
+  baseFrom: "var(--surface-card)",
+  baseVia: "var(--bg-alt)",
+  baseTo: "var(--surface-hover)",
   accent: "rgb(var(--brand-soft))",
   accentSoft: "rgb(var(--brand-accent))",
 };
@@ -26,8 +26,8 @@ const BRAND_LIGHT = {
   baseFrom: "#ffffff",
   baseVia: "#f5f7ff",
   baseTo: "#eef3ff",
-  text: "rgb(var(--dark-bg))",
-  textMuted: "rgb(var(--dark-bg) / 0.70)",
+  text: "var(--text-primary)",
+  textMuted: "var(--text-secondary)",
   ring: "rgb(var(--brand-soft) / 0.22)",
   shadow: "0 10px 28px rgba(2, 6, 23, 0.10)",
 };
@@ -168,7 +168,7 @@ function ServiceCard({ data, isLight }) {
 
   const Front = (
     <article
-      className={`relative h-full p-6 rounded-2xl shadow-md ring-1 ${frontTextClass}`}
+      className={`relative h-full p-7 rounded-2xl ${frontTextClass}`}
       aria-label={`${data.title} front`}
       style={{
         background: isLight
@@ -176,10 +176,7 @@ function ServiceCard({ data, isLight }) {
           : `linear-gradient(135deg, ${BRAND.baseFrom} 0%, ${BRAND.baseVia} 55%, ${BRAND.baseTo} 100%)`,
         boxShadow: isLight
           ? `0 0 0 1px ${BRAND_LIGHT.ring}, ${BRAND_LIGHT.shadow}`
-          : `0 0 0 1px rgb(var(--brand-soft) / 0.18), 0 10px 28px rgba(0,0,0,0.35)`,
-        borderColor: isLight
-          ? "rgb(var(--brand-soft) / 0.22)"
-          : "rgb(var(--brand-soft) / 0.28)",
+          : `0 0 0 1px rgb(var(--brand-soft) / 0.14), 0 2px 6px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.55)`,
       }}
     >
       {data.badge && (
@@ -192,8 +189,8 @@ function ServiceCard({ data, isLight }) {
         </motion.span>
       )}
 
-      <div className="flex h-full flex-col items-center justify-center text-center gap-3 relative z-[1]">
-        <Icon className="h-12 w-12" style={{ color: BRAND.accentSoft }} />
+      <div className="flex h-full flex-col items-center justify-center text-center gap-4 relative z-[1]">
+        <Icon className="h-10 w-10" style={{ color: BRAND.accentSoft }} />
         <h3 className="text-xl font-semibold">{data.title}</h3>
         <p className="max-w-[28ch]" style={frontDescStyle}>
           {data.desc}
@@ -211,7 +208,7 @@ function ServiceCard({ data, isLight }) {
         aria-hidden
         className="pointer-events-none absolute right-[-60px] bottom-[-60px] w-[260px] h-[260px] rounded-full blur-2xl"
         style={{
-          opacity: isLight ? 0.18 : 0.25,
+          opacity: isLight ? 0.14 : 0.12,
           background: `radial-gradient(50% 50% at 50% 50%, ${BRAND.accentSoft} 0%, rgba(96,165,250,0) 60%)`,
         }}
       />
@@ -221,14 +218,14 @@ function ServiceCard({ data, isLight }) {
   /* ========= BACK: already theme-friendly ========= */
   const Back = (
     <article
-      className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur"
+      className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur border border-base-300 dark:!border-0 card-surface dark:!bg-transparent"
       aria-label={`${data.title} back`}
       style={{
-        boxShadow: `0 0 0 1px rgb(var(--brand-soft) / 0.28) inset, 0 10px 28px rgba(2, 6, 23, 0.25)`,
+        boxShadow: `0 0 0 1px rgb(var(--brand-soft) / 0.20) inset, 0 12px 40px rgba(0,0,0,0.50)`,
       }}
     >
       <div className="flex h-full flex-col">
-        <div className="px-6 pt-6 text-center">
+        <div className="px-7 pt-7 text-center">
           <h4
             className="text-[1.2rem] leading-6 font-semibold tracking-wide"
             style={{ color: BRAND.accent }}
@@ -239,20 +236,20 @@ function ServiceCard({ data, isLight }) {
 
         <div
           ref={bodyRef}
-          className={`grow px-6 mt-2 pb-6 ${
+          className={`grow px-7 mt-2 pb-7 ${
             needsScroll
               ? "overflow-y-auto overscroll-contain"
               : "overflow-hidden"
           }`}
           style={{ scrollbarWidth: "thin" }}
         >
-          <p className="opacity-80">
+          <p className="text-base-content/82">
             {data.longDesc ||
               "We keep it simple and reliable — so you can trust us to get it done right."}
           </p>
 
           {data.bullets?.length > 0 && (
-            <ul className="mt-3 space-y-1.5 text-sm opacity-90">
+            <ul className="mt-3 space-y-1.5 text-sm text-base-content/90">
               {data.bullets.map((b, i) => (
                 <li key={i}>— {b}</li>
               ))}
@@ -301,32 +298,37 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" className="py-20 bg-base-100">
+    <section
+      id="services"
+      className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
+    >
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
+        aria-hidden
+      >
+        <div className="section-depth-services" />
+      </div>
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center">
           <Reveal from="up" distance={12}>
-            <div className="badge badge-outline mb-3 tracking-wide">What We Build</div>
+            <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">What We Build</div>
           </Reveal>
           <Reveal from="up" distance={20}>
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
               Our <span className="gradient-text-static">Services</span>
             </h2>
           </Reveal>
           <Reveal from="up" distance={16} delay={0.05}>
-            <p className="opacity-70 mt-3">Design • Build • Grow</p>
+            <p className="text-base-content/58 mt-4 text-sm tracking-[0.04em] max-w-sm mx-auto">Design • Build • Grow</p>
           </Reveal>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((s, i) => (
             <InOutItem key={s.id} index={i}>
               <ServiceCard data={s} isLight={isLight} />
             </InOutItem>
           ))}
-        </div>
-
-        <div className="mt-10 grid place-items-center">
-          <div className="h-0.5 w-24 bg-primary/70 rounded-full" />
         </div>
       </div>
     </section>

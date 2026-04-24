@@ -75,6 +75,10 @@ export default function Hero({ onOpenLightbox }) {
     <section id="home" className="relative z-0 bg-transparent">
       {/* ===== Background ===== */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="section-depth-hero pointer-events-none absolute inset-0 hidden dark:block"
+          aria-hidden
+        />
         {!fallback ? (
           <video
             ref={videoRef}
@@ -109,17 +113,17 @@ export default function Hero({ onOpenLightbox }) {
 
       {/* ===== Foreground ===== */}
       <div className="relative z-10">
-        <div className="container grid items-center gap-10 md:grid-cols-2 py-24 md:py-14">
+        <div className="container grid items-center gap-10 lg:gap-14 md:grid-cols-2 py-28 md:py-20">
           {/* Left text / CTA */}
           <motion.div
-            className="flex flex-col mt-12 md:mt-0 items-center text-center md:items-start md:text-left"
+            className="flex flex-col mt-8 md:mt-0 items-center text-center md:items-start md:text-left"
             variants={parent}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.25 }}
           >
             <motion.div
-              className="badge badge-primary badge-lg mb-6"
+              className="badge badge-primary mb-6 text-xs font-medium tracking-[0.07em] uppercase px-3.5 py-1.5 h-auto"
               variants={fadeUp}
               custom={0.2}
               whileHover={{ scale: 1.06 }}
@@ -128,7 +132,7 @@ export default function Hero({ onOpenLightbox }) {
             </motion.div>
 
             <motion.h1
-              className="leading-tight mb-5 md:mb-6"
+              className="leading-[1.1] md:leading-[1.06] mb-6"
               variants={fadeUp}
               custom={0.4}
             >
@@ -139,7 +143,7 @@ export default function Hero({ onOpenLightbox }) {
             </motion.h1>
 
             <motion.p
-              className="mt-1 md:mt-2 mb-8 md:mb-10 text-lg opacity-90 max-w-prose md:max-w-xl"
+              className="mb-9 md:mb-10 text-[1.0625rem] leading-relaxed opacity-80 max-w-[40ch]"
               variants={fadeUp}
               custom={0.6}
             >
@@ -154,21 +158,11 @@ export default function Hero({ onOpenLightbox }) {
             >
               <a
                 href="#contact"
-                className="
-                  inline-flex items-center justify-center
-                  px-5 py-3 rounded-full font-semibold leading-none
-                  border-2 text-white bg-white/15 backdrop-blur-md
-                  transition hover:-translate-y-[3px] hover:scale-[1.03]
-                  shadow-[0_20px_40px_rgba(0,0,0,0.4)]
-                  hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
-                  border-white/40 ring-1 ring-[rgb(var(--brand)/0.35)]
-                "
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full font-semibold leading-none tracking-[0.015em] text-white transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
                 style={{
+                  background: "rgb(var(--brand))",
                   boxShadow:
-                    "0 25px 60px rgba(0,0,0,0.75), 0 0 30px rgb(var(--brand) / 0.45)",
-                  background:
-                    "radial-gradient(circle at 0% 0%, rgb(var(--brand) / 0.28) 0%, transparent 70%), rgb(var(--brand) / 0.22)",
-                  borderColor: "rgb(var(--brand) / 0.5)",
+                    "0 0 0 1px rgb(var(--brand) / 0.55), 0 4px 24px rgb(var(--brand) / 0.40)",
                 }}
               >
                 Get a Quote
@@ -176,34 +170,36 @@ export default function Hero({ onOpenLightbox }) {
 
               <a
                 href="#work"
-                className="
-                  inline-flex items-center justify-center
-                  px-5 py-3 rounded-full font-semibold leading-none
-                  border-2 border-white/40 text-white
-                  bg-white/12 backdrop-blur-md
-                  transition hover:-translate-y-[3px] hover:scale-[1.03]
-                  shadow-[0_20px_40px_rgba(0,0,0,0.4)]
-                  hover:shadow-[0_30px_60px_rgba(0,0,0,0.6)]
-                "
+                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full font-semibold leading-none tracking-[0.015em] border backdrop-blur-sm transition-all duration-200"
+                style={{
+                  color: "var(--text-secondary)",
+                  borderColor: "var(--btn-secondary-border)",
+                  background: "var(--btn-secondary-bg)",
+                }}
               >
                 See our work
               </a>
             </motion.div>
 
             <motion.div
-              className="mt-6 flex items-center justify-center gap-2 text-[12px] sm:text-[13px] flex-nowrap whitespace-nowrap"
+              className="mt-9 md:mt-8 flex flex-wrap items-center justify-center md:justify-start gap-2 text-[12px] sm:text-[13px]"
               variants={fadeInRow}
               custom={1.0}
             >
-              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
-                Web Design
-              </span>
-              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
-                E-Commerce
-              </span>
-              <span className="shrink-0 rounded-box bg-base-200 px-2.5 py-1">
-                SEO-Ready
-              </span>
+              {["Web Design", "E-Commerce", "SEO-Ready"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full px-3.5 py-1.5 font-medium tracking-[0.03em]"
+                  style={{
+                    background: "var(--tag-bg)",
+                    border: "1px solid var(--tag-border)",
+                    color: "var(--text-secondary)",
+                    backdropFilter: "blur(6px)",
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
             </motion.div>
           </motion.div>
 

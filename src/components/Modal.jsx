@@ -16,13 +16,13 @@ export default function Modal({ payload, onClose }) {
   const stop = (e) => e.stopPropagation();
   return (
     <div
-      className="fixed inset-0 z-[999] bg-black/60 backdrop-blur flex items-center justify-center p-4"
+      className="fixed inset-0 z-[999] bg-[color:var(--scrim)] backdrop-blur flex items-center justify-center p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="max-w-2xl w-full bg-base-100 rounded-2xl p-6 relative"
+        className="max-w-2xl w-full bg-base-100 rounded-2xl border border-[color:var(--surface-border)] p-6 relative dark:!border-0 dark:!bg-transparent card-surface"
         onClick={stop}
       >
         <button
@@ -41,7 +41,7 @@ export default function Modal({ payload, onClose }) {
             loading="lazy"
           />
         )}
-        {payload.text && <p className="opacity-80 mt-3">{payload.text}</p>}
+        {payload.text && <p className="mt-3 text-[color:var(--text-secondary)]">{payload.text}</p>}
         {Array.isArray(payload.list) && (
           <ul className="mt-3 space-y-2">
             {payload.list.map((x, i) => (

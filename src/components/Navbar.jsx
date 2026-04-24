@@ -77,11 +77,11 @@ function CTAButton({
 function BurgerButton({ onClick, isLight }) {
   const btnBg = isLight
     ? "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.10), rgba(255,255,255,0.92) 55%), linear-gradient(180deg, #FFFFFF, #F2F6FF)"
-    : `radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 60%), linear-gradient(180deg, rgb(var(--dark-bg-mid)), rgb(var(--dark-bg-deep)))`;
+    : "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.12), transparent 60%), var(--nav-burger-grad)";
 
   const btnBorder = isLight
     ? "1px solid rgba(0,0,0,0.10)"
-    : "1px solid rgba(255,255,255,0.12)";
+    : "1px solid var(--surface-border)";
 
   const btnShadow = isLight
     ? `inset 0 1px 2px rgba(255,255,255,0.70),
@@ -166,7 +166,7 @@ function SocialIcon({ href, label, type }) {
       style={{
         border: `1px solid ${edge}`,
         background:
-          "radial-gradient(120% 120% at 0% 0%, rgba(59,130,246,0.25), rgba(0,0,0,0) 60%), radial-gradient(120% 120% at 80% 20%, rgba(0,96,255,0.25), rgba(0,0,0,0) 70%), rgba(15,23,42,0.78)",
+          "radial-gradient(120% 120% at 0% 0%, rgba(59,130,246,0.25), transparent 60%), radial-gradient(120% 120% at 80% 20%, rgba(0,96,255,0.25), transparent 70%), var(--frost-78)",
         boxShadow: `0 10px 22px rgba(0,0,0,0.35), 0 0 18px ${glow1}, 0 0 36px ${glow2}`,
         backdropFilter: "blur(6px) saturate(160%)",
         WebkitBackdropFilter: "blur(6px) saturate(160%)",
@@ -414,7 +414,7 @@ export default function Navbar() {
   // âœ… Desktop link styles: Light readable, Dark same vibe
   const linkBase = isLight
     ? "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-black/70 hover:text-black transition"
-    : "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-white/75 hover:text-white transition";
+    : "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition";
 
   const linkUnderline =
     "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-full " +
@@ -424,39 +424,37 @@ export default function Navbar() {
 
   const linkActive = isLight
     ? "text-black drop-shadow-[0_10px_30px_rgba(0,96,255,0.20)]"
-    : "text-white drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
+    : "text-[color:var(--text-primary)] drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
 
-  // Desktop pill disabled
   const DESKTOP_BAR_BG = "transparent";
   const DESKTOP_BAR_BORDER = "1px solid transparent";
   const DESKTOP_BAR_SHADOW = "none";
 
-  // âœ… Mobile TOP pill: Dark = your old one, Light = bright version
+  // Dark keeps improved tone via var(--nav-pill-grad); same pill structure as before (brand radial + 2-stop linear)
   const MOBILE_PILL_BG = isLight
     ? "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,247,255,0.86))"
-    : "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(26,30,40,0.92), rgba(14,18,28,0.88))";
+    : "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), var(--nav-pill-grad)";
 
   const MOBILE_PILL_BORDER = isLight
     ? "1px solid rgba(0,0,0,0.08)"
-    : "1px solid rgba(255,255,255,0.10)";
+    : "1px solid var(--surface-border)";
   const MOBILE_PILL_SHADOW = isLight
     ? "0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgb(var(--brand) / 0.14), inset 0 1px 2px rgba(255,255,255,0.22)"
     : "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgb(var(--brand) / 0.20), inset 0 1px 2px rgba(255,255,255,0.06)";
 
-  // âœ… Drawer BG: Dark = your old one, Light = bright version
   const DRAWER_BG = isLight
     ? "linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,255,0.94))"
-    : "linear-gradient(180deg, rgba(10,14,23,0.94), rgba(10,14,23,0.92))";
+    : "var(--nav-drawer-grad)";
 
-  const DRAWER_TEXT = isLight ? "#0B1220" : "#ffffff";
+  const DRAWER_TEXT = isLight ? "#0B1220" : "var(--text-primary)";
   const DRAWER_MUTED = isLight
     ? "rgba(11,18,32,0.62)"
-    : "rgba(255,255,255,0.72)";
+    : "var(--text-secondary)";
   const DRAWER_BORDER = isLight ? "rgb(var(--brand) / 0.18)" : "rgb(var(--brand) / 0.25)";
   const CARD_BG = isLight
     ? "linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02))"
-    : "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))";
-  const CARD_BORDER = isLight ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.12)";
+    : "linear-gradient(180deg, var(--surface-card), var(--surface-hover))";
+  const CARD_BORDER = isLight ? "rgba(0,0,0,0.10)" : "var(--surface-border)";
   const CARD_SHADOW = isLight
     ? "0 12px 24px rgba(0,0,0,0.10)"
     : "0 12px 24px rgba(0,0,0,0.35)";
@@ -629,7 +627,7 @@ export default function Navbar() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 aria-label="Close menu overlay"
-                className="fixed inset-0 z-[95] md:hidden bg-[rgba(0,0,0,0.62)] backdrop-blur-[8px]"
+                className="fixed inset-0 z-[95] md:hidden bg-[color:var(--scrim-68)] backdrop-blur-[8px]"
               />
 
               <motion.aside
@@ -674,10 +672,10 @@ export default function Navbar() {
                       style={{
                         borderColor: isLight
                           ? "rgba(0,0,0,0.10)"
-                          : "rgba(255,255,255,0.14)",
+                          : "var(--surface-border)",
                         background: isLight
                           ? "linear-gradient(180deg, #FFFFFF, #F3F6FF)"
-                          : `linear-gradient(180deg, rgb(var(--dark-bg)), rgb(var(--dark-bg-deep)))`,
+                          : "linear-gradient(180deg, var(--surface-card), var(--bg-alt))",
                         boxShadow: isLight
                           ? "inset 0 1px 2px rgba(255,255,255,0.5), 0 10px 22px rgba(0,0,0,0.12)"
                           : "inset 0 1px 2px rgba(255,255,255,0.06), 0 10px 22px rgba(0,0,0,0.35)",
@@ -709,7 +707,7 @@ export default function Navbar() {
                         border: `1px solid ${CARD_BORDER}`,
                         background: isLight
                           ? "radial-gradient(circle at 30% 30%, rgba(0,0,0,0.06), rgba(0,0,0,0.02))"
-                          : "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), rgba(255,255,255,0.06))",
+                          : "radial-gradient(circle at 30% 30%, oklch(0.3 0.04 265 / 0.9), oklch(0.304 0.03 265 / 0.92))",
                         boxShadow: "0 0 20px rgb(var(--brand) / 0.25)",
                       }}
                       aria-label="Close menu"
@@ -726,7 +724,7 @@ export default function Navbar() {
                     style={{
                       color: isLight
                         ? "rgba(0,0,0,0.55)"
-                        : "rgba(255,255,255,0.55)",
+                        : "var(--text-secondary)",
                     }}
                   >
                     Navigation
@@ -750,7 +748,7 @@ export default function Navbar() {
                         style={{
                           background: isLight
                             ? "linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02))"
-                            : "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
+                            : "linear-gradient(180deg, var(--surface-card), var(--surface-hover))",
                           border: `1px solid ${CARD_BORDER}`,
                           boxShadow: isLight
                             ? "0 10px 26px rgba(0,0,0,0.12)"
@@ -794,7 +792,7 @@ export default function Navbar() {
                           style={{
                             color: isLight
                               ? "rgba(0,0,0,0.55)"
-                              : "rgba(255,255,255,0.7)",
+                              : "var(--text-secondary)",
                           }}
                         />
                       </a>
@@ -819,7 +817,7 @@ export default function Navbar() {
                     style={{
                       color: isLight
                         ? "rgba(0,0,0,0.45)"
-                        : "rgba(255,255,255,0.45)",
+                        : "var(--text-secondary)",
                     }}
                   >
                     Connect

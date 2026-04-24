@@ -14,7 +14,16 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  @apply bg-base-100 text-base-content;
+  @apply text-base-content;
+}
+html[data-theme="light"] body {
+  @apply bg-base-100;
+}
+/* Dark: neutral canvas only — atmosphere lives per-section (not one viewport-tall gradient) */
+html[data-theme="dark"] body {
+  color: var(--text-primary);
+  background-color: var(--canvas-base);
+  background-image: none;
 }
 .container {
   @apply max-w-8xl mx-auto px-4;
@@ -24,7 +33,7 @@ body {
   h1,
   h2 {
     font-family: theme("fontFamily.display");
-    letter-spacing: -0.02em !important;
+    letter-spacing: -0.03em !important;
   }
 
   h3 {
@@ -34,14 +43,17 @@ body {
 
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
+    line-height: 1.08;
   }
 
   h2 {
     @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
+    line-height: 1.12;
   }
 
   h3 {
     @apply text-2xl sm:text-3xl font-bold;
+    line-height: 1.2;
   }
 }
 
@@ -56,10 +68,175 @@ body {
   --brand:        0 96 255;    /* #0060FF — primary brand blue  */
   --brand-soft:   59 130 246;  /* #3b82f6 — softer blue         */
   --brand-accent: 56 189 248;  /* #38bdf8 — sky/cyan accent     */
+  --brand-deep:   15 40 110;   /* #0f286e — deep navy           */
   --brand-gold:   212 175 55;  /* #d4af37 — gold                */
-  --dark-bg:      11 18 32;    /* #0b1220 — dark surface        */
-  --dark-bg-deep: 10 15 26;    /* #0a0f1a — deep dark           */
-  --dark-bg-mid:  14 20 34;    /* #0e1422 — mid dark            */
+
+  /* Global floor: deep navy, not pure black */
+  --canvas-base: oklch(0.13 0.024 265);
+  /* Legacy (modals, media fallback) */
+  --bg-page-a: oklch(0.22 0.025 265);
+  --bg-page-b: oklch(0.16 0.02 265);
+  --bg-page-c: oklch(0.12 0.018 265);
+  --bg-page-d: oklch(0.1 0.014 265);
+  --bg-page-e: oklch(0.08 0.01 265);
+  --bg-page-top:     var(--bg-page-a);
+  --bg-page-mid:     var(--bg-page-c);
+  --bg-page-lower:   var(--bg-page-d);
+  --bg-page-bottom:  var(--bg-page-e);
+  --bg-main:         var(--bg-page-c);
+  --bg-alt:          oklch(0.175 0.022 265);
+  /* Card faces: rich navy, slight vertical falloff (not one flat fill) */
+  --card-face-t:     oklch(0.27 0.035 265);
+  --card-face-b:     oklch(0.22 0.03 265);
+  --card-pricing-t:  oklch(0.29 0.04 265);
+  --card-pricing-b:  oklch(0.235 0.036 265);
+  --surface-card:    var(--card-face-b);
+  --surface-pricing: var(--card-pricing-b);
+  --surface-border:  oklch(0.42 0.022 265);
+  --surface-hover:   oklch(0.3 0.03 265);
+  --frost-72:        oklch(0.25 0.03 265 / 0.72);
+  --frost-78:        oklch(0.25 0.03 265 / 0.78);
+  --frost-82:        oklch(0.25 0.03 265 / 0.82);
+  --scrim:           oklch(0.15 0.014 265 / 0.72);
+  --scrim-68:        oklch(0.15 0.014 265 / 0.68);
+  --scrim-82:        oklch(0.15 0.014 265 / 0.82);
+  --btn-secondary-bg:   oklch(0.26 0.03 265 / 0.5);
+  --btn-secondary-border: oklch(0.45 0.02 265 / 0.85);
+  --tag-bg:            oklch(0.26 0.03 265 / 0.45);
+  --tag-border:        oklch(0.45 0.02 265 / 0.78);
+  /* Section fields: own ramp each block; 258–270; seams matched; contact-join = footer-t */
+  /* Hero: open navy sky — wide L range so gradient is clearly visible */
+  --section-hero-t:     oklch(0.340 0.068 258);
+  --section-hero-m:     oklch(0.278 0.056 261);
+  --section-hero-b:     oklch(0.224 0.046 264);
+  /* Services: rich navy field — wide L range makes gradient clearly visible */
+  --section-services-t: oklch(0.265 0.056 264);
+  --section-services-m: oklch(0.235 0.048 267);
+  --section-services-b: oklch(0.205 0.040 269);
+  /* Work: seam-matched to services-b, own descent */
+  --section-work-t:     oklch(0.205 0.040 269);
+  --section-work-m:     oklch(0.190 0.036 268);
+  --section-work-b:     oklch(0.174 0.031 269);
+  /* Pricing: deepest well — still clearly navy, not black */
+  --section-pricing-t:  oklch(0.174 0.031 269);
+  --section-pricing-m:  oklch(0.162 0.027 271);
+  --section-pricing-b:  oklch(0.148 0.024 273);
+  /* Testimonials: real lift from pricing — mid is visibly brighter */
+  --section-quote-t:    oklch(0.162 0.028 263);
+  --section-quote-m:    oklch(0.238 0.052 261);
+  --section-quote-b:    oklch(0.196 0.038 264);
+  /* Contact: descending ramp — seam with footer locked */
+  --section-contact-t:  oklch(0.196 0.038 264);
+  --section-contact-m:  oklch(0.178 0.033 266);
+  --section-contact-b:  oklch(0.162 0.030 268);
+  --section-contact-join: oklch(0.155 0.028 268);
+  /* Footer: integrated handoff, not a black block */
+  --section-footer-t:  oklch(0.155 0.028 268);
+  --section-footer-m:  oklch(0.138 0.024 270);
+  --section-footer-b:  oklch(0.120 0.019 272);
+  --text-primary:   oklch(0.97 0.01 265);
+  --text-secondary: oklch(0.82 0.014 265);
+  --text-muted:     oklch(0.65 0.02 265);
+}
+
+/* Nav (dark): improved tone for mobile pill + drawer (desktop row stays structurally transparent) */
+html[data-theme="dark"] {
+  --nav-pill-grad: linear-gradient(
+    180deg,
+    oklch(0.44 0.048 264 / 0.94) 0%,
+    oklch(0.32 0.04 264 / 0.9) 100%
+  );
+  --nav-drawer-grad: linear-gradient(
+    180deg,
+    oklch(0.4 0.044 264 / 0.98) 0%,
+    oklch(0.3 0.036 264 / 0.96) 100%
+  );
+  --nav-burger-grad: linear-gradient(
+    180deg,
+    oklch(0.4 0.043 264) 0%,
+    oklch(0.32 0.037 264) 100%
+  );
+}
+
+/* Per-section depth: each block paints its own local field (body = flat canvas) */
+.section-depth-hero,
+.section-depth-services,
+.section-depth-work,
+.section-depth-pricing,
+.section-depth-quote,
+.section-depth-contact,
+.section-depth-footer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+html[data-theme="dark"] .section-depth-hero {
+  /* Wide navy sky — one broad top bloom, linear gradient carries the range */
+  background:
+    radial-gradient(120% 60% at 50% 0%, oklch(0.44 0.10 258 / 0.16) 0%, transparent 55%),
+    linear-gradient(180deg, var(--section-hero-t) 0%, var(--section-hero-m) 52%, var(--section-hero-b) 100%);
+  background-color: var(--section-hero-b);
+}
+html[data-theme="dark"] .section-depth-services {
+  /* Navy field — one wide top-right bloom for character */
+  background:
+    radial-gradient(70% 55% at 100% 0%, oklch(0.30 0.072 268 / 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, var(--section-services-t) 0%, var(--section-services-m) 50%, var(--section-services-b) 100%);
+  background-color: var(--section-services-b);
+}
+html[data-theme="dark"] .section-depth-work {
+  /* Midtone navy — one wide left-side field bloom */
+  background:
+    radial-gradient(65% 70% at 0% 50%, oklch(0.26 0.054 266 / 0.18) 0%, transparent 68%),
+    linear-gradient(180deg, var(--section-work-t) 0%, var(--section-work-m) 50%, var(--section-work-b) 100%);
+  background-color: var(--section-work-b);
+}
+html[data-theme="dark"] .section-depth-pricing {
+  /* Deepest well — strong floor weight, matches footer recipe */
+  background:
+    radial-gradient(110% 55% at 50% 105%, oklch(0.10 0.022 273 / 0.28) 0%, transparent 50%),
+    linear-gradient(180deg, var(--section-pricing-t) 0%, var(--section-pricing-m) 50%, var(--section-pricing-b) 100%);
+  background-color: var(--section-pricing-b);
+}
+html[data-theme="dark"] .section-depth-quote {
+  /* Lift after pricing — very wide mid bloom, atmospheric not spotlit */
+  background:
+    radial-gradient(140% 40% at 50% 52%, oklch(0.28 0.056 261 / 0.16) 0%, transparent 65%),
+    linear-gradient(180deg, var(--section-quote-t) 0%, var(--section-quote-m) 48%, var(--section-quote-b) 100%);
+  background-color: var(--section-quote-b);
+}
+html[data-theme="dark"] .section-depth-contact {
+  /* Closing ramp — bottom bloom locks seam with footer */
+  background:
+    radial-gradient(110% 55% at 50% 105%, oklch(0.14 0.028 268 / 0.20) 0%, transparent 50%),
+    linear-gradient(180deg, var(--section-contact-t) 0%, var(--section-contact-m) 50%, var(--section-contact-b) 75%, var(--section-contact-join) 100%);
+  background-color: var(--section-contact-join);
+}
+/* Footer: integrated navy handoff — not a black block */
+html[data-theme="dark"] .section-depth-footer {
+  background:
+    radial-gradient(ellipse 100% 50% at 50% 100%, oklch(0.11 0.028 272 / 0.28) 0%, transparent 46%),
+    radial-gradient(70% 30% at 50% 0%, oklch(0.20 0.040 266 / 0.14) 0%, transparent 48%),
+    linear-gradient(180deg, var(--section-footer-t) 0%, var(--section-footer-m) 48%, var(--section-footer-b) 100%);
+  background-color: var(--section-footer-b);
+}
+
+/* Premium dark card faces: internal gradient + edge + insets (not flat base-100 slabs) */
+@layer components {
+  html[data-theme="dark"] .card-surface {
+    background: linear-gradient(180deg, var(--card-face-t) 0%, var(--card-face-b) 100%);
+    background-color: var(--card-face-b);
+    border: 1px solid oklch(0.38 0.025 265 / 0.55);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.075),
+      inset 0 -1px 0 0 oklch(0.05 0.012 265 / 0.45);
+  }
+  html[data-theme="dark"] .card-surface--pricing {
+    background: linear-gradient(180deg, var(--card-pricing-t) 0%, var(--card-pricing-b) 100%);
+    background-color: var(--card-pricing-b);
+    border: 1px solid oklch(0.44 0.028 265 / 0.52);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.085),
+      inset 0 -1px 0 0 oklch(0.04 0.01 265 / 0.5);
+  }
 }
 
 /* ===== Shared mask ===== */
@@ -112,8 +289,8 @@ body {
 }
 [data-theme="dark"] .hero-bleed {
   background: radial-gradient(
-    60% 40% at 50% 18%,
-    rgba(100, 160, 255, 0.1),
+    60% 40% at 50% 16%,
+    rgba(100, 170, 255, 0.14),
     transparent 70%
   );
   mix-blend-mode: screen;
@@ -249,8 +426,8 @@ body {
 [data-theme="dark"] .hero-topfade {
   background: linear-gradient(
     180deg,
-    rgba(4, 6, 10, 0.48),
-    rgba(0, 0, 0, 0) 32%
+    rgba(4, 6, 10, 0.3),
+    rgba(0, 0, 0, 0) 34%
   );
 }
 
@@ -320,8 +497,8 @@ body {
 .gradient-text-static {
   background-image: linear-gradient(
     135deg,
-    rgb(var(--brand)),
-    rgb(var(--brand-accent))
+    rgb(var(--brand)) 0%,
+    rgb(var(--brand-soft)) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -354,4 +531,70 @@ body {
   100% {
     background-position: 0% 50%;
   }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.14; }
+  50%       { opacity: 0.42; }
+}
+.animate-glowPulse {
+  animation: glowPulse 2.4s ease-in-out infinite;
+}
+
+/* Input border polish in dark mode */
+[data-theme="dark"] .input-bordered,
+[data-theme="dark"] .textarea-bordered {
+  border-color: var(--surface-border);
+}
+[data-theme="dark"] .input-bordered:focus,
+[data-theme="dark"] .textarea-bordered:focus {
+  border-color: rgb(var(--brand) / 0.55);
+}
+
+/* Dark: button hierarchy + ghost balance (Daisy; brand blue unchanged) */
+html[data-theme="dark"] .btn.btn-primary {
+  box-shadow: 0 3px 16px -4px rgb(var(--brand) / 0.28), inset 0 1px 0 0 oklch(0.5 0.04 255 / 0.14);
+}
+html[data-theme="dark"] .btn.btn-primary:hover,
+html[data-theme="dark"] .btn.btn-primary:focus-visible {
+  filter: brightness(1.03);
+  box-shadow: 0 5px 20px -4px rgb(var(--brand) / 0.32), inset 0 1px 0 0 oklch(0.55 0.04 255 / 0.18);
+}
+html[data-theme="dark"] .btn.btn-ghost {
+  color: var(--text-secondary);
+}
+html[data-theme="dark"] .btn.btn-ghost:hover,
+html[data-theme="dark"] .btn.btn-ghost:focus-visible {
+  color: var(--text-primary);
+  background-color: oklch(0.3 0.02 265 / 0.35);
+}
+html[data-theme="dark"] .btn.btn-outline {
+  border-color: oklch(0.45 0.02 265 / 0.5);
+  color: var(--text-secondary);
+}
+html[data-theme="dark"] .btn.btn-outline:hover,
+html[data-theme="dark"] .btn.btn-outline:focus-visible {
+  border-color: oklch(0.52 0.02 265 / 0.7);
+  background-color: oklch(0.28 0.02 265 / 0.3);
+  color: var(--text-primary);
+}
+
+/* Dark: form copy + labels read clearly on elevated cards */
+html[data-theme="dark"] .input,
+html[data-theme="dark"] .textarea,
+html[data-theme="dark"] .input-bordered,
+html[data-theme="dark"] .textarea-bordered {
+  color: var(--text-primary);
+}
+html[data-theme="dark"] .input::placeholder,
+html[data-theme="dark"] .textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.9;
+}
+html[data-theme="dark"] .label .label-text,
+html[data-theme="dark"] .label > span.label-text {
+  color: var(--text-secondary);
+}
+html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
+  color: var(--text-muted);
 }

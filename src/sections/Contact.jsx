@@ -104,7 +104,7 @@ export default function Contact() {
       key: "address",
       icon: <MapPinIcon className="h-5 w-5 text-primary" />,
       label: "Address",
-      content: <p className="opacity-70 text-sm">GTA, Ontario, Canada</p>,
+      content: <p className="text-sm text-base-content/78">GTA, Ontario, Canada</p>,
     },
     {
       key: "instagram",
@@ -112,7 +112,7 @@ export default function Contact() {
       label: "Instagram",
       content: (
         <a href="https://instagram.com/milink.ca" target="_blank" rel="noopener noreferrer"
-          className="link link-hover text-sm opacity-70" aria-label="Instagram milink.ca">
+          className="link link-hover text-sm text-base-content/78" aria-label="Instagram milink.ca">
           @milink.ca
         </a>
       ),
@@ -122,7 +122,7 @@ export default function Contact() {
       icon: <PhoneIcon className="h-5 w-5 text-primary" />,
       label: "Phone",
       content: (
-        <a href="tel:+14376003139" className="link link-hover text-sm opacity-70"
+        <a href="tel:+14376003139" className="link link-hover text-sm text-base-content/78"
           aria-label="Call +1 (437) 600-3139">
           +1 (437) 600-3139
         </a>
@@ -139,7 +139,7 @@ export default function Contact() {
       label: "WhatsApp",
       content: (
         <a href={WA_LINK} target="_blank" rel="noopener noreferrer"
-          className="link link-hover text-sm opacity-70" aria-label="Chat on WhatsApp"
+          className="link link-hover text-sm text-base-content/78" aria-label="Chat on WhatsApp"
           onClick={(e) => {
             if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
               e.preventDefault();
@@ -154,43 +154,52 @@ export default function Contact() {
 
   /* ── Render ─────────────────────────────────────────────── */
   return (
-    <section id="contact" className="py-24">
+    <section
+      id="contact"
+      className="relative overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
+    >
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
+        aria-hidden
+      >
+        <div className="section-depth-contact" />
+      </div>
 
       {/* ① Header — fadeInDown (enters from above, slides down) */}
       <div className="text-center mb-14 space-y-3">
         <Reveal from="down" distance={14}>
-          <div className="badge badge-outline mb-1">Contact</div>
+          <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Contact</div>
         </Reveal>
         <Reveal from="down" distance={20} delay={0.08}>
           <h2 className="text-4xl sm:text-5xl font-semibold">Get In <span className="gradient-text-static">Touch</span></h2>
         </Reveal>
         <Reveal from="down" distance={16} delay={0.16}>
-          <p className="opacity-70 max-w-lg mx-auto">
+          <p className="text-base-content/68 max-w-md mx-auto">
             Have a question or want to start a project? Reach out and let&apos;s
             bring your ideas to life.
           </p>
         </Reveal>
       </div>
 
-      <div className="container mx-auto grid gap-10 lg:grid-cols-2 items-start">
+      <div className="container mx-auto grid gap-8 lg:grid-cols-2 items-stretch">
 
         {/* ② LEFT card — fadeInUp, delay 0 */}
-        <Reveal from="up" distance={32} delay={0.1}>
+        <Reveal from="up" distance={32} delay={0.1} className="h-full">
           <motion.div
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-200 space-y-8 h-full"
+            className="bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface"
           >
             <div>
               <h2 className="text-3xl font-bold">Contact Info</h2>
-              <p className="opacity-70 mt-2 text-sm leading-relaxed">
+              <p className="text-base-content/75 mt-2 text-sm leading-relaxed">
                 We&apos;d love to hear from you. Pick any channel below.
               </p>
             </div>
 
             {/* ④ Contact rows — staggered fadeInLeft + row hover nudge */}
-            <ul className="space-y-5">
+            <ul className="space-y-6">
               {contactItems.map(({ key, icon, label, content }, i) => (
                 <Reveal key={key} from="left" distance={18} delay={0.12 + i * 0.09}>
                   <motion.li
@@ -219,12 +228,12 @@ export default function Contact() {
         </Reveal>
 
         {/* ③ RIGHT card — fadeInUp, delay 0.2s */}
-        <Reveal from="up" distance={32} delay={0.22}>
+        <Reveal from="up" distance={32} delay={0.22} className="h-full">
           <motion.div
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-200 h-full"
+            className="bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface"
           >
             <form onSubmit={handleSubmit} className="space-y-5">
               <h2 className="text-3xl font-bold">Send a Message</h2>

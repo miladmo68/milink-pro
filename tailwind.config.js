@@ -98,10 +98,18 @@ export default {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
           primary: "#0060FF",
+          "base-100": "#ffffff",
+          "base-200": "#f3f3f6",   // barely-off-white for alt sections
+          "base-300": "#e5e5ea",   // clean borders
+          "base-content": "#111118",
         },
         dark: {
           ...require("daisyui/src/theming/themes")["dark"],
           primary: "#0060FF",
+          "base-100": "oklch(0.245 0.032 265)",
+          "base-200": "oklch(0.175 0.022 265)",
+          "base-300": "oklch(0.48 0.02 265)",
+          "base-content": "oklch(0.97 0.01 265)",
         },
       },
     ],

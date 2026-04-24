@@ -20,7 +20,7 @@ const DEFAULT_IMAGE = `${BASE_URL}/og-cover.jpg`;
 export const viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1220" },
+    { media: "(prefers-color-scheme: dark)", color: "oklch(0.118 0.011 266)" },
   ],
 };
 

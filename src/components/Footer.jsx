@@ -80,7 +80,7 @@ export default function Footer() {
           aria-label={item.label}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn btn-sm btn-circle btn-outline text-base-content/80 border-base-content/40 hover:bg-base-content/10 hover:text-base-content hover:border-base-content transition-all duration-300"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-base-content/15 text-base-content/50 hover:text-base-content/90 hover:border-base-content/30 transition-all duration-300"
           onClick={item.onClick}
         >
           <svg
@@ -99,28 +99,49 @@ export default function Footer() {
   return (
     <motion.footer
       ref={ref}
-      className={`py-10 border-t border-base-200 bg-base-200 ${reduced ? "" : "will-change-transform"}`}
+      className={`relative overflow-hidden py-16 border-t border-base-300/80 dark:border-[oklch(0.32_0.02_265_/_0.35)] bg-base-200 dark:!bg-transparent ${
+        reduced ? "" : "will-change-transform"
+      }`}
       initial="hidden"
       animate={inView ? "show" : "hidden"}
       variants={parentVariants}
     >
-      <div className="container flex flex-col items-center text-center gap-4">
-        {/* خط 1: برند و تماس */}
-        <motion.div variants={lineVariants}>
-          <p className="font-bold">Milink Digital Agency</p>
-          <p className="text-sm opacity-80">
-            📍 GTA, Ontario, Canada | 📞{" "}
-            <a href="tel:+14376003139" className="underline hover:no-underline">
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
+        aria-hidden
+      >
+        <div className="section-depth-footer" />
+      </div>
+      <div className="container relative z-10 flex flex-col items-center text-center gap-6">
+        {/* Brand */}
+        <motion.div variants={lineVariants} className="space-y-2">
+          <p className="text-sm font-semibold">Milink Digital Agency</p>
+          <p className="text-[13px] text-base-content/58">
+            GTA, Ontario, Canada &nbsp;·&nbsp;{" "}
+            <a
+              href="tel:+14376003139"
+              className="text-base-content/65 hover:text-base-content/85 transition-colors"
+            >
               +1 (437) 600-3139
             </a>
           </p>
         </motion.div>
 
-        {/* خط 2: سوشال (یک‌جا، بدون استگر آیکن‌ها) */}
+        {/* Socials */}
         <motion.div variants={lineVariants}>{SocialRow}</motion.div>
 
-        {/* خط 3: کپی‌رایت */}
-        <motion.div variants={lineVariants} className="opacity-70 text-sm">
+        {/* Separator */}
+        <motion.div
+          variants={lineVariants}
+          aria-hidden
+          className="w-12 h-px bg-base-content/16"
+        />
+
+        {/* Copyright */}
+        <motion.div
+          variants={lineVariants}
+          className="text-base-content/48 text-[11px] tracking-[0.1em]"
+        >
           © {YEAR} Milink. All rights reserved.
         </motion.div>
       </div>

@@ -6,8 +6,8 @@ export default function Lightbox({ src, onClose }){
     return ()=> document.removeEventListener("keydown", onKey);
   },[onClose]);
   return (
-    <div className="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-4" onClick={onClose}>
-      <img src={src} alt="" className="max-h-[90vh] rounded-box shadow-2xl" onClick={(e)=>e.stopPropagation()} loading="eager" />
+    <div className="fixed inset-0 z-[999] bg-[color:var(--scrim-82)] flex items-center justify-center p-4" onClick={onClose}>
+      <img src={src} alt="" className="max-h-[90vh] rounded-box border border-[color:var(--surface-border)] shadow-2xl" onClick={(e)=>e.stopPropagation()} loading="eager" />
       <button className="btn btn-sm absolute right-4 top-4" onClick={onClose} aria-label="Close">✕</button>
     </div>
   );
