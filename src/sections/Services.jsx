@@ -308,6 +308,7 @@ export default function Services() {
       >
         <div className="section-depth-services" />
       </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] -z-10 bg-gradient-to-b from-black/[0.11] to-transparent dark:from-black/[0.50]" aria-hidden />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           <Reveal from="up" distance={12}>
