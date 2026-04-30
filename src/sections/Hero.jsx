@@ -72,10 +72,10 @@ export default function Hero() {
 
         {/* Title */}
         <h1
-          className="font-display font-black mb-8"
+          className="font-display font-black mb-8 text-center sm:text-left"
           style={{ letterSpacing: "-0.03em", fontSize: "clamp(38px, 8vw, 84px)", lineHeight: 0.92 }}
         >
-          <div className="overflow-hidden flex gap-[0.22em]">
+          <div className="overflow-hidden flex gap-[0.22em] justify-center sm:justify-start">
             {["Build", "what"].map((w, i) => (
               <motion.span
                 key={w}
@@ -149,7 +149,7 @@ export default function Hero() {
         </motion.div>
 
         {/* Stats */}
-        <motion.div {...fadeUp(1.0)} className="flex items-center flex-wrap gap-y-4">
+        <motion.div {...fadeUp(1.0)} className="flex items-center flex-wrap gap-y-4 justify-center sm:justify-start">
           {STATS.map((s, i) => (
             <div key={s.label} className="flex items-center">
               <div className={i === 0 ? "pr-6" : "px-6"}>
