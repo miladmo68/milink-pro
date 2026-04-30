@@ -1,16 +1,20 @@
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 
-const inter = Inter({
+const CustomCursor = dynamic(() => import("../components/ui/CustomCursor.jsx"), { ssr: false });
+
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "700", "800"],
+  variable: "--font-syne",
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-plus-jakarta",
+  weight: ["300", "400", "500"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -181,7 +185,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`scroll-smooth ${inter.variable} ${plusJakarta.variable}`}
+      className={`scroll-smooth ${syne.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -204,7 +208,10 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <CustomCursor />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,873 +1,242 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+"use client";
+import { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { nav } from "../data/content.js";
-import { SITE } from "../config/siteConfig.js";
 import ThemeToggle from "./ThemeToggle.jsx";
-import { XMarkIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import LogoFancy from "./LogoFancy.jsx";
-import { REVEAL_EASE } from "./scroll-reveal.jsx";
 
-/* =========================
-   CTA (Book a Call)
-========================= */
-function CTAButton({
-  onClick,
-  borderless = false,
-  wide = false,
-  mobileGlow = false,
-}) {
-  const baseShadow =
-    "inset 0 1px 3px rgba(255,255,255,0.65), 0 4px 14px rgb(var(--brand) / 0.25)";
-  const glowShadow =
-    "inset 0 0 0 1px rgb(var(--brand) / 0.85), inset 0 6px 18px rgb(var(--brand) / 0.15), 0 0 16px rgb(var(--brand) / 0.45), 0 10px 30px rgb(var(--brand) / 0.28)";
+const EASE = [0.25, 0.1, 0.25, 1];
 
-  return (
-    <motion.a
-      href="#contact"
-      onClick={onClick}
-      whileHover={{
-        y: -1,
-        scale: 1.02,
-        backgroundColor: "rgba(245, 248, 255, 0.68)",
-        backgroundImage:
-          "radial-gradient(circle at center, rgb(var(--brand) / 0.08) 0%, transparent 70%)",
-        boxShadow:
-          "inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 22px rgb(var(--brand) / 0.30), 0 0 14px rgb(var(--brand) / 0.18)",
-        borderColor: borderless ? "transparent" : "rgb(var(--brand))",
-        filter: "brightness(1.02) saturate(1.05)",
-      }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.6 }}
-      className={`relative inline-flex select-none items-center gap-2 rounded-full text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60 ${
-        wide ? "w-full justify-center px-4 py-3" : "px-4 py-2"
-      }`}
-      style={{
-        color: "rgb(var(--brand))",
-        background: "rgba(255,255,255,0.55)",
-        border: borderless ? "none" : "1px solid rgb(var(--brand))",
-        boxShadow: mobileGlow ? glowShadow : baseShadow,
-        backgroundImage: "none",
-        backdropFilter: "blur(10px)",
-        transition:
-          "background-color .25s, background-image .25s, box-shadow .25s, border-color .25s, filter .25s",
-        overflow: "visible",
-        filter: mobileGlow
-          ? "drop-shadow(0 0 10px rgb(var(--brand) / 0.45))"
-          : undefined,
-      }}
-    >
-      <span
-        className="inline-block rounded-full"
-        style={{
-          width: 8,
-          height: 8,
-          background:
-            "radial-gradient(circle at 30% 30%, rgb(var(--brand-soft)), rgb(var(--brand)) 80%)",
-          boxShadow: "0 0 10px rgb(var(--brand-soft) / 0.85)",
-        }}
-      />
-      <span>Book a Call</span>
-    </motion.a>
-  );
-}
-
-/* =========================
-   Burger Button (Light/Dark)
-========================= */
-function BurgerButton({ onClick, isLight }) {
-  const btnBg = isLight
-    ? "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.10), rgba(255,255,255,0.92) 55%), linear-gradient(180deg, #FFFFFF, #F2F6FF)"
-    : "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.12), transparent 60%), var(--nav-burger-grad)";
-
-  const btnBorder = isLight
-    ? "1px solid rgba(0,0,0,0.10)"
-    : "1px solid var(--surface-border)";
-
-  const btnShadow = isLight
-    ? `inset 0 1px 2px rgba(255,255,255,0.70),
-       0 0 0 2px rgba(0,0,0,0.06),
-       0 0 0 4px rgb(var(--brand) / 0.18),
-       0 14px 34px rgba(0,0,0,0.14)`
-    : `inset 0 1px 2px rgba(255,255,255,0.10),
-       0 0 0 2px rgba(255,255,255,0.20),
-       0 0 0 4px rgb(var(--brand) / 0.45),
-       0 16px 40px rgba(0,0,0,0.35)`;
-
-  const outerGlow = isLight
-    ? "0 0 22px rgb(var(--brand) / 0.18)"
-    : "0 0 26px rgb(var(--brand) / 0.45)";
-
-  const lineBg = isLight
-    ? "linear-gradient(180deg, rgba(15,23,42,0.75), rgba(15,23,42,0.55))"
-    : "linear-gradient(180deg, rgba(209,213,219,0.96), rgba(156,163,175,0.9))";
-
-  const lineShadow = isLight
-    ? "none"
-    : "0 0 8px rgba(255,255,255,0.25), 0 0 10px rgb(var(--brand) / 0.12)";
-
-  const topHighlight = isLight
-    ? "linear-gradient(to right, transparent, rgba(0,0,0,0.18), transparent)"
-    : "linear-gradient(to right, transparent, rgba(255,255,255,0.30), transparent)";
-
-  return (
-    <motion.button
-      onClick={onClick}
-      aria-label="Open menu"
-      whileTap={{ scale: 0.97, y: 1 }}
-      className="group relative grid h-12 w-12 place-items-center rounded-full transition-all duration-200 select-none touch-manipulation"
-      style={{
-        border: btnBorder,
-        background: btnBg,
-        boxShadow: btnShadow,
-      }}
-    >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-full"
-        style={{ boxShadow: outerGlow }}
-      />
-      <div className="flex flex-col gap-[6px]">
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="block h-[2.5px] w-6 rounded-full"
-            style={{
-              background: lineBg,
-              boxShadow: lineShadow,
-            }}
-          />
-        ))}
-      </div>
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -top-px left-[10%] right-[10%] h-px rounded-full opacity-50"
-        style={{ background: topHighlight }}
-      />
-    </motion.button>
-  );
-}
-
-/* =========================
-   Social Icon helper
-========================= */
-function SocialIcon({ href, label, type }) {
-  const isExternal = href.startsWith("http");
-  const glow1 = "rgb(var(--brand) / 0.55)";
-  const glow2 = "rgb(var(--brand-soft) / 0.45)";
-  const edge = "rgba(255,255,255,0.14)";
-
-  return (
-    <a
-      href={href}
-      target={isExternal ? "_blank" : undefined}
-      rel={isExternal ? "noopener noreferrer" : undefined}
-      aria-label={label}
-      className="relative grid h-11 w-11 place-items-center rounded-full overflow-visible select-none"
-      style={{
-        border: `1px solid ${edge}`,
-        background:
-          "radial-gradient(120% 120% at 0% 0%, rgba(59,130,246,0.25), transparent 60%), radial-gradient(120% 120% at 80% 20%, rgba(0,96,255,0.25), transparent 70%), var(--frost-78)",
-        boxShadow: `0 10px 22px rgba(0,0,0,0.35), 0 0 18px ${glow1}, 0 0 36px ${glow2}`,
-        backdropFilter: "blur(6px) saturate(160%)",
-        WebkitBackdropFilter: "blur(6px) saturate(160%)",
-        transition: "transform .2s ease, box-shadow .25s ease",
-      }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.transform = "translateY(-1px) scale(1.04)")
-      }
-      onMouseLeave={(e) => (e.currentTarget.style.transform = "none")}
-    >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-full"
-        style={{
-          boxShadow: `0 0 22px ${glow1}, 0 0 34px ${glow2}`,
-          opacity: 0.9,
-          filter: "blur(0.2px)",
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-[2px] rounded-full overflow-hidden"
-        style={{
-          border: "1px solid rgba(255,255,255,0.10)",
-          background:
-            "radial-gradient(circle at 35% 30%, rgba(255,255,255,0.10), rgba(255,255,255,0.02) 55%, rgba(255,255,255,0) 70%)",
-        }}
-      >
-        <span
-          className="milink-sheen absolute -inset-3 rounded-full"
-          style={{
-            background:
-              "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%)",
-            transform: "translateX(-140%) rotate(8deg)",
-            filter: "blur(2px)",
-            opacity: 0,
-            transition: "transform .7s ease, opacity .3s ease",
-          }}
-        />
-      </span>
-
-      <style>{`a[aria-label="${label}"]:hover .milink-sheen{transform:translateX(120%) rotate(8deg);opacity:1;}`}</style>
-
-      {type === "ig" && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <rect
-            x="3"
-            y="3"
-            width="18"
-            height="18"
-            rx="5"
-            stroke="rgba(255,255,255,0.90)"
-            strokeWidth="1.5"
-          />
-          <circle
-            cx="12"
-            cy="12"
-            r="3.5"
-            stroke="rgba(255,255,255,0.90)"
-            strokeWidth="1.5"
-          />
-          <circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.92)" />
-        </svg>
-      )}
-
-      {type === "wa" && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M5 19l1.3-3.2A7 7 0 1119 12 7 7 0 018.1 17.8L5 19z"
-            stroke="rgba(255,255,255,0.90)"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M10.2 8.8c.3-.2.5-.2.6 0l1.1 1.3c.1.1.1.3 0 .5l-.5.6c.4.7 1 1.3 1.7 1.7l.6-.5c.2-.1.4-.1.5 0l1.3 1.1c.2.1.2.3 0 .6-.6.8-1.6 1.1-2.5.8-1.7-.6-3-1.9-3.6-3.6-.3-.9 0-1.9.8-2.5z"
-            fill="rgba(255,255,255,0.92)"
-          />
-        </svg>
-      )}
-
-      {type === "mail" && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <rect
-            x="3"
-            y="5"
-            width="18"
-            height="14"
-            rx="2"
-            stroke="rgba(255,255,255,0.90)"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M4 7l8 6 8-6"
-            stroke="rgba(255,255,255,0.90)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      )}
-
-      {type === "fb" && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M13.5 21v-7h2.2l.3-2.6h-2.5V9.2c0-.8.2-1.2 1.2-1.2h1.3V5.6c-.6-.1-1.3-.2-1.9-.2-2 0-3.4 1.2-3.4 3.5v1.5H8.8V14h2V21h2.7z"
-            fill="rgba(255,255,255,0.92)"
-          />
-        </svg>
-      )}
-    </a>
-  );
-}
-
-/* =========================
-   Navbar
-========================= */
 export default function Navbar() {
-  const reduced = useReducedMotion();
-  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const lockScrollY = useRef(0);
-
-  // Active hash
-  const [activeHash, setActiveHash] = useState("#home");
-
-  // âœ… detect theme from data-theme (DaisyUI)
-  const [isLight, setIsLight] = useState(false);
+  const [active, setActive] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const el = document.documentElement;
-
-    const compute = () => {
-      const t = el.getAttribute("data-theme") || "";
-      // Ø§Ú¯Ø± ØªÙ…â€ŒÙ‡Ø§ÛŒ Ø³ÙØ§Ø±Ø´ÛŒ Ø¯Ø§Ø±ÛŒ Ú©Ù‡ Ù„Ø§ÛŒØª Ø­Ø³Ø§Ø¨ Ù…ÛŒØ´Ù†ØŒ Ø§ÛŒÙ†Ø¬Ø§ add Ú©Ù†
-      const lightNames = new Set([
-        "light",
-        "cupcake",
-        "bumblebee",
-        "emerald",
-        "corporate",
-      ]);
-      setIsLight(lightNames.has(t));
-    };
-
-    compute();
-
-    // watch data-theme changes
-    const obs = new MutationObserver(() => compute());
-    obs.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
-
-    return () => obs.disconnect();
-  }, []);
-
-  // ScrollSpy map
-  const navHrefs = useMemo(() => nav.map((n) => n.href), []);
-  const observerRef = useRef(null);
-  const rafRef = useRef(null);
-
-  // hashchange (fallback)
-  useEffect(() => {
-    const setFromHash = () => setActiveHash(window.location.hash || "#home");
-    setFromHash();
-    window.addEventListener("hashchange", setFromHash);
-    return () => window.removeEventListener("hashchange", setFromHash);
-  }, []);
-
-  // scrolled
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Scroll spy with IntersectionObserver
   useEffect(() => {
-    if (!navHrefs.length) return;
+    const sections = nav.map((n) => n.href.replace("#", ""));
+    const observers = sections.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([e]) => { if (e.isIntersecting) setActive(`#${id}`); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((o) => o?.disconnect());
+  }, []);
 
-    const ids = navHrefs
-      .filter((h) => h && h.startsWith("#"))
-      .map((h) => h.slice(1));
-    const els = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (!els.length) return;
-
-    const updateActive = (hash) => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(() => setActiveHash(hash));
-    };
-
-    observerRef.current?.disconnect?.();
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort(
-            (a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0)
-          );
-
-        if (visible[0]?.target?.id) updateActive(`#${visible[0].target.id}`);
-      },
-      {
-        root: null,
-        threshold: [0.12, 0.22, 0.35, 0.5, 0.65],
-        rootMargin: "-20% 0px -55% 0px",
-      }
-    );
-
-    els.forEach((el) => observerRef.current.observe(el));
-
-    return () => {
-      observerRef.current?.disconnect?.();
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [navHrefs]);
-
-  // Lock scroll when mobile menu is open
   useEffect(() => {
-    if (open) {
-      lockScrollY.current = window.scrollY || 0;
-      const body = document.body;
-      const html = document.documentElement;
-      body.style.position = "fixed";
-      body.style.top = `-${lockScrollY.current}px`;
-      body.style.left = "0";
-      body.style.right = "0";
-      body.style.width = "100%";
-      body.style.overflow = "hidden";
-      html.style.overscrollBehavior = "none";
-    } else {
-      const body = document.body;
-      const html = document.documentElement;
-      body.style.position = "";
-      body.style.top = "";
-      body.style.left = "";
-      body.style.right = "";
-      body.style.width = "";
-      body.style.overflow = "";
-      html.style.overscrollBehavior = "";
-      if (lockScrollY.current) window.scrollTo(0, lockScrollY.current);
-    }
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  const baseHeight = 100;
-  const navH = open ? baseHeight + nav.length * 44 : baseHeight;
-  const LOGO_BOX_WIDTH = 260;
-
-  // âœ… Desktop link styles: Light readable, Dark same vibe
-  const linkBase = isLight
-    ? "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-black/70 hover:text-black transition"
-    : "relative inline-flex items-center text-sm font-medium tracking-[0.06em] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition";
-
-  const linkUnderline =
-    "after:content-[''] after:absolute after:-bottom-2 after:left-0 after:h-[2px] after:w-full " +
-    "after:bg-[linear-gradient(90deg,transparent,rgb(var(--brand-accent)/0.95),rgb(var(--brand)/0.95),transparent)] " +
-    "after:scale-x-0 after:origin-right after:transition-transform after:duration-300 after:blur-[0.2px] " +
-    "hover:after:scale-x-100 hover:after:origin-left";
-
-  const linkActive = isLight
-    ? "text-black drop-shadow-[0_10px_30px_rgba(0,96,255,0.20)]"
-    : "text-[color:var(--text-primary)] drop-shadow-[0_10px_30px_rgba(0,96,255,0.30)]";
-
-  const DESKTOP_BAR_BG = "transparent";
-  const DESKTOP_BAR_BORDER = "1px solid transparent";
-  const DESKTOP_BAR_SHADOW = "none";
-
-  // Dark keeps improved tone via var(--nav-pill-grad); same pill structure as before (brand radial + 2-stop linear)
-  const MOBILE_PILL_BG = isLight
-    ? "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), linear-gradient(180deg, rgba(238,245,254,0.95), rgba(228,239,252,0.91))"
-    : "radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%), var(--nav-pill-grad)";
-
-  const MOBILE_PILL_BORDER = isLight
-    ? "1px solid rgba(13,24,41,0.14)"
-    : "1px solid var(--surface-border)";
-  const MOBILE_PILL_SHADOW = isLight
-    ? "0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgb(var(--brand) / 0.14), inset 0 1px 2px rgba(255,255,255,0.22)"
-    : "0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgb(var(--brand) / 0.20), inset 0 1px 2px rgba(255,255,255,0.06)";
-
-  const DRAWER_BG = isLight
-    ? "linear-gradient(180deg, rgba(238,246,254,0.98), rgba(228,240,252,0.97))"
-    : "var(--nav-drawer-grad)";
-
-  const DRAWER_TEXT = isLight ? "#0B1220" : "var(--text-primary)";
-  const DRAWER_MUTED = isLight
-    ? "rgba(11,18,32,0.62)"
-    : "var(--text-secondary)";
-  const DRAWER_BORDER = isLight ? "rgb(var(--brand) / 0.18)" : "rgb(var(--brand) / 0.25)";
-  const CARD_BG = isLight
-    ? "linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02))"
-    : "linear-gradient(180deg, var(--surface-card), var(--surface-hover))";
-  const CARD_BORDER = isLight ? "rgba(0,0,0,0.10)" : "var(--surface-border)";
-  const CARD_SHADOW = isLight
-    ? "0 12px 24px rgba(0,0,0,0.10)"
-    : "0 12px 24px rgba(0,0,0,0.35)";
-
-  const listVariants = {
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: reduced ? 0 : 0.05,
-        delayChildren: reduced ? 0 : 0.05,
-      },
-    },
-  };
-  const itemVariants = {
-    hidden: { y: reduced ? 0 : 10, opacity: reduced ? 1 : 0 },
-    show: {
-      y: 0,
-      opacity: 1,
-      transition: reduced
-        ? { duration: 0 }
-        : { type: "spring", stiffness: 420, damping: 30, mass: 0.6 },
-    },
-  };
+  const scrollTo = useCallback((href) => {
+    setOpen(false);
+    const el = document.querySelector(href);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all pt-3 ${
-          SITE.enableStickyBlur && scrolled
-            ? "backdrop-blur-xl bg-transparent"
-            : "bg-transparent"
-        }`}
-        style={{ height: baseHeight }}
-      >
-        {/* Desktop */}
-        <div className="container hidden md:flex items-center gap-6">
-          <div
-            className="w-full flex items-center gap-6 px-4"
-            style={{
-              height: scrolled ? 64 : 72,
-              background: DESKTOP_BAR_BG,
-              border: DESKTOP_BAR_BORDER,
-              boxShadow: DESKTOP_BAR_SHADOW,
-              backdropFilter: "none",
-              WebkitBackdropFilter: "none",
-              transition:
-                "height .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease",
-            }}
-          >
-            <div className="flex items-center gap-1">
-              <div
-                className="hidden md:block shrink-0 overflow-hidden m-0 p-0 leading-none"
-                style={{ width: LOGO_BOX_WIDTH, transform: "translateY(1px)" }}
-              >
-                <LogoFancy
-                  className="flex items-center font-[sans-serif] m-0 p-0 leading-none w-full"
-                  idleSrc="/logo.png"
-                  idleAlt="MILINK Logo"
-                  idleTitle="MILINK"
-                  idleSubtitle="DIGITAL AGENCY"
-                  hoverTitle="Design . Launch . Scale"
-                  gradientClass="gradient-text"
-                  iconGap={0}
-                  blockShiftY={1}
-                  hoverCenterShiftY={+1}
-                />
-              </div>
-
-              <nav className="hidden md:flex items-center gap-7 ml-1 relative">
-                {nav.map((n, i) => {
-                  const isActive = activeHash === n.href;
-                  return (
-                    <a
-                      key={i}
-                      href={n.href}
-                      className={`${linkBase} ${linkUnderline} ${
-                        isActive ? linkActive : ""
-                      }`}
-                      onClick={() => setActiveHash(n.href)}
-                      aria-current={isActive ? "page" : undefined}
-                    >
-                      {isActive && (
-                        <motion.span
-                          layoutId="nav-indicator"
-                          className="absolute -bottom-[11px] left-0 right-0 h-[3px] rounded-full"
-                          transition={{
-                            type: "spring",
-                            stiffness: 520,
-                            damping: 38,
-                            mass: 0.6,
-                          }}
-                          style={{
-                            background:
-                              "linear-gradient(90deg, rgb(var(--brand-accent)/0), rgb(var(--brand-accent)/0.95), rgb(var(--brand)/0.95), rgb(var(--brand-accent)/0))",
-                            boxShadow: isLight
-                              ? "0 0 14px rgb(var(--brand) / 0.18), 0 10px 22px rgb(var(--brand) / 0.10)"
-                              : "0 0 18px rgb(var(--brand) / 0.30), 0 10px 26px rgb(var(--brand) / 0.18)",
-                            filter: "blur(0.1px)",
-                          }}
-                        />
-                      )}
-                      {n.label}
-                    </a>
-                  );
-                })}
-              </nav>
-            </div>
-
-            <div className="ml-auto hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-3">
-                <ThemeToggle />
-                <div
-                  className="w-px h-7"
-                  style={{
-                    background: isLight
-                      ? "rgba(0,0,0,0.10)"
-                      : "rgba(255,255,255,0.10)",
-                  }}
-                />
-                <CTAButton mobileGlow />
-              </div>
+      <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "nav-scrolled" : "nav-top"}`}>
+        {/* ── Desktop bar ── */}
+        <div className="hidden md:block max-w-8xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
+            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 no-underline">
+              {/* <img src="/logo.png" alt="Milink" width={28} height={28} className="w-7 h-7 object-contain flex-shrink-0" /> */}
+              <span className="font-display font-black text-xl leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
+              <span className="font-display font-black text-xl leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+            </a>
+            <nav className="flex items-center gap-8" aria-label="Main navigation">
+              {nav.map((item) => (
+                <a key={item.href} href={item.href} onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  className="relative font-display text-sm font-semibold tracking-wide transition-colors duration-200 no-underline py-1"
+                  style={{ color: active === item.href ? "var(--text-primary)" : "var(--text-muted)" }}>
+                  {item.label}
+                  {active === item.href && (
+                    <motion.span layoutId="nav-underline" className="absolute -bottom-0.5 left-0 right-0 h-px rounded-full"
+                      style={{ background: "var(--accent)" }} transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                  )}
+                </a>
+              ))}
+            </nav>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <motion.a href="#contact" onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-display font-bold text-sm no-underline"
+                style={{ background: "var(--accent)", color: "#fff" }}>
+                Book a Call
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M7 17L17 7M17 7H7M17 7v10"/>
+                </svg>
+              </motion.a>
             </div>
           </div>
         </div>
 
-        {/* Mobile top bar */}
-        <div className="md:hidden px-3 py-3">
+        {/* ── Mobile capsule ── */}
+        <div className="md:hidden px-3 pt-3 pb-1">
           <div
-            className="flex items-center gap-3 rounded-[28px] px-4 py-3 relative overflow-hidden ring-1"
+            className="flex items-center gap-3 rounded-[28px] px-4 py-3 relative overflow-hidden"
             style={{
-              ringColor: isLight
-                ? "rgba(0,0,0,0.08)"
-                : "rgba(255,255,255,0.10)",
-              background: MOBILE_PILL_BG,
-              border: MOBILE_PILL_BORDER,
-              boxShadow: MOBILE_PILL_SHADOW,
-              backdropFilter: "blur(12px)",
+              background: "var(--nav-pill-bg)",
+              border: "var(--nav-pill-border)",
+              boxShadow: "var(--nav-pill-shadow)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
             }}
           >
-            <div className="shrink-0">
-              <LogoFancy
-                className="flex items-center font-[sans-serif]"
-                idleSrc="/logo.png"
-                idleAlt="MILINK Logo"
-                idleTitle="MILINK"
-                idleSubtitle="DIGITAL AGENCY"
-                hoverTitle="Design . Launch . Scale"
-                gradientClass="gradient-text"
-                iconGap={0}
-                blockShiftY={1}
-                hoverCenterShiftY={+1}
-              />
-            </div>
+            {/* Logo */}
+            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 no-underline">
+              {/* <img src="/logo.png" alt="Milink" width={24} height={24} className="w-6 h-6 object-contain flex-shrink-0" /> */}
+              <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
+              <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+            </a>
 
-            <div className="ml-auto mr-[14px]">
-              {/* âœ… FIX: pass isLight */}
-              <BurgerButton isLight={isLight} onClick={() => setOpen(true)} />
-            </div>
+            {/* Hamburger only — no theme toggle here */}
+            <button
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
+              className="ml-auto w-11 h-11 flex flex-col items-center justify-center gap-[5px] rounded-full"
+              style={{
+                background: "var(--nav-burger-bg)",
+                border: "var(--nav-burger-border)",
+                boxShadow: "var(--nav-burger-shadow)",
+              }}
+            >
+              <motion.span animate={{ rotate: open ? 45 : 0, y: open ? 6 : 0 }} transition={{ duration: 0.22 }} className="block w-5 h-[2px] rounded-full" style={{ background: "var(--text-primary)" }} />
+              <motion.span animate={{ opacity: open ? 0 : 1, scaleX: open ? 0 : 1 }} transition={{ duration: 0.15 }} className="block w-5 h-[2px] rounded-full" style={{ background: "var(--text-primary)" }} />
+              <motion.span animate={{ rotate: open ? -45 : 0, y: open ? -6 : 0 }} transition={{ duration: 0.22 }} className="block w-5 h-[2px] rounded-full" style={{ background: "var(--text-primary)" }} />
+            </button>
           </div>
         </div>
-
-        {/* Mobile overlay + drawer */}
-        <AnimatePresence>
-          {open && (
-            <>
-              <motion.button
-                key="overlay"
-                onClick={() => setOpen(false)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                aria-label="Close menu overlay"
-                className="fixed inset-0 z-[95] md:hidden bg-[color:var(--scrim-68)] backdrop-blur-[8px]"
-              />
-
-              <motion.aside
-                key="drawer"
-                initial={{ x: "110%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "110%" }}
-                transition={{ type: "tween", duration: reduced ? 0 : 0.28, ease: REVEAL_EASE }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 120 }}
-                dragElastic={0.06}
-                onDragEnd={(e, info) => {
-                  if (info.offset.x > 60 || info.velocity.x > 300)
-                    setOpen(false);
-                }}
-                className="fixed right-0 top-0 z-[96] h-[100dvh] w-[min(380px,90vw)] p-4 flex flex-col md:hidden touch-pan-y overflow-x-visible"
-                style={{
-                  color: DRAWER_TEXT,
-                  background: DRAWER_BG,
-                  borderLeft: `1px solid ${DRAWER_BORDER}`,
-                  boxShadow:
-                    "0 30px 80px rgba(0,0,0,0.45), 0 0 60px rgb(var(--brand) / 0.1)",
-                  backdropFilter: "blur(18px)",
-                  paddingTop: "max(16px, env(safe-area-inset-top))",
-                  paddingBottom: "max(12px, env(safe-area-inset-bottom))",
-                }}
-                role="dialog"
-                aria-modal="true"
-              >
-                {/* Header drawer */}
-                <div
-                  className="mb-4 flex items-center justify-between rounded-2xl p-3"
-                  style={{
-                    background: CARD_BG,
-                    border: `1px solid ${CARD_BORDER}`,
-                    boxShadow: CARD_SHADOW,
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="h-12 w-12 rounded-2xl overflow-hidden grid place-items-center border"
-                      style={{
-                        borderColor: isLight
-                          ? "rgba(0,0,0,0.10)"
-                          : "var(--surface-border)",
-                        background: isLight
-                          ? "linear-gradient(180deg, #FFFFFF, #F3F6FF)"
-                          : "linear-gradient(180deg, var(--surface-card), var(--bg-alt))",
-                        boxShadow: isLight
-                          ? "inset 0 1px 2px rgba(255,255,255,0.5), 0 10px 22px rgba(0,0,0,0.12)"
-                          : "inset 0 1px 2px rgba(255,255,255,0.06), 0 10px 22px rgba(0,0,0,0.35)",
-                      }}
-                    >
-                      <img
-                        src="/logo.png"
-                        alt="Milink Digital Agency"
-                        className="h-10 w-10 object-contain"
-                        loading="eager"
-                        decoding="async"
-                      />
-                    </div>
-
-                    <div className="leading-tight">
-                      <div className="text-base font-semibold">Milink</div>
-                      <div className="text-sm" style={{ color: DRAWER_MUTED }}>
-                        Digital Agency
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <ThemeToggle />
-                    <button
-                      onClick={() => setOpen(false)}
-                      className="grid h-10 w-10 place-items-center rounded-xl"
-                      style={{
-                        border: `1px solid ${CARD_BORDER}`,
-                        background: isLight
-                          ? "radial-gradient(circle at 30% 30%, rgba(0,0,0,0.06), rgba(0,0,0,0.02))"
-                          : "radial-gradient(circle at 30% 30%, oklch(0.3 0.04 265 / 0.9), oklch(0.304 0.03 265 / 0.92))",
-                        boxShadow: "0 0 20px rgb(var(--brand) / 0.25)",
-                      }}
-                      aria-label="Close menu"
-                    >
-                      <XMarkIcon className="h-5 w-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Title */}
-                <div className="px-1 pb-2">
-                  <div
-                    className="text-[13px] uppercase tracking-[0.22em]"
-                    style={{
-                      color: isLight
-                        ? "rgba(0,0,0,0.55)"
-                        : "var(--text-secondary)",
-                    }}
-                  >
-                    Navigation
-                  </div>
-                </div>
-
-                {/* Links */}
-                <motion.ul
-                  variants={listVariants}
-                  initial="hidden"
-                  animate="show"
-                  className="grid gap-3 overflow-y-auto pr-1"
-                  style={{ maxHeight: "calc(100dvh - 430px)" }}
-                >
-                  {nav.map((n, i) => (
-                    <motion.li key={i} variants={itemVariants}>
-                      <a
-                        href={n.href}
-                        onClick={() => setOpen(false)}
-                        className="group relative flex items-center justify-between rounded-2xl px-4 py-4"
-                        style={{
-                          background: isLight
-                            ? "linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02))"
-                            : "linear-gradient(180deg, var(--surface-card), var(--surface-hover))",
-                          border: `1px solid ${CARD_BORDER}`,
-                          boxShadow: isLight
-                            ? "0 10px 26px rgba(0,0,0,0.12)"
-                            : "0 10px 26px rgba(0,0,0,0.35)",
-                          overflow: "hidden",
-                          transition:
-                            "transform .15s ease, box-shadow .2s ease, border-color .2s ease",
-                        }}
-                      >
-                        <span
-                          aria-hidden
-                          className="absolute left-0 top-0 h-full w-[3px] opacity-70"
-                          style={{
-                            background:
-                              "linear-gradient(180deg, rgb(var(--brand) / 0.8), rgb(var(--brand) / 0.2))",
-                          }}
-                        />
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute -inset-10 opacity-0 blur-2xl group-hover:opacity-100 transition-opacity duration-300"
-                          style={{
-                            background:
-                              "radial-gradient(140px 60px at 50% 30%, rgb(var(--brand) / 0.16), transparent 70%)",
-                          }}
-                        />
-                        <div className="relative z-10 flex items-center gap-3">
-                          <span
-                            className="h-2 w-2 rounded-full"
-                            style={{
-                              background:
-                                "radial-gradient(circle at 40% 40%, rgb(var(--brand-soft)), rgb(var(--brand)) 80%)",
-                              boxShadow: "0 0 10px rgb(var(--brand) / 0.55)",
-                            }}
-                          />
-                          <span className="text-[15px] font-medium tracking-wide">
-                            {n.label}
-                          </span>
-                        </div>
-                        <ChevronRightIcon
-                          className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5"
-                          style={{
-                            color: isLight
-                              ? "rgba(0,0,0,0.55)"
-                              : "var(--text-secondary)",
-                          }}
-                        />
-                      </a>
-                    </motion.li>
-                  ))}
-                </motion.ul>
-
-                {/* Divider */}
-                <div
-                  className="mt-4 mb-2 h-px w-full"
-                  style={{
-                    background: isLight
-                      ? "linear-gradient(90deg, transparent, rgba(0,0,0,0.14), transparent)"
-                      : "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
-                  }}
-                />
-
-                {/* Socials */}
-                <div className="px-1 pb-2">
-                  <div
-                    className="text-[12px] uppercase tracking-[0.18em] mb-2"
-                    style={{
-                      color: isLight
-                        ? "rgba(0,0,0,0.45)"
-                        : "var(--text-secondary)",
-                    }}
-                  >
-                    Connect
-                  </div>
-                  <div className="flex items-center justify-center gap-3">
-                    <SocialIcon
-                      href="https://www.instagram.com/milink.ca"
-                      label="Instagram"
-                      type="ig"
-                    />
-                    <SocialIcon
-                      href="https://wa.me/14376003139"
-                      label="WhatsApp"
-                      type="wa"
-                    />
-                    <SocialIcon
-                      href="mailto:info@milink.ca"
-                      label="Email"
-                      type="mail"
-                    />
-                    <SocialIcon
-                      href="https://www.facebook.com/milink.ca"
-                      label="Facebook"
-                      type="fb"
-                    />
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div
-                  className="mt-3 mb-1 h-px w-full"
-                  style={{
-                    background: isLight
-                      ? "linear-gradient(90deg, transparent, rgba(0,0,0,0.14), transparent)"
-                      : "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
-                  }}
-                />
-
-                {/* CTA â€” mobile */}
-                <div className="mt-auto pt-1 grid place-items-center overflow-visible">
-                  <CTAButton onClick={() => setOpen(false)} wide mobileGlow />
-                </div>
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
       </header>
 
-      {/* Spacer (desktop only) */}
-      <div className="hidden md:block" style={{ height: navH }} aria-hidden />
+      {/* ── Mobile fullscreen overlay ── */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25, ease: EASE }}
+            className="fixed inset-0 z-[200] flex flex-col md:hidden"
+            style={{ background: "var(--mobile-menu-bg)" }}
+          >
+            {/* Header row matches the capsule height/padding */}
+            <div className="flex items-center justify-between px-7 pt-6 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
+                <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cur = document.documentElement.getAttribute("data-theme") || "dark";
+                    const next = cur === "dark" ? "light" : "dark";
+                    document.documentElement.setAttribute("data-theme", next);
+                    document.documentElement.classList.toggle("dark", next === "dark");
+                    try { localStorage.setItem("milink-theme-mode", next); } catch {}
+                    window.dispatchEvent(new CustomEvent("milink-theme-change", { detail: next }));
+                  }}
+                  aria-label="Toggle theme"
+                  style={{
+                    width: 44,
+                    height: 44,
+                    minWidth: 44,
+                    minHeight: 44,
+                    flexShrink: 0,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 9999,
+                    background: "transparent",
+                    color: "var(--text-primary)",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ display: "block", color: "var(--text-primary)" }}>
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Close menu"
+                  style={{
+                    width: 44,
+                    height: 44,
+                    minWidth: 44,
+                    minHeight: 44,
+                    flexShrink: 0,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 9999,
+                    background: "var(--nav-burger-bg)",
+                    border: "var(--nav-burger-border)",
+                    boxShadow: "var(--nav-burger-shadow)",
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{ color: "var(--text-primary)" }}>
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <nav className="flex flex-col gap-2.5 px-5 pt-6 pb-6 flex-1 overflow-y-auto" aria-label="Mobile navigation">
+              {nav.map((item, i) => (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.04 + i * 0.055, ease: EASE }}
+                  onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  className="flex items-center justify-between px-5 py-4 rounded-2xl font-display font-bold text-lg no-underline"
+                  style={{
+                    background: active === item.href ? "rgba(0,96,255,0.10)" : "var(--mobile-item-bg)",
+                    color: active === item.href ? "var(--accent)" : "var(--text-primary)",
+                    border: `1px solid ${active === item.href ? "rgba(0,96,255,0.22)" : "var(--mobile-item-border)"}`,
+                  }}
+                >
+                  {item.label}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ color: "var(--accent)", opacity: 0.5 }}>
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </motion.a>
+              ))}
+
+              <motion.a
+                href="#contact"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.34, ease: EASE }}
+                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                className="mt-4 flex items-center justify-center gap-2 px-6 py-4 rounded-full font-display font-bold text-base no-underline"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                Book a Call ↗
+              </motion.a>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

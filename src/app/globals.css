@@ -2,58 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Basics ===== */
-html,
-body {
+/* ===== Base ===== */
+html, body {
   @apply w-full overflow-x-hidden;
 }
-* {
-  box-sizing: border-box;
-}
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; font-size: 16px; scrollbar-gutter: stable; }
 body {
   @apply text-base-content;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 html[data-theme="light"] body {
   @apply bg-base-100;
 }
-/* Dark: neutral canvas only — atmosphere lives per-section (not one viewport-tall gradient) */
 html[data-theme="dark"] body {
   color: var(--text-primary);
   background-color: var(--canvas-base);
   background-image: none;
 }
+
 .container {
   @apply max-w-8xl mx-auto px-4;
 }
 
 @layer base {
-  h1,
-  h2 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: theme("fontFamily.display");
-    letter-spacing: -0.03em !important;
   }
-
-  h3 {
-    font-family: theme("fontFamily.display");
-    letter-spacing: -0.01em;
-  }
-
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl font-extrabold;
-    line-height: 1.08;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
   }
-
   h2 {
     @apply text-3xl sm:text-4xl md:text-5xl font-extrabold;
-    line-height: 1.12;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
-
   h3 {
     @apply text-2xl sm:text-3xl font-bold;
+    letter-spacing: -0.02em;
     line-height: 1.2;
+  }
+}
+
+/* ===== Hero design tokens (blue accent) ===== */
+:root {
+  --bg:     oklch(0.13 0.024 265);
+  --text:   oklch(0.97 0.01 265);
+  --muted:  oklch(0.65 0.02 265);
+  --border: rgba(255,255,255,0.08);
+  --accent: #0060FF;
+}
+html[data-theme="light"] {
+  --bg:     #eaf1fb;
+  --text:   #0d1829;
+  --muted:  #3d5068;
+  --border: rgba(0,0,0,0.10);
+  --accent: #0060FF;
+}
+
+/* ===== Navbar ===== */
+/* Desktop only: frosted bar; mobile = transparent so video shows behind floating capsule */
+@media (min-width: 768px) {
+  header.nav-top {
+    background: rgba(9,9,11,0.60);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+  }
+  [data-theme="light"] header.nav-top {
+    background: rgba(234,241,251,0.70);
+    border-bottom: 1px solid transparent;
+  }
+  header.nav-scrolled {
+    background: rgba(9,9,11,0.88);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  [data-theme="light"] header.nav-scrolled {
+    background: rgba(234,241,251,0.94);
+    border-bottom: 1px solid rgba(0,0,0,0.07);
   }
 }
 
@@ -221,6 +254,36 @@ html[data-theme="light"] .label .label-text {
   color: #3d5068;
 }
 
+/* Nav — mobile capsule + burger tokens (theme-aware) */
+:root {
+  --nav-pill-bg:     radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.12) 0%, rgb(var(--brand) / 0) 60%),
+                     linear-gradient(180deg, oklch(0.34 0.042 264 / 0.92) 0%, oklch(0.26 0.036 264 / 0.94) 100%);
+  --nav-pill-border: 1px solid rgba(255,255,255,0.10);
+  --nav-pill-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 28px rgb(var(--brand) / 0.20), inset 0 1px 2px rgba(255,255,255,0.06);
+
+  --nav-burger-bg:     linear-gradient(180deg, oklch(0.44 0.042 264) 0%, oklch(0.36 0.036 264) 100%);
+  --nav-burger-border: 1px solid rgba(255,255,255,0.18);
+  --nav-burger-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 0 0 4px rgb(var(--brand) / 0.45), inset 0 1px 2px rgba(255,255,255,0.10);
+
+  --mobile-item-bg:     rgba(255,255,255,0.04);
+  --mobile-item-border: rgba(255,255,255,0.08);
+  --mobile-menu-bg:     oklch(0.28 0.028 265);
+}
+html[data-theme="light"] {
+  --nav-pill-bg:     radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%),
+                     linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(245,247,255,0.86) 100%);
+  --nav-pill-border: 1px solid rgba(0,0,0,0.08);
+  --nav-pill-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 28px rgb(var(--brand) / 0.14), inset 0 1px 2px rgba(255,255,255,0.22);
+
+  --nav-burger-bg:     radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.10), rgba(255,255,255,0.92) 55%), linear-gradient(180deg, #FFFFFF, #F2F6FF);
+  --nav-burger-border: 1px solid rgba(0,0,0,0.10);
+  --nav-burger-shadow: inset 0 1px 2px rgba(255,255,255,0.70), 0 0 0 2px rgba(0,0,0,0.06), 0 0 0 4px rgb(var(--brand) / 0.18), 0 14px 34px rgba(0,0,0,0.14);
+
+  --mobile-item-bg:     rgba(0,96,255,0.06);
+  --mobile-item-border: rgba(0,96,255,0.14);
+  --mobile-menu-bg:     #eaf1fb;
+}
+
 /* Nav (dark): slightly lighter pill + drawer; desktop header gets a visible frosted-navy surface */
 html[data-theme="dark"] {
   --nav-pill-grad: linear-gradient(
@@ -371,6 +434,16 @@ html[data-theme="dark"] .section-depth-footer {
     #000 65%,
     transparent 92%
   );
+}
+
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
 }
 
 .hero-plain {

@@ -15,7 +15,7 @@ export default {
 
       fontFamily: {
         sans: [
-          "var(--font-inter)",
+          "var(--font-dm-sans)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
@@ -25,29 +25,24 @@ export default {
           "sans-serif",
         ],
         display: [
-          "var(--font-plus-jakarta)",
-          "var(--font-inter)",
+          "var(--font-syne)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
           "Arial",
           "sans-serif",
         ],
         body: [
-          "var(--font-inter)",
+          "var(--font-dm-sans)",
           "system-ui",
           "-apple-system",
           "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
           "Arial",
           "sans-serif",
         ],
         fa: [
           "Vazirmatn",
-          "var(--font-inter)",
+          "var(--font-dm-sans)",
           "system-ui",
           "sans-serif",
         ],
