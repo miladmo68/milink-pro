@@ -1,6 +1,6 @@
 "use client";
-import { useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const EASE = [0.25, 0.1, 0.25, 1];
 
@@ -10,26 +10,32 @@ const STATS = [
   { num: "5★",  label: "Rating" },
 ];
 
-// Floating service constellation (desktop only)
-const SERVICES = [
-  { label: "Web Design",   top: "6%",  left: "22%", delay: 0.0, size: "lg" },
-  { label: "E-Commerce",   top: "20%", left: "62%", delay: 0.1, size: "md" },
-  { label: "SEO",          top: "44%", left: "10%", delay: 0.2, size: "sm" },
-  { label: "UI / UX",      top: "52%", left: "48%", delay: 0.3, size: "lg" },
-  { label: "Branding",     top: "74%", left: "20%", delay: 0.4, size: "md" },
-  { label: "Performance",  top: "82%", left: "60%", delay: 0.5, size: "sm" },
-];
+const ROTATING_WORDS = ["websites", "stores", "brands", "experiences"];
 
-const sizeMap = {
-  sm: "px-3.5 py-1.5 text-[11px]",
-  md: "px-4 py-2 text-[12px]",
-  lg: "px-5 py-2.5 text-[13px]",
-};
+const MARQUEE_ITEMS = [
+  "Web Design",
+  "E-Commerce",
+  "SEO",
+  "UI / UX",
+  "Branding",
+  "Performance",
+  "Shopify",
+  "WordPress",
+  "Maintenance",
+];
 
 export default function Hero() {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
   const reduced = useReducedMotion();
+
+  // Rotating word
+  const [wordIdx, setWordIdx] = useState(0);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setInterval(() => setWordIdx((i) => (i + 1) % ROTATING_WORDS.length), 2400);
+    return () => clearInterval(t);
+  }, [reduced]);
 
   const fadeUp = (delay = 0, distance = 30) => ({
     initial: reduced ? {} : { opacity: 0, y: distance },
@@ -92,7 +98,7 @@ export default function Hero() {
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(38% 45% at 78% 35%, rgb(var(--brand) / 0.16) 0%, rgba(0,0,0,0) 70%)",
+              "radial-gradient(35% 45% at 82% 35%, rgb(var(--brand) / 0.14) 0%, rgba(0,0,0,0) 70%)",
             mixBlendMode: "screen",
           }}
         />
@@ -108,10 +114,10 @@ export default function Hero() {
       </div>
 
       {/* ===== Content ===== */}
-      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 pt-24 pb-20 md:pb-28 lg:py-28 w-full">
+      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 pt-24 pb-24 md:pb-32 lg:py-28 w-full">
         <div className="grid lg:grid-cols-12 gap-10 xl:gap-16 items-center">
           {/* Left column */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-8">
             {/* Eyebrow — premium status capsule */}
             <motion.div
               {...fadeUp(0.2, 16)}
@@ -148,7 +154,7 @@ export default function Hero() {
             {/* Title */}
             <h1
               className="font-display font-black mb-8 text-center sm:text-left"
-              style={{ letterSpacing: "-0.03em", fontSize: "clamp(38px, 8vw, 88px)", lineHeight: 0.92 }}
+              style={{ letterSpacing: "-0.03em", fontSize: "clamp(38px, 8.6vw, 96px)", lineHeight: 0.92 }}
             >
               <div className="overflow-hidden flex gap-[0.22em] justify-center sm:justify-start">
                 {["Build", "what"].map((w, i) => (
@@ -188,13 +194,32 @@ export default function Hero() {
               </div>
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle with rotating word */}
             <motion.p
               {...fadeUp(0.65)}
-              className="font-body font-light text-[16px] max-w-[480px] mb-12"
+              className="font-body font-light text-[16px] max-w-[520px] mb-12"
               style={{ color: "var(--text-secondary)", lineHeight: 1.75 }}
             >
-              We design and build high-performance websites, e-commerce stores, and digital experiences that turn visitors into customers.
+              We design and build high-performance{" "}
+              <span className="relative inline-flex items-baseline align-baseline">
+                <span aria-hidden="true" className="invisible whitespace-nowrap font-medium">
+                  experiences
+                </span>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={ROTATING_WORDS[wordIdx]}
+                    initial={reduced ? {} : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduced ? {} : { opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                    className="absolute left-0 right-0 font-display font-bold whitespace-nowrap"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {ROTATING_WORDS[wordIdx]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>{" "}
+              that turn visitors into customers.
             </motion.p>
 
             {/* CTAs */}
@@ -254,118 +279,94 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right column — service constellation (desktop only) */}
+          {/* Right column — vertical editorial accent (desktop only) */}
           <div
-            className="hidden lg:block lg:col-span-5"
+            className="hidden lg:flex lg:col-span-4 relative items-center justify-end"
             aria-hidden="true"
+            style={{ minHeight: "440px" }}
           >
-            <div className="relative w-full" style={{ height: "560px" }}>
-              {/* Soft brand halo */}
-              <div
-                className="absolute inset-0 blur-3xl"
-                style={{
-                  background:
-                    "radial-gradient(50% 50% at 50% 50%, rgb(var(--brand) / 0.22) 0%, rgba(0,0,0,0) 70%)",
-                  opacity: 0.85,
-                }}
-              />
-
-              {/* Concentric rings */}
-              <svg
-                className="absolute inset-0 w-full h-full"
-                viewBox="0 0 400 560"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                <defs>
-                  <radialGradient id="ring-grad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="rgb(var(--brand))" stopOpacity="0.30" />
-                    <stop offset="100%" stopColor="rgb(var(--brand))" stopOpacity="0" />
-                  </radialGradient>
-                </defs>
-                <circle cx="200" cy="280" r="120" stroke="rgba(120,165,255,0.10)" strokeWidth="1" />
-                <circle cx="200" cy="280" r="180" stroke="rgba(120,165,255,0.08)" strokeWidth="1" />
-                <circle cx="200" cy="280" r="240" stroke="rgba(120,165,255,0.06)" strokeWidth="1" />
-                <circle cx="200" cy="280" r="120" fill="url(#ring-grad)" />
-              </svg>
-
-              {/* Center monogram */}
-              <motion.div
-                initial={reduced ? {} : { opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7, ease: EASE, delay: reduced ? 0 : 0.5 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center rounded-3xl"
-                style={{
-                  width: 120,
-                  height: 120,
-                  background:
-                    "radial-gradient(120% 120% at 30% 20%, rgb(var(--brand) / 0.25), rgb(var(--brand) / 0.08) 60%), rgba(10,16,28,0.85)",
-                  border: "1px solid rgb(var(--brand) / 0.40)",
-                  boxShadow:
-                    "0 0 0 1px rgba(255,255,255,0.04) inset, 0 24px 60px rgba(0,0,0,0.45), 0 0 60px rgb(var(--brand) / 0.35)",
-                  backdropFilter: "blur(14px)",
-                }}
-              >
-                <div className="flex items-baseline gap-0.5">
-                  <span className="font-display font-black text-3xl leading-none" style={{ color: "#fff" }}>MI</span>
-                  <span className="font-display font-black text-3xl leading-none" style={{ color: "var(--accent)" }}>.</span>
-                </div>
-              </motion.div>
-
-              {/* Service capsules */}
-              {SERVICES.map((s, i) => (
+            {/* progress rail */}
+            <div className="relative h-full flex items-center pr-2">
+              <div className="relative w-px h-[360px]" style={{ background: "rgba(255,255,255,0.08)" }}>
                 <motion.div
-                  key={s.label}
-                  initial={reduced ? {} : { opacity: 0, y: 14, scale: 0.92 }}
-                  animate={
-                    reduced
-                      ? { opacity: 1 }
-                      : {
-                          opacity: 1,
-                          y: [0, i % 2 === 0 ? -6 : 6, 0],
-                          scale: 1,
-                        }
-                  }
-                  transition={{
-                    opacity: { duration: 0.6, ease: EASE, delay: 0.7 + s.delay },
-                    scale: { duration: 0.6, ease: EASE, delay: 0.7 + s.delay },
-                    y: reduced
-                      ? {}
-                      : { duration: 6 + i * 0.6, repeat: Infinity, ease: "easeInOut", delay: 1 + s.delay },
-                  }}
-                  className={`absolute font-display font-semibold tracking-wide rounded-full ${sizeMap[s.size]}`}
+                  initial={reduced ? { height: "60%" } : { height: 0 }}
+                  animate={{ height: "60%" }}
+                  transition={{ duration: 1.4, ease: EASE, delay: reduced ? 0 : 0.7 }}
+                  className="absolute top-0 left-0 w-px"
                   style={{
-                    top: s.top,
-                    left: s.left,
-                    background: "rgba(14,22,38,0.78)",
-                    color: "#fff",
-                    border: "1px solid rgb(var(--brand) / 0.30)",
-                    boxShadow:
-                      "0 12px 28px rgba(0,0,0,0.40), 0 0 18px rgb(var(--brand) / 0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
+                    background: "linear-gradient(180deg, rgb(var(--brand)) 0%, rgb(var(--brand-accent)) 100%)",
+                    boxShadow: "0 0 12px rgb(var(--brand) / 0.6)",
                   }}
-                >
-                  <span
-                    className="inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle"
-                    style={{
-                      background: "var(--accent)",
-                      boxShadow: "0 0 10px rgb(var(--brand) / 0.85)",
-                    }}
-                  />
-                  {s.label}
-                </motion.div>
-              ))}
+                />
+                <motion.span
+                  initial={reduced ? { y: "60%", opacity: 1 } : { y: 0, opacity: 0 }}
+                  animate={{ y: "60%", opacity: 1 }}
+                  transition={{ duration: 1.4, ease: EASE, delay: reduced ? 0 : 0.7 }}
+                  className="absolute -left-[3px] block w-[7px] h-[7px] rounded-full"
+                  style={{
+                    background: "var(--accent)",
+                    boxShadow: "0 0 14px rgb(var(--brand) / 0.85)",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* vertical text */}
+            <div className="flex items-center justify-center" style={{ width: "44px" }}>
+              <motion.div
+                initial={reduced ? {} : { opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: EASE, delay: reduced ? 0 : 0.55 }}
+                className="font-display font-bold uppercase text-[11px] tracking-[0.42em]"
+                style={{
+                  writingMode: "vertical-rl",
+                  transform: "rotate(180deg)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                MILINK · Studio · Toronto · 2024 · ★
+              </motion.div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* ===== Bottom marquee ticker ===== */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10 overflow-hidden border-t pointer-events-none"
+        style={{
+          borderColor: "rgba(255,255,255,0.06)",
+          background:
+            "linear-gradient(180deg, rgba(7,12,22,0) 0%, rgba(7,12,22,0.55) 60%, rgba(7,12,22,0.78) 100%)",
+        }}
+        aria-hidden="true"
+      >
+        <motion.div
+          className="flex whitespace-nowrap py-4"
+          animate={reduced ? {} : { x: ["0%", "-50%"] }}
+          transition={reduced ? {} : { duration: 38, repeat: Infinity, ease: "linear" }}
+        >
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="flex items-center gap-6 px-6 shrink-0">
+              <span
+                className="font-display font-black uppercase text-[15px] tracking-[0.22em]"
+                style={{ color: "var(--text-primary)", opacity: 0.55 }}
+              >
+                {item}
+              </span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ color: "var(--accent)", opacity: 0.85 }}>
+                <path d="M12 2 L13.6 9.4 L21 11 L13.6 12.6 L12 20 L10.4 12.6 L3 11 L10.4 9.4 Z" />
+              </svg>
+            </span>
+          ))}
+        </motion.div>
+      </div>
+
       {/* Scroll indicator */}
       <motion.div
         aria-hidden
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1"
-        style={{ opacity: 0.5, color: "var(--accent)" }}
+        className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1"
+        style={{ opacity: 0.45, color: "var(--accent)" }}
         animate={{ y: [0, 6, 0] }}
         transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
       >
