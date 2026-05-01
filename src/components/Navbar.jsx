@@ -48,32 +48,66 @@ export default function Navbar() {
       <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "nav-scrolled" : "nav-top"}`}>
         {/* ── Desktop bar ── */}
         <div className="hidden md:block max-w-8xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 no-underline">
-              {/* <img src="/logo.png" alt="Milink" width={28} height={28} className="w-7 h-7 object-contain flex-shrink-0" /> */}
-              <span className="font-display font-black text-xl leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
-              <span className="font-display font-black text-xl leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+          <div className="flex items-center justify-between h-20">
+            <a
+              href="#home"
+              onClick={(e) => { e.preventDefault(); scrollTo("#home"); }}
+              className="flex items-center gap-2 no-underline"
+            >
+              <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--text-primary)" }}>MI</span>
+              <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--accent)" }}>LINK</span>
             </a>
-            <nav className="flex items-center gap-8" aria-label="Main navigation">
+
+            <nav
+              className="flex items-center gap-1 px-2 py-1.5 rounded-full"
+              aria-label="Main navigation"
+              style={{
+                background: "var(--nav-links-bg, rgba(255,255,255,0.04))",
+                border: "1px solid var(--nav-links-border, rgba(255,255,255,0.07))",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+              }}
+            >
               {nav.map((item) => (
-                <a key={item.href} href={item.href} onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
-                  className="relative font-display text-sm font-semibold tracking-wide transition-colors duration-200 no-underline py-1"
-                  style={{ color: active === item.href ? "var(--text-primary)" : "var(--text-muted)" }}>
-                  {item.label}
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  className="relative font-display text-[13px] font-semibold tracking-wide transition-colors duration-200 no-underline px-4 py-1.5 rounded-full"
+                  style={{ color: active === item.href ? "var(--text-primary)" : "var(--text-muted)" }}
+                >
                   {active === item.href && (
-                    <motion.span layoutId="nav-underline" className="absolute -bottom-0.5 left-0 right-0 h-px rounded-full"
-                      style={{ background: "var(--accent)" }} transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: "var(--nav-pill-active, rgba(0,96,255,0.14))",
+                        border: "1px solid var(--nav-pill-active-border, rgba(0,96,255,0.30))",
+                      }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
                   )}
+                  <span className="relative">{item.label}</span>
                 </a>
               ))}
             </nav>
+
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <motion.a href="#contact" onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
-                whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.97 }}
+              <span className="h-5 w-px" style={{ background: "var(--surface-border)", opacity: 0.5 }} />
+              <motion.a
+                href="#contact"
+                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-display font-bold text-sm no-underline"
-                style={{ background: "var(--accent)", color: "#fff" }}>
+                style={{
+                  background: "var(--accent)",
+                  color: "#fff",
+                  boxShadow: "0 4px 14px rgb(var(--brand) / 0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
+                }}
+              >
                 Book a Call
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M7 17L17 7M17 7H7M17 7v10"/>

@@ -268,6 +268,12 @@ html[data-theme="light"] .label .label-text {
   --mobile-item-bg:     rgba(255,255,255,0.04);
   --mobile-item-border: rgba(255,255,255,0.08);
   --mobile-menu-bg:     oklch(0.28 0.028 265);
+
+  /* Desktop nav links pill (frosted) */
+  --nav-links-bg:           rgba(255,255,255,0.04);
+  --nav-links-border:       rgba(255,255,255,0.08);
+  --nav-pill-active:        rgb(var(--brand) / 0.18);
+  --nav-pill-active-border: rgb(var(--brand) / 0.34);
 }
 html[data-theme="light"] {
   --nav-pill-bg:     radial-gradient(160% 140% at 85% 20%, rgb(var(--brand) / 0.10) 0%, rgb(var(--brand) / 0) 60%),
@@ -282,6 +288,12 @@ html[data-theme="light"] {
   --mobile-item-bg:     rgba(0,96,255,0.06);
   --mobile-item-border: rgba(0,96,255,0.14);
   --mobile-menu-bg:     #eaf1fb;
+
+  /* Desktop nav links pill (frosted) — light */
+  --nav-links-bg:           rgba(255,255,255,0.55);
+  --nav-links-border:       rgba(0,0,0,0.07);
+  --nav-pill-active:        rgb(var(--brand) / 0.10);
+  --nav-pill-active-border: rgb(var(--brand) / 0.28);
 }
 
 /* Nav (dark): slightly lighter pill + drawer; desktop header gets a visible frosted-navy surface */
