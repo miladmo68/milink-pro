@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Instagram } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 
 /* ─── Shared easing ─────────────────────────────────────── */
 const EASE = [0.4, 0, 0.2, 1];
@@ -158,22 +159,22 @@ export default function Contact() {
       id="contact"
       className="relative overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
     >
-      <div
+      <ScrollParallax
         className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
-        aria-hidden
+        offset={50}
       >
         <div className="section-depth-contact" />
-      </div>
+      </ScrollParallax>
 
-      {/* ① Header — fadeInDown (enters from above, slides down) */}
+      {/* ① Header — fade-up to match the intershine .section-head pattern */}
       <div className="text-center mb-14 space-y-3">
-        <Reveal from="down" distance={14}>
+        <Reveal from="up" distance={14}>
           <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Contact</div>
         </Reveal>
-        <Reveal from="down" distance={20} delay={0.08}>
+        <Reveal from="up" distance={20} delay={0.08}>
           <h2 className="text-4xl sm:text-5xl font-semibold">Get In <span className="gradient-text-static">Touch</span></h2>
         </Reveal>
-        <Reveal from="down" distance={16} delay={0.16}>
+        <Reveal from="up" distance={16} delay={0.16}>
           <p className="text-base-content/68 max-w-md mx-auto">
             Have a question or want to start a project? Reach out and let&apos;s
             bring your ideas to life.
@@ -201,7 +202,7 @@ export default function Contact() {
             {/* ④ Contact rows — staggered fadeInLeft + row hover nudge */}
             <ul className="space-y-6">
               {contactItems.map(({ key, icon, label, content }, i) => (
-                <Reveal key={key} from="left" distance={18} delay={0.12 + i * 0.09}>
+                <Reveal key={key} from="up" distance={18} delay={0.12 + i * 0.08}>
                   <motion.li
                     variants={rowVariants}
                     initial="rest"

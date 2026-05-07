@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Instagram, Globe, Link as LinkIcon, X } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 import { motion } from "framer-motion";
 import { work } from "../data/content.js";
 
@@ -89,12 +90,12 @@ export default function Work() {
       id="work"
       className="relative overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
     >
-      <div
+      <ScrollParallax
         className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
-        aria-hidden
+        offset={60}
       >
         <div className="section-depth-work" />
-      </div>
+      </ScrollParallax>
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center">
@@ -198,8 +199,8 @@ export default function Work() {
               key={w.id}
               asChild
               from="up"
-              distance={16}
-              delay={i * 0.04}
+              distance={24}
+              delay={i * 0.08}
             >
               <article
                 className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-[color:var(--frost-82)] transition hover:bg-[var(--surface-hover)]"

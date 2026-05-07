@@ -10,7 +10,14 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { services } from "../data/content.js";
-import { Reveal, REVEAL_EASE, REVEAL_DURATION_IN } from "../components/scroll-reveal.jsx";
+import {
+  Reveal,
+  REVEAL_EASE,
+  REVEAL_DURATION_IN,
+  REVEAL_AMOUNT,
+  REVEAL_MARGIN,
+} from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 
 /* ===== Brand palette — values driven by CSS vars in globals.css ===== */
 const BRAND = {
@@ -42,24 +49,23 @@ const iconMap = {
   PaintBrushIcon,
 };
 
-/* ===== Motion variants (shared constants) ===== */
+/* ===== Motion variants — fade-up to mirror fairconstruction's universal data-aos="fade-up" ===== */
 const itemVariants = {
-  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  hidden: { opacity: 0, y: 24 },
   show: {
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: { duration: REVEAL_DURATION_IN, ease: REVEAL_EASE },
   },
 };
 
-function InOutItem({ children, index = 0, delayStep = 0.06 }) {
+function InOutItem({ children, index = 0, delayStep = 0.08 }) {
   const ref = useRef(null);
   const reduced = useReducedMotion();
-  const inView = useInView(ref, { amount: 0.18, margin: "-10% 0% -10% 0%" });
+  const inView = useInView(ref, { amount: REVEAL_AMOUNT, margin: REVEAL_MARGIN });
 
   const variants = reduced
-    ? { hidden: { opacity: 1, y: 0, scale: 1 }, show: { opacity: 1, y: 0, scale: 1 } }
+    ? { hidden: { opacity: 1, y: 0 }, show: { opacity: 1, y: 0 } }
     : itemVariants;
 
   return (
@@ -302,12 +308,12 @@ export default function Services() {
       id="services"
       className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
-      <div
+      <ScrollParallax
         className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
-        aria-hidden
+        offset={55}
       >
         <div className="section-depth-services" />
-      </div>
+      </ScrollParallax>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] -z-10 bg-gradient-to-b from-black/[0.11] to-transparent dark:from-black/[0.50]" aria-hidden />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">

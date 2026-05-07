@@ -6,6 +6,7 @@ import {
   SlideIn,
   SectionHeader,
 } from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 
 const cx = (...a) => a.filter(Boolean).join(" ");
 
@@ -119,13 +120,15 @@ export default function Testimonials3DPro() {
       }}
       aria-label="Client testimonials"
     >
-      <div
+      <ScrollParallax
         className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
-        aria-hidden
+        offset={50}
       >
         <div className="section-depth-quote" />
-      </div>
-      <DecorBG />
+      </ScrollParallax>
+      <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={40}>
+        <DecorBG />
+      </ScrollParallax>
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <header className="text-center mb-14 max-w-2xl mx-auto">

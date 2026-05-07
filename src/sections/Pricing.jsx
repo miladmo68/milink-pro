@@ -2,7 +2,8 @@ import { pricing } from "../data/content.js";
 import { Check } from "lucide-react"; // optional
 
 // ⬇️ فقط این خط جدید اضافه شد
-import { Reveal, RevealStagger, SlideIn } from "../components/scroll-reveal.jsx";
+import { Reveal } from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 
 export default function Pricing() {
   return (
@@ -11,11 +12,11 @@ export default function Pricing() {
       className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
       {/* ===== Background (section sculpt + grid + brand wash) ===== */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <ScrollParallax className="pointer-events-none absolute inset-0 -z-10" offset={70}>
         <div className="section-depth-pricing" />
         <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_1.2px)] [background-size:18px_18px]" />
         <div className="absolute inset-x-0 top-[-120px] h-[340px] blur-3xl opacity-30 dark:opacity-[0.34] bg-gradient-to-r from-[rgb(var(--brand)/0.32)] via-[rgb(var(--brand)/0.14)] to-[rgb(var(--brand)/0.32)]" />
-      </div>
+      </ScrollParallax>
 
       <div className="container">
         {/* ===== Header ===== */}
@@ -32,8 +33,8 @@ export default function Pricing() {
           <div className="mx-auto mt-6 h-[3px] w-24 rounded-full bg-gradient-to-r from-[rgb(var(--brand)/0.9)] via-[rgb(var(--brand)/0.6)] to-[rgb(var(--brand)/0.9)]" />
         </div>
 
-        {/* ===== Cards (فقط افکت اضافه شده) ===== */}
-        <RevealStagger className="mt-14 grid gap-6 sm:gap-8 md:grid-cols-3 justify-center">
+        {/* ===== Cards — fade-up stagger to match intershine pricing-card pattern ===== */}
+        <div className="mt-14 grid gap-6 sm:gap-8 md:grid-cols-3 justify-center">
           {pricing.map((p, i) => {
             const isPopular = !!p.popular;
             const isPro = (p.name || "").toLowerCase() === "professional";
@@ -79,13 +80,8 @@ export default function Pricing() {
               ? "shadow-[0_22px_54px_-18px_rgba(0,0,0,0.6),0_0_0_1px_oklch(0.4_0.02_265_/_0.48)]"
               : "ring-1 ring-inset ring-base-300/50 shadow-[0_36px_88px_-12px_rgba(0,0,0,0.68),0_0_0_1px_oklch(0.46_0.02_265_/_0.55)]";
 
-            // ⬇️ فقط این لایه‌ی SlideIn اضافه شد (dir مثل نمونه‌ی خودت)
             return (
-              <SlideIn
-                key={i}
-                dir={i % 3 === 0 ? "left" : i % 3 === 1 ? "up" : "right"}
-                dist={36}
-              >
+              <Reveal key={i} from="up" distance={24} delay={i * 0.08}>
                 <article className={cardOuter}>
                   {/* inner glass card */}
                   <div
@@ -204,10 +200,10 @@ export default function Pricing() {
                     </div>
                   </div>
                 </article>
-              </SlideIn>
+              </Reveal>
             );
           })}
-        </RevealStagger>
+        </div>
       </div>
 
       {/* keyframes for badge glow */}
