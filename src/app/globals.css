@@ -743,6 +743,119 @@ html[data-theme="dark"] .section-depth-footer {
   animation: glowPulse 2.4s ease-in-out infinite;
 }
 
+/* ============================================================
+   AMBIENT MOTION — fairconstruction-style drifting decor
+   Always-on, low-amplitude, no scroll dependency.
+   ============================================================ */
+@keyframes mesh-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-3%, 2%, 0) scale(1.05); }
+  100% { transform: translate3d(2%, -2%, 0) scale(1.02); }
+}
+@keyframes mesh-drift-alt {
+  0%   { transform: translate3d(0, 0, 0) scale(1.02); }
+  50%  { transform: translate3d(3%, -2%, 0) scale(1); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.04); }
+}
+@keyframes bg-shift {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Drifting brand-color orb — drop into a section's decor stack */
+.bg-orb {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  max-width: 720px;
+  max-height: 720px;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.42;
+  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--brand) / 0.55) 0%, transparent 70%);
+  animation: mesh-drift 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.bg-orb--accent {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(var(--brand-accent) / 0.50) 0%, transparent 70%);
+  animation: mesh-drift-alt 28s ease-in-out infinite alternate;
+}
+.bg-orb--top-right    { top: -20%; right: -20%; }
+.bg-orb--top-left     { top: -25%; left: -22%; }
+.bg-orb--bottom-left  { bottom: -22%; left: -25%; }
+.bg-orb--bottom-right { bottom: -25%; right: -22%; }
+
+/* Animated dark gradient (for CTA-style elements) */
+.bg-shift-dark {
+  background-size: 200% 200%;
+  animation: bg-shift 12s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   CARD HOVER STACK — lift + gold gradient bar + diagonal sweep
+   ============================================================ */
+.card-lift {
+  transition: transform .35s cubic-bezier(.33, 1, .68, 1),
+              box-shadow .35s cubic-bezier(.33, 1, .68, 1),
+              border-color .35s cubic-bezier(.33, 1, .68, 1);
+}
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px -12px rgb(var(--brand) / 0.32);
+  border-color: rgb(var(--brand) / 0.45);
+}
+
+.card-sweep { position: relative; overflow: hidden; isolation: isolate; }
+.card-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgb(var(--brand-accent) / 0.18) 50%,
+    transparent 70%
+  );
+  transition: left .9s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.card-sweep:hover::after { left: 150%; }
+
+.card-bar { position: relative; }
+.card-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgb(var(--brand)) 0%, rgb(var(--brand-accent)) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .45s cubic-bezier(.33, 1, .68, 1);
+  z-index: 2;
+  border-radius: 3px;
+  pointer-events: none;
+}
+.card-bar:hover::before { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-orb,
+  .bg-orb--accent,
+  .bg-shift-dark { animation: none !important; }
+  .card-lift,
+  .card-sweep::after,
+  .card-bar::before { transition: none !important; }
+  .card-lift:hover { transform: none; box-shadow: none; }
+  .card-sweep:hover::after { left: -150%; }
+  .card-bar:hover::before { transform: scaleX(0); }
+}
+
 /* Input border polish in dark mode */
 [data-theme="dark"] .input-bordered,
 [data-theme="dark"] .textarea-bordered {

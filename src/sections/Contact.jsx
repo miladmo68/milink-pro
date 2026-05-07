@@ -165,6 +165,10 @@ export default function Contact() {
       >
         <div className="section-depth-contact" />
       </ScrollParallax>
+      <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={35}>
+        <div className="bg-orb bg-orb--top-right" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
+      </ScrollParallax>
 
       {/* ① Header — fade-up to match the intershine .section-head pattern */}
       <div className="text-center mb-14 space-y-3">
@@ -172,7 +176,7 @@ export default function Contact() {
           <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Contact</div>
         </Reveal>
         <Reveal from="up" distance={20} delay={0.08}>
-          <h2 className="text-4xl sm:text-5xl font-semibold">Get In <span className="gradient-text-static">Touch</span></h2>
+          <h2 className="text-4xl sm:text-5xl font-semibold">Get In <span className="gradient-text">Touch</span></h2>
         </Reveal>
         <Reveal from="up" distance={16} delay={0.16}>
           <p className="text-base-content/68 max-w-md mx-auto">
@@ -190,7 +194,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface"
+            className="bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface card-sweep card-bar"
           >
             <div>
               <h2 className="text-3xl font-bold">Contact Info</h2>
@@ -234,7 +238,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface"
+            className="bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface card-sweep card-bar"
           >
             <form onSubmit={handleSubmit} className="space-y-5">
               <h2 className="text-3xl font-bold">Send a Message</h2>

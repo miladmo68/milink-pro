@@ -96,6 +96,10 @@ export default function Work() {
       >
         <div className="section-depth-work" />
       </ScrollParallax>
+      <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={40}>
+        <div className="bg-orb bg-orb--top-left" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-right" aria-hidden="true" />
+      </ScrollParallax>
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-2xl mx-auto text-center">
@@ -104,7 +108,7 @@ export default function Work() {
           </Reveal>
           <Reveal from="up" distance={20}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              Our <span className="gradient-text-static">Work</span>
+              Our <span className="gradient-text">Work</span>
             </h2>
           </Reveal>
           <Reveal from="up" distance={16} delay={0.05}>
@@ -203,7 +207,7 @@ export default function Work() {
               delay={i * 0.08}
             >
               <article
-                className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-[color:var(--frost-82)] transition hover:bg-[var(--surface-hover)]"
+                className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-[color:var(--frost-82)] card-lift card-sweep hover:bg-[var(--surface-hover)]"
                 role="button"
                 aria-label={`Open ${w.title}`}
                 onClick={() =>

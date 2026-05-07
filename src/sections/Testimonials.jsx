@@ -128,6 +128,8 @@ export default function Testimonials3DPro() {
       </ScrollParallax>
       <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={40}>
         <DecorBG />
+        <div className="bg-orb bg-orb--top-left" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-right" aria-hidden="true" />
       </ScrollParallax>
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
@@ -137,7 +139,7 @@ export default function Testimonials3DPro() {
           </Reveal>
           <Reveal from="up" distance={20}>
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-              What Clients <span className="gradient-text-static">Say</span>
+              What Clients <span className="gradient-text">Say</span>
             </h2>
           </Reveal>
           <p className="text-base-content/58 mt-4 text-sm max-w-sm mx-auto">Real feedback, real outcomes.</p>

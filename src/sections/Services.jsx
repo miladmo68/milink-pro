@@ -314,6 +314,10 @@ export default function Services() {
       >
         <div className="section-depth-services" />
       </ScrollParallax>
+      <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={30}>
+        <div className="bg-orb bg-orb--top-right" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
+      </ScrollParallax>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] -z-10 bg-gradient-to-b from-black/[0.11] to-transparent dark:from-black/[0.50]" aria-hidden />
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
@@ -322,7 +326,7 @@ export default function Services() {
           </Reveal>
           <Reveal from="up" distance={20}>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-              Our <span className="gradient-text-static">Services</span>
+              Our <span className="gradient-text">Services</span>
             </h2>
           </Reveal>
           <Reveal from="up" distance={16} delay={0.05}>

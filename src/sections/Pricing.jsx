@@ -11,11 +11,13 @@ export default function Pricing() {
       id="pricing"
       className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
-      {/* ===== Background (section sculpt + grid + brand wash) ===== */}
+      {/* ===== Background (section sculpt + grid + brand wash + drifting orbs) ===== */}
       <ScrollParallax className="pointer-events-none absolute inset-0 -z-10" offset={70}>
         <div className="section-depth-pricing" />
         <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_1.2px)] [background-size:18px_18px]" />
         <div className="absolute inset-x-0 top-[-120px] h-[340px] blur-3xl opacity-30 dark:opacity-[0.34] bg-gradient-to-r from-[rgb(var(--brand)/0.32)] via-[rgb(var(--brand)/0.14)] to-[rgb(var(--brand)/0.32)]" />
+        <div className="bg-orb bg-orb--top-right" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
       </ScrollParallax>
 
       <div className="container">
@@ -25,7 +27,7 @@ export default function Pricing() {
             <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Our Packages</div>
           </Reveal>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-            <span className="gradient-text-static">Pricing</span> &amp; Packages
+            <span className="gradient-text">Pricing</span> &amp; Packages
           </h2>
           <p className="mt-4 text-base-content/68 max-w-sm mx-auto">
             Choose what fits now—upgrade any time as you grow.
@@ -83,13 +85,13 @@ export default function Pricing() {
             return (
               <Reveal key={i} from="up" distance={24} delay={i * 0.08}>
                 <article className={cardOuter}>
-                  {/* inner glass card */}
+                  {/* inner glass card — fairconstruction-style lift + sweep + gold bar */}
                   <div
                     className={
-                      "relative h-full rounded-2xl card-surface--pricing " +
+                      "relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar " +
                       innerLift +
                       " " +
-                      "transition-transform flex flex-col justify-between " +
+                      "flex flex-col justify-between " +
                       "min-h-[500px] md:min-h-[580px]"
                     }
                   >
