@@ -57,9 +57,9 @@ export default function Navbar() {
               <img
                 src="/Logo-Blue.png"
                 alt="MiLink logo"
-                width={74}
-                height={40}
-                className="logo-mark h-10 w-auto object-contain flex-shrink-0 select-none -my-2"
+                width={92}
+                height={50}
+                className="logo-mark h-[50px] w-auto object-contain flex-shrink-0 select-none -my-2"
                 draggable={false}
               />
               <AnimatePresence initial={false}>
@@ -163,9 +163,9 @@ export default function Navbar() {
               <img
                 src="/Logo-Blue.png"
                 alt="MiLink logo"
-                width={59}
-                height={32}
-                className="logo-mark h-8 w-auto object-contain flex-shrink-0 select-none -my-2"
+                width={81}
+                height={44}
+                className="logo-mark h-11 w-auto object-contain flex-shrink-0 select-none -my-2"
                 draggable={false}
               />
               <AnimatePresence initial={false}>
