@@ -91,13 +91,10 @@ export const metadata = {
   category: "technology",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon.png", sizes: "512x512", type: "image/png" },
+      { url: "/Logo-Navy.png", type: "image/png" },
     ],
-    apple: "/favicon.png",
+    shortcut: "/Logo-Navy.png",
+    apple: "/Logo-Navy.png",
   },
 };
 
@@ -111,7 +108,7 @@ const jsonLd = {
       url: BASE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${BASE_URL}/logo.png`,
+        url: `${BASE_URL}/Logo-Navy.png`,
       },
       contactPoint: {
         "@type": "ContactPoint",
