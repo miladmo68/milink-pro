@@ -48,18 +48,47 @@ export default function Navbar() {
       <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "nav-scrolled" : "nav-top"}`}>
         {/* ── Desktop bar ── */}
         <div className="hidden md:block max-w-8xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20">
+          <div className="relative flex items-center justify-between h-20">
             <a
               href="#home"
               onClick={(e) => { e.preventDefault(); scrollTo("#home"); }}
-              className="flex items-center gap-2 no-underline"
+              className="flex items-center no-underline"
             >
-              <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--text-primary)" }}>MI</span>
-              <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--accent)" }}>LINK</span>
+              <img
+                src="/Logo-Navy.png"
+                alt="MiLink logo"
+                width={74}
+                height={40}
+                className="logo-mark h-10 w-auto object-contain flex-shrink-0 select-none -my-2"
+                draggable={false}
+              />
+              <AnimatePresence initial={false}>
+                {!scrolled && (
+                  <motion.div
+                    key="brand-extension-desktop"
+                    initial={{ opacity: 0, maxWidth: 0, marginLeft: 0, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, maxWidth: 220, marginLeft: -8, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, maxWidth: 0, marginLeft: 0, filter: "blur(4px)" }}
+                    transition={{ duration: 0.42, ease: EASE }}
+                    style={{ overflow: "hidden" }}
+                    className="flex items-center gap-3"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="block w-px h-6 flex-shrink-0"
+                      style={{ background: "var(--text-primary)", opacity: 0.18 }}
+                    />
+                    <div className="flex items-center gap-1 whitespace-nowrap">
+                      <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--text-primary)" }}>MI</span>
+                      <span className="font-display font-black text-[22px] leading-none tracking-tight" style={{ color: "var(--accent)" }}>LINK</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </a>
 
             <nav
-              className="flex items-center gap-1 px-2 py-1.5 rounded-full"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1.5 rounded-full"
               aria-label="Main navigation"
               style={{
                 background: "var(--nav-links-bg, rgba(255,255,255,0.04))",
@@ -130,10 +159,38 @@ export default function Navbar() {
             }}
           >
             {/* Logo */}
-            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 no-underline">
-              {/* <img src="/logo.png" alt="Milink" width={24} height={24} className="w-6 h-6 object-contain flex-shrink-0" /> */}
-              <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
-              <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center no-underline">
+              <img
+                src="/Logo-Navy.png"
+                alt="MiLink logo"
+                width={59}
+                height={32}
+                className="logo-mark h-8 w-auto object-contain flex-shrink-0 select-none -my-2"
+                draggable={false}
+              />
+              <AnimatePresence initial={false}>
+                {!scrolled && (
+                  <motion.div
+                    key="brand-extension-mobile"
+                    initial={{ opacity: 0, maxWidth: 0, marginLeft: 0, filter: "blur(3px)" }}
+                    animate={{ opacity: 1, maxWidth: 180, marginLeft: -6, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, maxWidth: 0, marginLeft: 0, filter: "blur(3px)" }}
+                    transition={{ duration: 0.42, ease: EASE }}
+                    style={{ overflow: "hidden" }}
+                    className="flex items-center gap-2.5"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="block w-px h-5 flex-shrink-0"
+                      style={{ background: "var(--text-primary)", opacity: 0.18 }}
+                    />
+                    <div className="flex items-center gap-1 whitespace-nowrap">
+                      <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
+                      <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </a>
 
             {/* Hamburger only — no theme toggle here */}
@@ -169,9 +226,24 @@ export default function Navbar() {
           >
             {/* Header row matches the capsule height/padding */}
             <div className="flex items-center justify-between px-7 pt-6 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
-                <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/Logo-Navy.png"
+                  alt="MiLink logo"
+                  width={59}
+                  height={32}
+                  className="logo-mark h-8 w-auto object-contain flex-shrink-0 select-none -my-2"
+                  draggable={false}
+                />
+                <span
+                  aria-hidden="true"
+                  className="block w-px h-5 flex-shrink-0"
+                  style={{ background: "var(--text-primary)", opacity: 0.18 }}
+                />
+                <div className="flex items-center gap-1">
+                  <span className="font-display font-black text-lg leading-none" style={{ color: "var(--text-primary)" }}>MI</span>
+                  <span className="font-display font-black text-lg leading-none" style={{ color: "var(--accent)" }}>LINK</span>
+                </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <button

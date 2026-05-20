@@ -172,6 +172,7 @@ html[data-theme="light"] {
   --text-muted:     oklch(0.65 0.02 265);
 }
 
+
 /* ===== Light mode token overrides =====
    :root defaults are dark-oriented; these flip custom vars for light theme.
    daisyUI base-* colors are handled in tailwind.config.js.               */
