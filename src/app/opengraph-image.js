@@ -39,7 +39,7 @@ export default async function Image() {
             right: 0,
             bottom: 0,
             backgroundImage:
-              "linear-gradient(#0060FF0F 1px, transparent 1px), linear-gradient(90deg, #0060FF0F 1px, transparent 1px)",
+              "linear-gradient(rgba(0,96,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,96,255,0.06) 1px, transparent 1px)",
             backgroundSize: "44px 44px",
             display: "flex",
           }}
@@ -54,7 +54,7 @@ export default async function Image() {
             width: 540,
             height: 540,
             background:
-              "radial-gradient(circle, #0060FF47 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(0,96,255,0.28) 0%, transparent 70%)",
             display: "flex",
           }}
         />
@@ -66,7 +66,7 @@ export default async function Image() {
             width: 480,
             height: 480,
             background:
-              "radial-gradient(circle, #0060FF2E 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(0,96,255,0.18) 0%, transparent 70%)",
             display: "flex",
           }}
         />
