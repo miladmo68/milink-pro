@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 export const alt =
   "MILINK — Web Design, E-Commerce, SEO, UI/UX & Branding in Toronto";
@@ -6,9 +8,10 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
-  const logoData = await fetch(
-    new URL("../../public/Logo-Navy.png", import.meta.url)
-  ).then((res) => res.arrayBuffer());
+  const logoBuffer = await readFile(
+    path.join(process.cwd(), "public", "Logo-Navy.png")
+  );
+  const logoData = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
   return new ImageResponse(
     (
