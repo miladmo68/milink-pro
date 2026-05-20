@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 
 const BASE_URL = "https://milink.ca";
 
-const DEFAULT_IMAGE = `${BASE_URL}/Logo-Navy.png`;
+const DEFAULT_IMAGE = `${BASE_URL}/Logo-Blue.png`;
 const BRAND = "MILINK";
 
 export default function SEO({

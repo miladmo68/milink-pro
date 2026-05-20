@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 });
 
 const BASE_URL = "https://milink.ca";
-const DEFAULT_IMAGE = `${BASE_URL}/Logo-Navy.png`;
+const DEFAULT_IMAGE = `${BASE_URL}/Logo-Blue.png`;
 
 export const viewport = {
   themeColor: [
@@ -91,10 +91,10 @@ export const metadata = {
   category: "technology",
   icons: {
     icon: [
-      { url: "/Logo-Navy.png", type: "image/png" },
+      { url: "/Logo-Blue.png", type: "image/png" },
     ],
-    shortcut: "/Logo-Navy.png",
-    apple: "/Logo-Navy.png",
+    shortcut: "/Logo-Blue.png",
+    apple: "/Logo-Blue.png",
   },
 };
 
@@ -108,7 +108,7 @@ const jsonLd = {
       url: BASE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${BASE_URL}/Logo-Navy.png`,
+        url: `${BASE_URL}/Logo-Blue.png`,
       },
       contactPoint: {
         "@type": "ContactPoint",

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function LogoFancy({
   className = "",
   href = "#home",
-  idleSrc = "/Logo-Navy.png",
+  idleSrc = "/Logo-Blue.png",
   idleAlt = "MILINK Logo",
 
   idleTitle = "MILINK",

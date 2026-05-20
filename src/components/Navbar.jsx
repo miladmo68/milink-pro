@@ -55,7 +55,7 @@ export default function Navbar() {
               className="flex items-center no-underline"
             >
               <img
-                src="/Logo-Navy.png"
+                src="/Logo-Blue.png"
                 alt="MiLink logo"
                 width={74}
                 height={40}
@@ -161,7 +161,7 @@ export default function Navbar() {
             {/* Logo */}
             <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center no-underline">
               <img
-                src="/Logo-Navy.png"
+                src="/Logo-Blue.png"
                 alt="MiLink logo"
                 width={59}
                 height={32}
@@ -228,7 +228,7 @@ export default function Navbar() {
             <div className="flex items-center justify-between px-7 pt-6 pb-2">
               <div className="flex items-center gap-2.5">
                 <img
-                  src="/Logo-Navy.png"
+                  src="/Logo-Blue.png"
                   alt="MiLink logo"
                   width={59}
                   height={32}
