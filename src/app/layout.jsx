@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 });
 
 const BASE_URL = "https://milink.ca";
-const DEFAULT_IMAGE = `${BASE_URL}/og-cover.jpg`;
+const DEFAULT_IMAGE = `${BASE_URL}/Logo-Navy.png`;
 
 export const viewport = {
   themeColor: [
@@ -62,9 +62,9 @@ export const metadata = {
     images: [
       {
         url: DEFAULT_IMAGE,
-        width: 1200,
-        height: 630,
-        type: "image/jpeg",
+        width: 1385,
+        height: 752,
+        type: "image/png",
         secureUrl: DEFAULT_IMAGE,
       },
     ],
