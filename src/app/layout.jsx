@@ -59,22 +59,14 @@ export const metadata = {
     title: "MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding",
     description:
       "Premium websites & E-Commerce Solutions, SEO, UI/UX & Branding. Toronto.",
-    images: [
-      {
-        url: DEFAULT_IMAGE,
-        width: 1385,
-        height: 752,
-        type: "image/png",
-        secureUrl: DEFAULT_IMAGE,
-      },
-    ],
+    // images auto-generated from src/app/opengraph-image.js
   },
   twitter: {
     card: "summary_large_image",
     title: "MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding",
     description:
       "Premium websites & E-Commerce Solutions, SEO, UI/UX & Branding.",
-    images: [DEFAULT_IMAGE],
+    // images auto-generated from opengraph-image.js (Next.js uses the same file)
   },
   robots: {
     index: true,
