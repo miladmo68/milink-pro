@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 });
 
 const BASE_URL = "https://milink.ca";
-const DEFAULT_IMAGE = `${BASE_URL}/Logo-Blue.png`;
+const DEFAULT_IMAGE = `${BASE_URL}/og-cover1.jpg`;
 
 export const viewport = {
   themeColor: [
@@ -62,9 +62,10 @@ export const metadata = {
     images: [
       {
         url: DEFAULT_IMAGE,
-        width: 1385,
-        height: 752,
-        type: "image/png",
+        width: 1200,
+        height: 630,
+        alt: "MILINK — Web Design, E-Commerce, SEO & Branding in Toronto",
+        type: "image/jpeg",
         secureUrl: DEFAULT_IMAGE,
       },
     ],
@@ -153,7 +154,7 @@ const jsonLd = {
       "@type": "ProfessionalService",
       "@id": `${BASE_URL}/#localbusiness`,
       name: "Milink Digital Agency",
-      image: DEFAULT_IMAGE,
+      image: `${BASE_URL}/og-cover1.jpg`,
       url: BASE_URL,
       telephone: "+1-437-600-3139",
       address: {
