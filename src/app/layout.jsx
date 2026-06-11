@@ -154,7 +154,7 @@ const jsonLd = {
       "@type": "ProfessionalService",
       "@id": `${BASE_URL}/#localbusiness`,
       name: "Milink Digital Agency",
-      image: `${BASE_URL}/og-cover1.jpg`,
+      image: DEFAULT_IMAGE,
       url: BASE_URL,
       telephone: "+1-437-600-3139",
       address: {
