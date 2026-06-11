@@ -318,7 +318,8 @@ html[data-theme="dark"] {
 
 /* Desktop nav: frosted navy surface (overrides Tailwind bg-transparent on <header>) */
 @media (min-width: 768px) {
-  html[data-theme="dark"] header {
+  html[data-theme="dark"] header.nav-top,
+  html[data-theme="dark"] header.nav-scrolled {
     background: oklch(0.24 0.038 264 / 0.80) !important;
     backdrop-filter: blur(18px) saturate(140%) !important;
     -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
