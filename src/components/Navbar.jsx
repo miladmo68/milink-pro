@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { nav } from "../data/content.js";
 import ThemeToggle from "./ThemeToggle.jsx";
@@ -7,9 +9,11 @@ import ThemeToggle from "./ThemeToggle.jsx";
 const EASE = [0.25, 0.1, 0.25, 1];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("");
   const [open, setOpen] = useState(false);
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -18,19 +22,24 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const sections = nav.map((n) => n.href.replace("#", ""));
+    if (!isHome) {
+      setActive(pathname);
+      return;
+    }
+
+    const sections = nav.map((n) => n.href.replace("/", ""));
     const observers = sections.map((id) => {
       const el = document.getElementById(id);
       if (!el) return null;
       const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActive(`#${id}`); },
+        ([e]) => { if (e.isIntersecting) setActive(`/${id}`); },
         { threshold: 0.3 }
       );
       obs.observe(el);
       return obs;
     });
     return () => observers.forEach((o) => o?.disconnect());
-  }, []);
+  }, [isHome, pathname]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -43,17 +52,25 @@ export default function Navbar() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  const handleNavClick = useCallback((e, href) => {
+    setOpen(false);
+    if (!isHome) return;
+
+    const id = href.replace("/", "");
+    const el = document.getElementById(id);
+    if (el) {
+      e.preventDefault();
+      scrollTo(`#${id}`);
+    }
+  }, [isHome, scrollTo]);
+
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "nav-scrolled" : "nav-top"}`}>
         {/* ── Desktop bar ── */}
         <div className="hidden md:block max-w-8xl mx-auto px-4 sm:px-6">
           <div className="relative flex items-center justify-between h-20">
-            <a
-              href="#home"
-              onClick={(e) => { e.preventDefault(); scrollTo("#home"); }}
-              className="flex items-center no-underline"
-            >
+            <Link href="/" className="flex items-center no-underline">
               <img
                 src="/Logo-Blue.png"
                 alt="MiLink logo"
@@ -85,7 +102,7 @@ export default function Navbar() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </a>
+            </Link>
 
             <nav
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 px-2 py-1.5 rounded-full"
@@ -98,10 +115,10 @@ export default function Navbar() {
               }}
             >
               {nav.map((item) => (
-                <a
+                <Link
                   key={item.href}
                   href={item.href}
-                  onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className="relative font-display text-[13px] font-semibold tracking-wide transition-colors duration-200 no-underline px-4 py-1.5 rounded-full"
                   style={{ color: active === item.href ? "var(--text-primary)" : "var(--text-muted)" }}
                 >
@@ -117,7 +134,7 @@ export default function Navbar() {
                     />
                   )}
                   <span className="relative">{item.label}</span>
-                </a>
+                </Link>
               ))}
             </nav>
 
@@ -125,8 +142,13 @@ export default function Navbar() {
               <ThemeToggle />
               <span className="h-5 w-px" style={{ background: "var(--surface-border)", opacity: 0.5 }} />
               <motion.a
-                href="#contact"
-                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                href="/contact"
+                onClick={(e) => {
+                  if (isHome) {
+                    e.preventDefault();
+                    scrollTo("#contact");
+                  }
+                }}
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -159,7 +181,7 @@ export default function Navbar() {
             }}
           >
             {/* Logo */}
-            <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center no-underline">
+            <Link href="/" className="flex items-center no-underline">
               <img
                 src="/Logo-Blue.png"
                 alt="MiLink logo"
@@ -191,7 +213,7 @@ export default function Navbar() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </a>
+            </Link>
 
             {/* Hamburger only — no theme toggle here */}
             <button
@@ -313,7 +335,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.04 + i * 0.055, ease: EASE }}
-                  onClick={(e) => { e.preventDefault(); scrollTo(item.href); }}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className="flex items-center justify-between px-5 py-4 rounded-2xl font-display font-bold text-lg no-underline"
                   style={{
                     background: active === item.href ? "rgba(0,96,255,0.10)" : "var(--mobile-item-bg)",
@@ -329,11 +351,18 @@ export default function Navbar() {
               ))}
 
               <motion.a
-                href="#contact"
+                href="/contact"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.34, ease: EASE }}
-                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                onClick={(e) => {
+                  if (isHome) {
+                    e.preventDefault();
+                    scrollTo("#contact");
+                  } else {
+                    setOpen(false);
+                  }
+                }}
                 className="mt-4 flex items-center justify-center gap-2 px-6 py-4 rounded-full font-display font-bold text-base no-underline"
                 style={{ background: "var(--accent)", color: "#fff" }}
               >

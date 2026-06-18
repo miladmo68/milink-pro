@@ -27,10 +27,10 @@ export default function HomePage() {
         </h1>
 
         <nav aria-label="Primary internal links" className="sr-only">
-          <a href="#services">Our Services</a> • <a href="#work">Work</a> •{" "}
-          <a href="#pricing">Pricing</a> •{" "}
-          <a href="#testimonials">Testimonials</a> •{" "}
-          <a href="#contact">Contact</a>
+          <a href="/services">Our Services</a> • <a href="/work">Work</a> •{" "}
+          <a href="/pricing">Pricing</a> •{" "}
+          <a href="/testimonials">Testimonials</a> •{" "}
+          <a href="/contact">Contact</a>
         </nav>
 
         <section id="hero" aria-label="Hero">
