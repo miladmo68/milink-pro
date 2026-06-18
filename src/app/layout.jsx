@@ -90,13 +90,6 @@ export const metadata = {
   },
   verification: {},
   category: "technology",
-  icons: {
-    icon: [
-      { url: "/Logo-Blue.png", type: "image/png" },
-    ],
-    shortcut: "/Logo-Blue.png",
-    apple: "/Logo-Blue.png",
-  },
 };
 
 const jsonLd = {
