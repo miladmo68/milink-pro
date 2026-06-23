@@ -102,7 +102,9 @@ const jsonLd = {
       url: BASE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${BASE_URL}/Logo-Blue.png`,
+        url: `${BASE_URL}/icon.png`,
+        width: 192,
+        height: 192,
       },
       contactPoint: {
         "@type": "ContactPoint",
