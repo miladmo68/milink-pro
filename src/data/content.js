@@ -140,14 +140,14 @@ export const work = [
     title: "Intershine",
     summary: "Cleaning services website with a modern, clear layout.",
     cover: "/assets/img/intershine.png",
-    liveUrl: "https://intershine.ca",
+    liveUrl: "https://intershine-ca.vercel.app/",
   },
   {
     id: "p2",
     title: "Fair Construction",
     summary: "Construction company site with project showcases.",
-    cover: "/assets/img/fairconstruction.jpg",
-    liveUrl: "https://fairconstruction.ca",
+    cover: "/assets/img/fairconstruction.png",
+    liveUrl: "https://fairconstruction-ca.vercel.app/",
   },
   {
     id: "p3",
@@ -174,8 +174,15 @@ export const work = [
     id: "p6",
     title: "Tarahan Choob",
     summary: "Cabinetry & office furniture design/build studio.",
-    cover: "/assets/img/tarahanchoob.jpg",
-    liveUrl: "#",
+    cover: "/assets/img/tarahanchoob.png",
+    liveUrl: "https://woodline-ir.vercel.app/",
+  },
+    {
+    id: "p7",
+    title: "PEG Studio",
+    summary: "Cabinetry & office furniture design/build studio.",
+    cover: "/assets/img/pegstudio.png",
+    liveUrl: "https://peg-studio-ten.vercel.app/",
   },
 ];
 
