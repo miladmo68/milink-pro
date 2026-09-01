@@ -142,13 +142,7 @@ export default function Navbar() {
               <ThemeToggle />
               <span className="h-5 w-px" style={{ background: "var(--surface-border)", opacity: 0.5 }} />
               <motion.a
-                href="/contact"
-                onClick={(e) => {
-                  if (isHome) {
-                    e.preventDefault();
-                    scrollTo("#contact");
-                  }
-                }}
+                href="/portal"
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -159,7 +153,7 @@ export default function Navbar() {
                   boxShadow: "0 4px 14px rgb(var(--brand) / 0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
                 }}
               >
-                Book a Call
+                Client Portal
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M7 17L17 7M17 7H7M17 7v10"/>
                 </svg>
@@ -351,22 +345,15 @@ export default function Navbar() {
               ))}
 
               <motion.a
-                href="/contact"
+                href="/portal"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.34, ease: EASE }}
-                onClick={(e) => {
-                  if (isHome) {
-                    e.preventDefault();
-                    scrollTo("#contact");
-                  } else {
-                    setOpen(false);
-                  }
-                }}
+                onClick={() => setOpen(false)}
                 className="mt-4 flex items-center justify-center gap-2 px-6 py-4 rounded-full font-display font-bold text-base no-underline"
                 style={{ background: "var(--accent)", color: "#fff" }}
               >
-                Book a Call ↗
+                Start a Project ↗
               </motion.a>
             </nav>
           </motion.div>

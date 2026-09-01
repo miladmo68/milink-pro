@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function CustomCursor() {
+  const pathname = usePathname();
+  const disabled = pathname?.startsWith("/portal") || pathname?.startsWith("/admin");
   const dot = useRef(null);
   const ring = useRef(null);
   const pos = useRef({ x: -100, y: -100 });
@@ -11,7 +14,7 @@ export default function CustomCursor() {
   const [viewText, setViewText] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (disabled || typeof window === "undefined") return;
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
     const onMove = (e) => {
@@ -56,7 +59,9 @@ export default function CustomCursor() {
       document.removeEventListener("mouseout", onLeave);
       if (raf.current) cancelAnimationFrame(raf.current);
     };
-  }, []);
+  }, [disabled]);
+
+  if (disabled) return null;
 
   return (
     <>

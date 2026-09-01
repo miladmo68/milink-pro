@@ -1,0 +1,5 @@
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 15px;border:1px solid rgba(103,232,249,.35);border-radius:12px;background:linear-gradient(135deg,#a5f3fc 0%,#67e8f9 45%,#22d3ee 100%);color:#082031;font:700 12px Inter,Geist,ui-sans-serif,sans-serif;letter-spacing:-.01em;box-shadow:0 10px 24px rgba(8,145,178,.2),inset 0 1px 0 rgba(255,255,255,.45);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.button:hover:not(:disabled){filter:brightness(1.035);transform:translateY(-1px);box-shadow:0 14px 29px rgba(8,145,178,.3),inset 0 1px 0 rgba(255,255,255,.55)}
+.button:active:not(:disabled){transform:translateY(0);box-shadow:0 6px 16px rgba(8,145,178,.22)}
+.button:disabled{border-color:rgba(71,85,105,.7);background:rgba(51,65,85,.58);color:#94a3b8;box-shadow:none;cursor:not-allowed}
+@media(max-width:640px){.button{width:100%}}

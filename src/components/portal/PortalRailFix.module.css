@@ -1,0 +1,11 @@
+@media(min-width:801px){
+  .collapsed aside{padding-left:11px;padding-right:11px}
+  .collapsed aside>div:first-child{justify-content:center}
+  .collapsed aside>div:first-child>div{gap:0}
+  .collapsed aside>div:first-child>div>span,.collapsed aside>p,.collapsed aside nav button>span,.collapsed aside a>span,.collapsed aside>div:last-child>div>button>span{display:none}
+  .collapsed aside>div:first-child>button{position:absolute;z-index:12;top:24px;right:-15px;width:30px;height:30px;background:var(--side);box-shadow:0 5px 15px rgb(0 0 0/.18)}
+  .collapsed aside nav{margin-top:38px}
+  .collapsed aside nav button,.collapsed aside a{justify-content:center;padding:0}
+  .collapsed aside>div:last-child>div>button{justify-content:center;padding:7px 0}
+  .collapsed aside>div:last-child>div>div{left:calc(100% + 10px)}
+}

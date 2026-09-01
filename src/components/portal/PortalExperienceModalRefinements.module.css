@@ -1,0 +1,12 @@
+.modalActions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;padding-top:16px;border-top:1px solid rgba(51,65,85,.72)}
+.confirmField,.textareaField{display:grid;gap:7px;color:#cbd5e1;font:600 12px Inter,Geist,ui-sans-serif,sans-serif}
+.confirmField>span,.textareaField>span,.quoteFields label>span{color:#cbd5e1;font-size:12px;font-weight:600}
+.quoteFields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0}
+.quoteFields label{display:grid;gap:7px}
+.quoteFields input{box-sizing:border-box;width:100%;min-height:46px;padding:0 13px;border:1px solid rgba(71,85,105,.9);border-radius:11px;background:rgba(2,6,23,.72);color:#f8fafc;font:13px Inter,Geist,ui-sans-serif,sans-serif;outline:0}
+.quoteFields input:focus,.textareaField textarea:focus{border-color:#67e8f9;box-shadow:0 0 0 3px #67e8f914}
+.textareaField textarea{box-sizing:border-box;width:100%;min-height:126px;padding:12px 13px;border:1px solid rgba(71,85,105,.9);border-radius:11px;background:rgba(2,6,23,.72);color:#f8fafc;font:13px Inter,Geist,ui-sans-serif,sans-serif;line-height:1.55;outline:0;resize:none}
+.primaryAction{margin:0;padding:10px 16px;border:0;background:#67e8f9;color:#082031;box-shadow:0 10px 24px rgba(8,47,73,.55)}
+.secondaryAction{margin:0;padding:10px 14px;border:1px solid rgba(71,85,105,.9);border-radius:11px;background:transparent;color:#cbd5e1;box-shadow:none}
+.secondaryAction:hover{background:rgba(51,65,85,.64)}
+@media(max-width:640px){.modalActions{flex-direction:column-reverse;align-items:stretch;gap:9px}.modalActions button{width:100%;justify-content:center}.quoteFields{grid-template-columns:1fr}}
