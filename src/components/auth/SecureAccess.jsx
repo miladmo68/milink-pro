@@ -18,7 +18,7 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
   const [verificationSent, setVerificationSent] = useState(false);
   const isAdmin = area === "admin";
 
-  const portalVerificationRedirect = () => `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/portal?verified=true`;
+  const portalVerificationRedirect = () => `${window.location.origin}/auth/callback?next=/portal`;
 
   async function submit(event) {
     event.preventDefault();

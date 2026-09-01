@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, Suspense, lazy } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import Hero from "../sections/Hero.jsx";
@@ -14,8 +15,21 @@ const Modal = lazy(() => import("../components/Modal.jsx"));
 const Lightbox = lazy(() => import("../components/Lightbox.jsx"));
 
 export default function HomePage() {
+  const router = useRouter();
   const [modal, setModal] = useState(null);
   const [lightbox, setLightbox] = useState(null);
+  const [authRedirecting, setAuthRedirecting] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (!code) return;
+    params.set("next", "/portal");
+    setAuthRedirecting(true);
+    router.replace(`/auth/callback?${params.toString()}`);
+  }, [router]);
+
+  if (authRedirecting) return null;
 
   return (
     <>
