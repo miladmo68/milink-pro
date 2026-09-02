@@ -1,0 +1,6 @@
+.footer{display:flex;justify-content:center;padding:12px 14px!important;border-top:1px solid #1e293b!important;background:#0B101B!important}
+.footer button{color:#fff!important;font-size:11px!important;font-weight:600!important}
+.footer button:hover{color:#a5f3fc!important}
+.footerLight{border-top-color:#e2e8f0!important;background:#fff!important}
+.footerLight button{color:#334155!important}
+.footerLight button:hover{color:#0f172a!important}
