@@ -39,6 +39,38 @@
   .app :global(.mi-crm-table){min-width:0}.app :global(.mi-crm-table-head){display:none}.app :global(.mi-crm-table-row){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:14px}.app :global(.mi-crm-table-row)>span:first-of-type{grid-column:1/-1;overflow:hidden;color:var(--muted);font-size:11px;text-overflow:ellipsis;white-space:nowrap}.app :global(.mi-crm-table-row)>span:nth-of-type(2){grid-column:1}.app :global(.mi-crm-table-row)>time{grid-column:1;color:var(--muted);font-size:10px}.app :global(.mi-crm-table-row)>div{grid-column:2;grid-row:1 / span 3;align-self:center;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}.app :global(.mi-crm-toolbar){align-items:stretch;flex-direction:column}.app :global(.mi-crm-toolbar)>div{display:flex;overflow-x:auto;padding-bottom:2px}.app :global(.mi-crm-toolbar)>div button{flex:none}
   .adminListRow{align-items:flex-start!important;flex-wrap:wrap}.adminListRow .paymentButtons{width:100%;margin-top:3px}.paymentButtons{flex-wrap:wrap}.paymentButtons button{min-height:40px}.heroActions,.wizardActions,.approvalActions{position:relative;z-index:1}.heroActions .primaryButton,.wizardActions .primaryButton{min-height:44px}.mi-chat-composer{position:sticky;bottom:0;z-index:3}
 }
+/* Shared onboarding readiness card for the client overview and admin inspector. */
+.app :global(.mi-overview-side){display:grid;gap:18px;min-width:0}
+.app :global(.mi-overview-side .roadmapCard){height:max-content}
+.app :global(.mi-onboarding-readiness){display:grid;gap:14px;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 15px 40px #02061718;backdrop-filter:blur(18px)}
+.app :global(.mi-onboarding-readiness.is-admin){margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;padding:0}
+.app :global(.mi-onboarding-readiness header){display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.app :global(.mi-onboarding-readiness header>div){display:grid;gap:5px}
+.app :global(.mi-onboarding-readiness header span){color:var(--accent);font-size:9px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.app :global(.mi-onboarding-readiness h3){margin:0;color:var(--text);font-size:15px;font-weight:750;letter-spacing:-.02em}
+.app :global(.mi-onboarding-readiness header p){margin:0;color:var(--muted);font-size:11px;line-height:1.55}
+.app :global(.mi-onboarding-readiness header>b){flex:none;padding:6px 8px;border:1px solid #67e8f955;border-radius:999px;background:#67e8f910;color:var(--accent);font-size:10px;font-weight:750;white-space:nowrap}
+.app :global(.mi-onboarding-readiness header>b.is-complete){border-color:#34d39944;background:#34d39914;color:#34d399}
+.app :global(.mi-onboarding-progress){height:7px;overflow:hidden;border-radius:999px;background:color-mix(in srgb,var(--line) 70%,transparent)}
+.app :global(.mi-onboarding-progress i){display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#22d3ee,#34d399);box-shadow:0 0 14px #22d3ee55;transition:width .24s ease}
+.app :global(.mi-onboarding-items){display:grid;gap:7px}
+.app :global(.mi-onboarding-items button){display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;min-height:44px;padding:8px 9px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);font:600 11px Inter,Geist,ui-sans-serif,sans-serif;text-align:left;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.app :global(.mi-onboarding-items button:hover){border-color:#67e8f944;background:#67e8f908}
+.app :global(.mi-onboarding-items button>i){display:grid;width:22px;height:22px;place-items:center;border:1px solid var(--line);border-radius:7px;background:var(--surface-solid);color:#082031;font-style:normal}
+.app :global(.mi-onboarding-items button>i span){width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.55}
+.app :global(.mi-onboarding-items button>span){min-width:0;line-height:1.35}
+.app :global(.mi-onboarding-items button em){padding:4px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:9px;font-style:normal;white-space:nowrap}
+.app :global(.mi-onboarding-items button.is-ready){color:var(--muted);text-decoration:line-through;text-decoration-color:#34d39988}
+.app :global(.mi-onboarding-items button.is-ready>i){border-color:#34d39977;background:#34d399;color:#052e16}
+.app :global(.mi-onboarding-items button.is-ready em){border-color:#34d39944;background:#34d39914;color:#34d399;text-decoration:none}
+.app :global(.mi-onboarding-notice){margin:0;color:#fb7185;font-size:11px;line-height:1.5}
+.light :global(.mi-onboarding-readiness){border-color:#e2e8f0;background:#fff;box-shadow:0 1px 2px rgb(15 23 42 / .07);backdrop-filter:none}
+.light :global(.mi-onboarding-readiness.is-admin){border:0;background:transparent;box-shadow:none}
+.light :global(.mi-onboarding-readiness header span){color:#0369a1}.light :global(.mi-onboarding-readiness h3){color:#0f172a}.light :global(.mi-onboarding-readiness header p){color:#475569}
+.light :global(.mi-onboarding-readiness header>b){border-color:#bae6fd;background:#f0f9ff;color:#0369a1}.light :global(.mi-onboarding-readiness header>b.is-complete){border-color:#a7f3d0;background:#ecfdf5;color:#047857}
+.light :global(.mi-onboarding-progress){background:#e2e8f0}.light :global(.mi-onboarding-items button){color:#1e293b}.light :global(.mi-onboarding-items button:hover){border-color:#bae6fd;background:#f0f9ff}.light :global(.mi-onboarding-items button>i){border-color:#cbd5e1;background:#fff}.light :global(.mi-onboarding-items button>i span){background:#64748b}.light :global(.mi-onboarding-items button em){border-color:#cbd5e1;color:#64748b}.light :global(.mi-onboarding-items button.is-ready){color:#64748b}.light :global(.mi-onboarding-items button.is-ready>i){border-color:#6ee7b7;background:#34d399}.light :global(.mi-onboarding-items button.is-ready em){border-color:#a7f3d0;background:#ecfdf5;color:#047857}
+@media(max-width:800px){.app :global(.mi-onboarding-readiness){padding:17px}.app :global(.mi-onboarding-items button){min-height:48px}.app :global(.mi-overview-side){gap:14px}}
+
 /* Admin project inspector: explicit light-mode contrast, scoped to the dashboard shell. */
 .light :global(.mi-client-full .mi-back){color:#334155;font-weight:700}.light :global(.mi-client-full .mi-back:hover){color:#0f172a}
 .light :global(.mi-client-full-header),.light :global(.mi-client-actions),.light :global(.mi-client-full .mi-brief-section){border-color:#e2e8f0;background:#fff;box-shadow:0 1px 2px rgb(15 23 42 / .07);backdrop-filter:none}
