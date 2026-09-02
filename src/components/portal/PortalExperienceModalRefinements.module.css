@@ -1,3 +1,19 @@
+/* This module is used inside AdminModal, which is portaled outside .light. */
+:global(html.mi-portal-light) .modalActions{border-top-color:#e2e8f0}
+:global(html.mi-portal-light) .confirmField,
+:global(html.mi-portal-light) .textareaField,
+:global(html.mi-portal-light) .confirmField>span,
+:global(html.mi-portal-light) .textareaField>span,
+:global(html.mi-portal-light) .quoteFields label>span{color:#334155}
+:global(html.mi-portal-light) .quoteFields input,
+:global(html.mi-portal-light) .textareaField textarea{border-color:#cbd5e1;background:#fff;color:#0f172a}
+:global(html.mi-portal-light) .quoteFields input::placeholder,
+:global(html.mi-portal-light) .textareaField textarea::placeholder{color:#94a3b8}
+:global(html.mi-portal-light) .quoteFields input:focus,
+:global(html.mi-portal-light) .textareaField textarea:focus{border-color:#0284c7;box-shadow:0 0 0 3px rgb(14 165 233 / .14)}
+:global(html.mi-portal-light) .secondaryAction{border-color:#cbd5e1;color:#334155;background:#fff}
+:global(html.mi-portal-light) .secondaryAction:hover{background:#f1f5f9}
+
 .modalActions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;padding-top:16px;border-top:1px solid rgba(51,65,85,.72)}
 .confirmField,.textareaField{display:grid;gap:7px;color:#cbd5e1;font:600 12px Inter,Geist,ui-sans-serif,sans-serif}
 .confirmField>span,.textareaField>span,.quoteFields label>span{color:#cbd5e1;font-size:12px;font-weight:600}
