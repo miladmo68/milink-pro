@@ -228,6 +228,8 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Clients can upload voluntary assets to private `portal-files`, including category and optional description.
 - Categories cover brand/logo, imagery, documents, archives, and other.
 - Project-file records are surfaced for download/manage under the client’s RLS access.
+- The Asset Hub supports secure, in-app previews for PNG, JPG/JPEG, WebP, SVG, and PDF files. Image previews use a centered dashboard lightbox; PDFs use the same secure modal viewer. Other formats open through a short-lived signed URL.
+- Client and Admin Asset Hubs offer `Download All (.zip)`. The browser fetches short-lived signed URLs, packages blobs with `jszip`, and saves a `[business-name]-assets.zip` archive through `file-saver`. The control is disabled with no files and displays archive progress while running.
 - File-request responses can include a file, an optional note, or both; a client can explain that an asset does not exist rather than being blocked.
 - Admin review can accept/save a response into project assets or dismiss it.
 
@@ -240,7 +242,9 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 #### Approvals and payments
 
-- Tabs exist and are lighter-weight/placeholder compared with brief, asset, message, and profile capabilities.
+- `/portal?tab=approvals` is a live client sign-off workspace. Pending deliverables can be approved after confirmation or sent back with inline revision feedback; completed cards expose status badges and decision timestamps.
+- Deliverable types include `link`, `figma`, `staging`, and `document`; secure preview links open in a new tab when supplied.
+- The Admin project detail includes an **Approvals & Deliverables** section. Team members create a deliverable review with title, description, type, and optional URL, and can see live status plus exact client revision feedback.
 - `project_briefs.payment_status` supports manual e-Transfer review states. No automatic financial settlement exists.
 
 #### Profile & Settings
@@ -409,6 +413,8 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - Admin CRM refresh on `profiles` and `project_briefs` change.
 - User notification shell listens to `notifications` and incoming `messages` for bell/unread state.
 - Messages components subscribe to conversation changes; file-request/file flows depend on relevant publication setup.
+- Both the Client and Admin Asset Hubs subscribe to `project_files` changes scoped by `brief_id`, so uploads and removals update without refresh.
+- Client Approval cards and the Admin Deliverables manager subscribe to `approvals` changes scoped by `project_id`, keeping new reviews, decisions, and revision feedback synchronized in real time.
 
 Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, and `approvals` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
 
@@ -419,7 +425,7 @@ Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_
 - Clients can read only rows matching their `client_id` and can submit only a decision plus `client_feedback`.
 - Admins have full create/read/update/delete access through the existing non-recursive `public.is_admin()` security-definer function.
 - A `before update` guard prevents non-admin clients from changing ownership, project references, deliverable details, titles, descriptions, or creation timestamps. It sets `decided_at` when the client records a decision.
-- `approvals` is added to the Supabase Realtime publication for future Portal Approvals and Admin review synchronization.
+- `approvals` is added to the Supabase Realtime publication and is actively consumed by the Client Portal Approval tab and Admin Deliverables manager for immediate review-state synchronization.
 
 ### RLS safety boundary
 
