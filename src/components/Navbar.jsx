@@ -353,7 +353,7 @@ export default function Navbar() {
                 className="mt-4 flex items-center justify-center gap-2 px-6 py-4 rounded-full font-display font-bold text-base no-underline"
                 style={{ background: "var(--accent)", color: "#fff" }}
               >
-                Start a Project ↗
+               Client Portal ↗
               </motion.a>
             </nav>
           </motion.div>
