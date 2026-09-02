@@ -3,11 +3,16 @@
 @tailwind utilities;
 
 /* Refine the portal's existing fixed shell without replacing CSS-module layout rules. */
-main > aside { overflow: visible; }
-main > aside > div:first-child { position: relative; }
-main > aside > div:first-child > button:first-of-type { position: absolute; z-index: 4; top: 0; right: 0; display: grid !important; }
-main > aside nav { display: flex; flex-direction: column; gap: 10px; margin-top: 3px; }
+main > aside { position: relative; overflow: visible; }
+main > aside > div:first-child { position: static; }
+main > aside > div:first-child > button:first-of-type { position: absolute; z-index: 30; top: 24px; right: -14px; display: grid !important; width: 28px; height: 28px; padding: 0; border: 1px solid rgb(51 65 85 / .8); border-radius: 999px; background: #0f172a; color: #94a3b8; box-shadow: 0 8px 20px rgb(2 6 23 / .55); transition: color .2s, border-color .2s, background .2s, transform .2s; }
+main > aside > div:first-child > button:first-of-type:hover { border-color: rgb(34 211 238 / .5); background: #172033; color: #f8fafc; transform: scale(1.05); }
+main > aside nav { display: flex; flex-direction: column; gap: 10px; margin-top: 3px; overflow: visible; }
 main > aside nav button { min-height: 46px; padding-right: 13px; padding-left: 13px; }
+main > aside nav button[title] { position: relative; overflow: visible; }
+main > aside nav button[title]::after { position: absolute; top: 50%; left: calc(100% + 12px); z-index: 50; padding: 6px 10px; border: 1px solid rgb(51 65 85 / .86); border-radius: 8px; background: #0f172a; color: #e2e8f0; box-shadow: 0 14px 28px rgb(2 6 23 / .6); content: attr(title); font: 600 12px/1.25 Inter, Geist, ui-sans-serif, sans-serif; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transform: translateY(-50%) translateX(-4px); transition: opacity .15s ease, visibility .15s ease, transform .15s ease; }
+main > aside nav button[title]::before { position: absolute; top: 50%; left: calc(100% + 8px); z-index: 51; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-right: 4px solid #0f172a; content: ""; pointer-events: none; opacity: 0; visibility: hidden; transform: translateY(-50%) translateX(-4px); transition: opacity .15s ease, visibility .15s ease, transform .15s ease; }
+main > aside nav button[title]:hover::after, main > aside nav button[title]:focus-visible::after, main > aside nav button[title]:hover::before, main > aside nav button[title]:focus-visible::before { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
 
 /* MIlink real-time inbox: deliberately self-contained so it works in both portal themes. */
 .mi-chat-page { color: var(--text, #f8fafc); }
