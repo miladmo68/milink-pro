@@ -114,6 +114,9 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 | `NEXT_PUBLIC_SUPABASE_URL` | Public Supabase project URL. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser-safe anonymous key. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only administrative key. |
+| `STRIPE_SECRET_KEY` | Server-only Stripe API key used only by the Checkout and webhook route handlers. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Browser-safe Stripe publishable key reserved for Stripe client integrations; hosted Checkout currently redirects from the server response. |
+| `STRIPE_WEBHOOK_SECRET` | Stripe endpoint signing secret used to verify `/api/payments/webhook` requests. |
 | `NEXT_PUBLIC_SITE_URL` | Canonical app URL, normally `https://milink.ca`. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Unified Nodemailer SMTP config. |
 | `TO_EMAIL` | Comma-separated agency/admin alert recipients. |
@@ -250,7 +253,9 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `/portal?tab=approvals` is a live client sign-off workspace. Pending deliverables can be approved after confirmation or sent back with inline revision feedback; completed cards expose status badges and decision timestamps.
 - Deliverable types include `link`, `figma`, `staging`, and `document`; secure preview links open in a new tab when supplied.
 - The Admin project detail includes an **Approvals & Deliverables** section. Team members create a deliverable review with title, description, type, and optional URL, and can see live status plus exact client revision feedback.
-- `project_briefs.payment_status` supports manual e-Transfer review states. No automatic financial settlement exists.
+- **Dual payment methods:** the Payments tab supports both hosted Stripe Checkout and a distinct manual e-Transfer workflow. A confirmed proposal amount is always sourced from the trusted `project_briefs.proposal_amount_cents` value, never a browser-supplied amount. Stripe Checkout redirects to Stripe’s hosted page; raw card information is never handled or stored by MiLink.
+- The manual card tells the client to send an Interac e-Transfer to `miladmo68@gmail.com` and include the project/business name as the transfer reference. Selecting `I've sent my e-Transfer` only records `e_transfer_submitted`; it never marks the payment paid.
+- Stripe webhook completion writes the verified paid amount, provider IDs, payment method, and paid timestamp back to the project brief. The client view updates through its existing project-brief Realtime listener. Manual e-Transfer review/confirm/reject remains intact and is explicitly identified as a separate method.
 
 #### Handoff & Docs
 
@@ -297,8 +302,8 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 #### Payments
 
-- Shows briefs in payment-review related states and supports approve/reject status changes.
-- The admin must independently verify the e-Transfer outside the app before approval.
+- Shows separate Stripe Checkout activity and a manual e-Transfer verification queue, with payment method, paid/outstanding amount, and payment timestamp where available.
+- Stripe payments are reconciled by the signed webhook. For `e_transfer_submitted`, an admin must independently verify the funds in the bank, then use `Mark as received` or `Reject / not received`. Each decision is sent to the client notification bell immediately.
 
 #### Admin actions
 
@@ -368,7 +373,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
@@ -378,7 +383,8 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | --- | --- | --- |
 | `profiles` | One row per `auth.users` (`id` FK); identity, role, account profile fields. | Owner read/update own; admin read/update all. |
 | `projects` | Legacy project: `client_id → profiles`, title/email/status/stage/progress. | Owner read; admin manage. |
-| `project_briefs` | Rich primary intake: `client_id → profiles`, requirement/design/commercial/lifecycle data. | Owner manages own; admin manages all. |
+| `project_briefs` | Rich primary intake: `client_id → profiles`, requirement/design/commercial/lifecycle data and Stripe/e-Transfer payment state. | Owner reads own payment state; admin manages all. A trigger prevents clients from forging payment fields. |
+| `stripe_webhook_events` | Idempotency ledger for verified Stripe event/session IDs, project brief reference, payment intent ID, amount, and processing time. | Server webhook writes via a security-definer function; admins may read audit records. |
 | `project_files` | `brief_id → project_briefs`, `client_id → profiles`; filename/path/type/size/category/description/uploader. | Owner manages own records; admin manages all. |
 | `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
 | `messages` | `project_id → project_briefs`; sender/recipient → `profiles`; content, JSON attachments, read/timestamp. | Participants and admins under policy. |
@@ -394,6 +400,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 - Design: `design_style`, JSONB `brand_colors`, JSONB `reference_sites`. `brand_colors` may be a JSONB HEX array (for example `["#0066FF", "#0A101D", "#FFFFFF"]`) or a compatible serialized/string array; the dashboard normalizes valid HEX values into copyable Brand Identity Hub tokens.
 - Infrastructure: `domain_status` and `hosting_status` (`have_*`, `need_*`, `not_sure`).
 - Commercial/delivery: `budget_range`, `target_launch_date`, `additional_notes`, proposal amount/summary/delivery days, `payment_status`.
+- Payments: `payment_method` (`stripe` or `e_transfer`), `amount_paid_cents`, `stripe_customer_id`, `stripe_checkout_session_id`, `stripe_payment_intent_id`, `stripe_paid_at`, `e_transfer_submitted_at`, and `e_transfer_confirmed_at`. Only Stripe identifiers are stored; never card number, CVC, or other raw card data. Payment statuses include `e_transfer_submitted` between client declaration and agency verification.
 - Onboarding: JSONB `onboarding_checklist`, normalized in the dashboard to four stable records: `brand_assets`, `copywriting`, `domain_dns`, and `color_palette`. Each record has `id`, client-facing `label`, and `status` (`pending` or `ready`). A null or malformed value falls back safely to the default pending checklist.
 - Timeline: JSONB `timeline_updates`, normalized to a newest-first array of `{ id, message, category, created_at }`. Supported categories are `Design`, `Development`, `Milestone`, and `Note`; a null or malformed value safely renders as an empty timeline.
 - Handoff: JSONB `handoff_specs`, normalized safely to `{ admin_login_url, dns_provider, training_video_url, documentation_notes }`. It carries client-facing post-launch access, provider context, training, and operational guidance; an absent or malformed value falls back to empty strings and reveals no incomplete credentials.
@@ -428,6 +435,7 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 ### Realtime channels
 
 - Client-specific `project_briefs` updates.
+- Stripe webhook payment writes update `project_briefs`; the existing client brief subscription refreshes paid status, amount, and date without a page reload.
 - Onboarding readiness mutations update `project_briefs.onboarding_checklist`; the existing client brief subscription and Admin CRM project-brief subscription synchronize the checklist without a page reload.
 - Timeline post/remove mutations update `project_briefs.timeline_updates`; these updates use the same client brief and admin CRM subscriptions for live synchronization without a full reload.
 - Admin handoff-spec mutations update `project_briefs.handoff_specs`; the same client brief and admin CRM subscriptions synchronize finalized documentation and training resources in real time.
@@ -438,6 +446,24 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - Client Approval cards and the Admin Deliverables manager subscribe to `approvals` changes scoped by `project_id`, keeping new reviews, decisions, and revision feedback synchronized in real time.
 
 Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, and `approvals` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
+
+### Stripe Checkout payment workflow
+
+`supabase/stripe_payments_v1.sql` adds the safe Stripe metadata columns and the `stripe_webhook_events` idempotency ledger. It preserves all manual e-Transfer statuses and applies a payment-field guard for client-owned brief updates.
+
+1. An authenticated owner (or agency admin) calls `POST /api/payments/create-checkout-session` with only a brief ID.
+2. The server verifies ownership/admin access, reads the trusted proposal amount, atomically reserves one Checkout attempt, and uses that attempt as Stripe’s idempotency key for both customer/session creation. Repeated clicks reuse the same open session instead of creating duplicate customers or charges.
+3. Stripe calls `POST /api/payments/webhook`; the handler verifies `STRIPE_WEBHOOK_SECRET` with `constructEvent()` and atomically records the event/session plus paid state through `public.record_stripe_checkout_payment(...)`. A successful payment creates an idempotent in-app payment notification for agency administrators.
+4. Duplicate delivery is harmless: the event/session ledger has unique keys and the function returns without a second paid-state update. The client return screen retains the existing Realtime subscription and performs a short, bounded refresh while Stripe confirmation is settling, so the paid confirmation does not depend on a browser reload.
+
+### Manual e-Transfer payment workflow
+
+`supabase/e_transfer_payments_v1.sql` extends the payment state constraint with `e_transfer_submitted`, adds submitted/confirmed timestamps, and updates the payment-field guard. It relies on the existing non-recursive `public.is_admin()` function; it does not introduce a profiles lookup into any RLS policy.
+
+1. The client receives the Interac instructions in `/portal?tab=payments`, sends the transfer externally, then calls `POST /api/payments/e-transfer` with `action: "submit"` and only their project brief ID.
+2. The route authenticates ownership, reads the trusted proposal amount, records `payment_method: e_transfer`, `payment_status: e_transfer_submitted`, and database-controlled submission time, then creates one notification per agency admin using both `recipient_id` and compatibility `user_id`.
+3. In `/admin` Payments or the Action Center queue, an admin uses `Mark as received` only after bank verification. The route writes `paid`, the trusted `amount_paid_cents`, and `e_transfer_confirmed_at`, then notifies the client. `Reject / not received` writes `rejected` and tells the client to resend or contact support.
+4. The client-side payment guard rejects every client attempt to forge `paid`, `approved`, paid amount, provider IDs, or confirmation timestamps. The e-Transfer endpoint also limits duplicate submission through a conditional state update, so a repeated click has no second state transition or admin notification.
 
 ### Approval review workflow
 
