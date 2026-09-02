@@ -7,8 +7,8 @@ import { ArrowRight, CheckCircle2, KeyRound, LockKeyhole, Mail } from "lucide-re
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 
 const getBaseUrl = () => {
-  if (typeof window !== "undefined") return window.location.origin;
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  if (typeof window !== "undefined" && window.location.origin) return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL || "https://milink.ca";
 };
 function Frame({ children, eyebrow, title, copy }) {
   return <main className="grid min-h-screen place-items-center bg-[#0b0f17] p-4 text-slate-100"><section className="w-full max-w-md rounded-[28px] border border-[#22314e] bg-[#131b2e] p-6 shadow-2xl shadow-black/40 sm:p-9"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[#a6e8ed]"><img src="/Logo-Navy1.png" alt="MiLink" className="h-7 w-auto"/><span>MiLink</span></Link><span className="mt-9 grid h-12 w-12 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/10 text-[#a6e8ed]"><KeyRound size={21}/></span><p className="mt-6 text-xs font-bold uppercase tracking-[.14em] text-[#a6e8ed]">{eyebrow}</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-white">{title}</h1><p className="mt-3 text-sm leading-7 text-slate-400">{copy}</p>{children}</section></main>;
