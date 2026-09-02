@@ -199,7 +199,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 - Responsive desktop sidebar, collapsed icon rail, mobile drawer, header theme control, notification bell, user/account popovers, sign-out, and unread-message indicator.
 - Mobile dashboard standards: the sidebar becomes an auto-closing slide-over drawer; all navigation and account/support targets keep a minimum 44px touch target. CRM filters remain touch-scrollable, CRM rows reflow into stacked cards, payment actions wrap rather than overflow, and chat composers remain reachable while scrolling.
-- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, and `?tab=profile`.
+- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, `?tab=approvals`, `?tab=handoff`, and `?tab=profile`.
 - Account settings are placed in the account/user menu rather than duplicated in primary nav where configured.
 
 #### Overview
@@ -251,6 +251,13 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Deliverable types include `link`, `figma`, `staging`, and `document`; secure preview links open in a new tab when supplied.
 - The Admin project detail includes an **Approvals & Deliverables** section. Team members create a deliverable review with title, description, type, and optional URL, and can see live status plus exact client revision feedback.
 - `project_briefs.payment_status` supports manual e-Transfer review states. No automatic financial settlement exists.
+
+#### Handoff & Docs
+
+- `/portal?tab=handoff` is the client’s post-delivery hub. It becomes operational once a project reaches `client_review` or `completed`; before that it communicates that final documentation is being prepared.
+- When finalized by an admin, the portal presents the site admin-login launch link, DNS/host provider, training walkthrough link, launch/maintenance documentation, and an ongoing-support action that opens the Messages workspace.
+- If the handoff has no configured data, the client sees a calm delivery-ready empty state instead of incomplete credentials or placeholders.
+- Admin project details include **Project Handoff & Training Specs**. Agency staff can update the same record and save it directly to the active project brief; the existing brief Realtime subscription delivers the update to the client without a refresh.
 
 #### Profile & Settings
 
@@ -389,6 +396,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 - Commercial/delivery: `budget_range`, `target_launch_date`, `additional_notes`, proposal amount/summary/delivery days, `payment_status`.
 - Onboarding: JSONB `onboarding_checklist`, normalized in the dashboard to four stable records: `brand_assets`, `copywriting`, `domain_dns`, and `color_palette`. Each record has `id`, client-facing `label`, and `status` (`pending` or `ready`). A null or malformed value falls back safely to the default pending checklist.
 - Timeline: JSONB `timeline_updates`, normalized to a newest-first array of `{ id, message, category, created_at }`. Supported categories are `Design`, `Development`, `Milestone`, and `Note`; a null or malformed value safely renders as an empty timeline.
+- Handoff: JSONB `handoff_specs`, normalized safely to `{ admin_login_url, dns_provider, training_video_url, documentation_notes }`. It carries client-facing post-launch access, provider context, training, and operational guidance; an absent or malformed value falls back to empty strings and reveals no incomplete credentials.
 - Lifecycle status: `draft`, `submitted`, `reviewing`, `proposal_sent`, `in_progress`, `client_review`, `completed`.
 
 ### Profiles, roles, and extended fields
@@ -422,6 +430,7 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - Client-specific `project_briefs` updates.
 - Onboarding readiness mutations update `project_briefs.onboarding_checklist`; the existing client brief subscription and Admin CRM project-brief subscription synchronize the checklist without a page reload.
 - Timeline post/remove mutations update `project_briefs.timeline_updates`; these updates use the same client brief and admin CRM subscriptions for live synchronization without a full reload.
+- Admin handoff-spec mutations update `project_briefs.handoff_specs`; the same client brief and admin CRM subscriptions synchronize finalized documentation and training resources in real time.
 - Admin CRM refresh on `profiles` and `project_briefs` change.
 - User notification shell listens to `notifications` and incoming `messages` for bell/unread state.
 - Messages components subscribe to conversation changes; file-request/file flows depend on relevant publication setup.
