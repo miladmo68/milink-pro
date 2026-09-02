@@ -349,7 +349,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`.
+7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
@@ -361,6 +361,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | `projects` | Legacy project: `client_id → profiles`, title/email/status/stage/progress. | Owner read; admin manage. |
 | `project_briefs` | Rich primary intake: `client_id → profiles`, requirement/design/commercial/lifecycle data. | Owner manages own; admin manages all. |
 | `project_files` | `brief_id → project_briefs`, `client_id → profiles`; filename/path/type/size/category/description/uploader. | Owner manages own records; admin manages all. |
+| `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
 | `messages` | `project_id → project_briefs`; sender/recipient → `profiles`; content, JSON attachments, read/timestamp. | Participants and admins under policy. |
 | `file_requests` | Client/project asset request, creator, title/description, client response, decision. | Client responds to own; admin creates/reviews. |
 | `notifications` | Recipient/sender, title/body/message/link/type/read/timestamp; compatibility columns may exist. | Recipient own state; admin creation/management. |
@@ -409,7 +410,16 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - User notification shell listens to `notifications` and incoming `messages` for bell/unread state.
 - Messages components subscribe to conversation changes; file-request/file flows depend on relevant publication setup.
 
-Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, and `notifications` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
+Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, and `approvals` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
+
+### Approval review workflow
+
+`supabase/approvals_v1.sql` adds `public.approvals` for client-facing reviews of deliverables such as links, Figma files, staging sites, and documents. Each row belongs to one `project_briefs` project and one client profile. The workflow state is `pending`, `approved`, or `changes_requested`.
+
+- Clients can read only rows matching their `client_id` and can submit only a decision plus `client_feedback`.
+- Admins have full create/read/update/delete access through the existing non-recursive `public.is_admin()` security-definer function.
+- A `before update` guard prevents non-admin clients from changing ownership, project references, deliverable details, titles, descriptions, or creation timestamps. It sets `decided_at` when the client records a decision.
+- `approvals` is added to the Supabase Realtime publication for future Portal Approvals and Admin review synchronization.
 
 ### RLS safety boundary
 
@@ -490,4 +500,3 @@ Known email handling in frontend is UI convenience only. Sensitive actions must 
 5. For DB changes, add a safe/re-runnable SQL patch under `supabase/`; preserve data and avoid recursive RLS.
 6. Keep secrets only in environment configuration.
 7. Run `npm run build` after executable code changes. For documentation-only work, validate the Markdown and referenced paths.
-
