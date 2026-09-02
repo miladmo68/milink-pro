@@ -233,6 +233,8 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Project-file records are surfaced for download/manage under the client’s RLS access.
 - The Asset Hub supports secure, in-app previews for PNG, JPG/JPEG, WebP, SVG, and PDF files. Image previews use a centered dashboard lightbox; PDFs use the same secure modal viewer. Other formats open through a short-lived signed URL.
 - Client and Admin Asset Hubs offer `Download All (.zip)`. The browser fetches short-lived signed URLs, packages blobs with `jszip`, and saves a `[business-name]-assets.zip` archive through `file-saver`. The control is disabled with no files and displays archive progress while running.
+- The Brand Identity Hub reads `project_briefs.brand_colors` as a JSONB array or compatible string array, validates HEX values, and renders clickable color tokens. Selecting a swatch copies its HEX value with immediate `Copied!` feedback; no palette is shown when no valid tokens exist.
+- Asset browsing is organized into shared smart categories: `All Files`, `Brand & Identity` (`brand`, `logo`, `identity`, `font`), `Content & Media` (`content`, `image`, `imagery`, `media`, `document`), and `Deliverables` (`deliverable`, `final`, `invoice`, `proposal`). Search, empty states, item counts, and ZIP export all operate on the currently visible category/search result.
 - File-request responses can include a file, an optional note, or both; a client can explain that an asset does not exist rather than being blocked.
 - Admin review can accept/save a response into project assets or dismiss it.
 
@@ -382,7 +384,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 
 - Business: `business_name`, `industry`, `current_website`, `business_description`.
 - Scope: JSONB `main_goals`, `site_type`, JSONB `page_structure`, `custom_pages`, `required_features`.
-- Design: `design_style`, JSONB `brand_colors`, JSONB `reference_sites`.
+- Design: `design_style`, JSONB `brand_colors`, JSONB `reference_sites`. `brand_colors` may be a JSONB HEX array (for example `["#0066FF", "#0A101D", "#FFFFFF"]`) or a compatible serialized/string array; the dashboard normalizes valid HEX values into copyable Brand Identity Hub tokens.
 - Infrastructure: `domain_status` and `hosting_status` (`have_*`, `need_*`, `not_sure`).
 - Commercial/delivery: `budget_range`, `target_launch_date`, `additional_notes`, proposal amount/summary/delivery days, `payment_status`.
 - Onboarding: JSONB `onboarding_checklist`, normalized in the dashboard to four stable records: `brand_assets`, `copywriting`, `domain_dns`, and `color_palette`. Each record has `id`, client-facing `label`, and `status` (`pending` or `ready`). A null or malformed value falls back safely to the default pending checklist.
