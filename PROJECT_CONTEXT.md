@@ -208,6 +208,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - **Active project:** hero becomes a command card with business/project name, current stage, stage explanation, `View / edit project brief`, and `Message MiLink team` actions.
 - Roadmap stages: brief submitted, MiLink review, proposal & scope, development, client review, launch.
 - **Onboarding Readiness:** when a client has a brief, the Overview includes a live readiness card beside the roadmap. It tracks vector logo/brand assets, page copywriting, domain/DNS details, and colour/typography approval. Each item can be toggled between `pending` and `ready`, displays completion percentage/progress, auto-saves optimistically, and synchronizes with the agency team through the existing brief Realtime listener.
+- **Live Progress Updates:** active projects show a vertical changelog beside the roadmap. Each update has a category (`Design`, `Development`, `Milestone`, or `Note`), concise message, and localized timestamp. Until the first update arrives, the card displays a calm empty state rather than placeholder content.
 - Includes next-step, privacy reassurance, support card, pending file requests, and an optional compact asset context.
 
 #### Project Brief — fields, validation, persistence
@@ -271,6 +272,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Supports client-name/email search and filters: all, registered/no brief, brief submitted, in development, completed.
 - A selected client yields project/profile detail, requirement context, assets, file-request review, chat shortcut, stage controls, proposal controls, payment controls, and destructive deletion.
 - The full client/project inspector contains the same **Onboarding Readiness** checklist as the client overview. Admins can toggle readiness directly; changes are persisted to the project brief and immediately become visible in the client workspace.
+- The inspector also includes **Live Project Timeline** management: the team can post a concise progress message with a category, review the client-visible stream, or remove an incorrect update. Mutations update the shared brief immediately.
 - Deletion invokes `/api/admin/delete-client`: it verifies the caller, rejects deletion of agency admin accounts, removes known storage/data, then deletes the Auth user. It is irreversible and requires explicit confirmation.
 
 #### Projects
@@ -384,6 +386,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 - Infrastructure: `domain_status` and `hosting_status` (`have_*`, `need_*`, `not_sure`).
 - Commercial/delivery: `budget_range`, `target_launch_date`, `additional_notes`, proposal amount/summary/delivery days, `payment_status`.
 - Onboarding: JSONB `onboarding_checklist`, normalized in the dashboard to four stable records: `brand_assets`, `copywriting`, `domain_dns`, and `color_palette`. Each record has `id`, client-facing `label`, and `status` (`pending` or `ready`). A null or malformed value falls back safely to the default pending checklist.
+- Timeline: JSONB `timeline_updates`, normalized to a newest-first array of `{ id, message, category, created_at }`. Supported categories are `Design`, `Development`, `Milestone`, and `Note`; a null or malformed value safely renders as an empty timeline.
 - Lifecycle status: `draft`, `submitted`, `reviewing`, `proposal_sent`, `in_progress`, `client_review`, `completed`.
 
 ### Profiles, roles, and extended fields
@@ -416,6 +419,7 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 
 - Client-specific `project_briefs` updates.
 - Onboarding readiness mutations update `project_briefs.onboarding_checklist`; the existing client brief subscription and Admin CRM project-brief subscription synchronize the checklist without a page reload.
+- Timeline post/remove mutations update `project_briefs.timeline_updates`; these updates use the same client brief and admin CRM subscriptions for live synchronization without a full reload.
 - Admin CRM refresh on `profiles` and `project_briefs` change.
 - User notification shell listens to `notifications` and incoming `messages` for bell/unread state.
 - Messages components subscribe to conversation changes; file-request/file flows depend on relevant publication setup.
