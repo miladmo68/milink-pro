@@ -1,6 +1,14 @@
-.footer{display:flex;justify-content:center;padding:12px 14px!important;border-top:1px solid #1e293b!important;background:#0B101B!important}
-.footer button{color:#fff!important;font-size:11px!important;font-weight:600!important}
-.footer button:hover{color:#a5f3fc!important}
-.footerLight{border-top-color:#e2e8f0!important;background:#fff!important}
-.footerLight button{color:#334155!important}
+.popover{
+  background:#0B101B!important;
+  border:1px solid #1e293b!important;
+  box-shadow:0 24px 60px rgb(2 6 23 / .42)!important;
+  opacity:1!important;
+  backdrop-filter:none!important;
+}
+.popoverLight{background:#fff!important;border-color:#e2e8f0!important;box-shadow:0 24px 60px rgb(15 23 42 / .16)!important}
+.footer{display:flex;justify-content:center;padding:12px!important;border-top:1px solid #1e293b!important;background:#0B101B!important}
+.footer button{color:#94a3b8!important;font-size:11px!important;font-weight:500!important;transition:color .18s ease!important}
+.footer button:hover{color:#e2e8f0!important}
+.footerLight{border-top-color:#e2e8f0!important;background:#f8fafc!important}
+.footerLight button{color:#64748b!important}
 .footerLight button:hover{color:#0f172a!important}
