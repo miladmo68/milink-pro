@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2, KeyRound, LockKeyhole, Mail } from "lucide-react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 
-const appUrl = () => process.env.NEXT_PUBLIC_SITE_URL || (typeof window === "undefined" ? "https://milink.ca" : window.location.origin);
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+};
 function Frame({ children, eyebrow, title, copy }) {
   return <main className="grid min-h-screen place-items-center bg-[#0b0f17] p-4 text-slate-100"><section className="w-full max-w-md rounded-[28px] border border-[#22314e] bg-[#131b2e] p-6 shadow-2xl shadow-black/40 sm:p-9"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[#a6e8ed]"><img src="/Logo-Navy1.png" alt="MiLink" className="h-7 w-auto"/><span>MiLink</span></Link><span className="mt-9 grid h-12 w-12 place-items-center rounded-2xl border border-cyan-300/25 bg-cyan-300/10 text-[#a6e8ed]"><KeyRound size={21}/></span><p className="mt-6 text-xs font-bold uppercase tracking-[.14em] text-[#a6e8ed]">{eyebrow}</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-white">{title}</h1><p className="mt-3 text-sm leading-7 text-slate-400">{copy}</p>{children}</section></main>;
 }
@@ -14,7 +17,7 @@ function Notice({ children, error = false }) { return <div className={`mt-5 flex
 
 export function ForgotPassword(){
   const [email,setEmail]=useState(""); const [busy,setBusy]=useState(false); const [notice,setNotice]=useState(""); const [error,setError]=useState(false);
-  const submit=async event=>{event.preventDefault();const supabase=getSupabaseBrowserClient();if(!supabase){setError(true);setNotice("Password recovery is unavailable until Supabase is configured.");return;}setBusy(true);setNotice("");const {error:requestError}=await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(),{redirectTo:`${appUrl().replace(/\/$/,"")}/reset-password`});setBusy(false);setError(Boolean(requestError));setNotice(requestError?.message||"Password reset link sent to your email. Please check your inbox.");};
+  const submit=async event=>{event.preventDefault();const supabase=getSupabaseBrowserClient();if(!supabase){setError(true);setNotice("Password recovery is unavailable until Supabase is configured.");return;}setBusy(true);setNotice("");const {error:requestError}=await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(),{redirectTo:`${getBaseUrl().replace(/\/$/,"")}/reset-password`});setBusy(false);setError(Boolean(requestError));setNotice(requestError?.message||"Password reset link sent to your email. Please check your inbox.");};
   return <Frame eyebrow="Account recovery" title="Reset your password" copy="Enter the email connected to your MIlink client portal. We’ll send a secure, single-use reset link."><form className="mt-7" onSubmit={submit}><label className="text-xs font-bold text-slate-300">Email address</label><div className="relative mt-2"><Mail size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"/><input required type="email" value={email} onChange={event=>setEmail(event.target.value)} placeholder="you@company.com" className="w-full rounded-xl border border-slate-700 bg-slate-950/45 py-3.5 pl-11 pr-4 text-sm outline-none transition focus:border-cyan-300"/></div><button disabled={busy} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-300 to-cyan-300 py-3.5 text-sm font-bold text-slate-950 disabled:opacity-50">{busy?"Sending reset link…":"Send reset link"}<ArrowRight size={17}/></button></form>{notice&&<Notice error={error}>{notice}</Notice>}<p className="mt-6 text-center text-sm text-slate-400"><Link href="/portal" className="font-semibold text-[#a6e8ed] hover:text-white">Back to sign in</Link></p></Frame>;
 }
 

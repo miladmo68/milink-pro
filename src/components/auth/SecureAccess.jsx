@@ -7,6 +7,10 @@ import { ArrowRight, CheckCircle2, LockKeyhole, Mail, ShieldCheck } from "lucide
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 
 const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") return window.location.origin;
+  return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+};
 
 export default function SecureAccess({ area = "client", initialNotice = "" }) {
   const router = useRouter();
@@ -18,7 +22,7 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
   const [verificationSent, setVerificationSent] = useState(false);
   const isAdmin = area === "admin";
 
-  const portalVerificationRedirect = () => `${window.location.origin}/auth/callback?next=/portal`;
+  const portalVerificationRedirect = () => `${getBaseUrl()}/auth/callback?next=/portal`;
 
   async function submit(event) {
     event.preventDefault();
@@ -28,7 +32,7 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) { setNotice("Secure sign-in needs Supabase keys. Add them to .env.local before using accounts in production."); return; }
     setBusy(true); setNotice("");
-    const redirectTo = `${window.location.origin}/auth/callback?next=${isAdmin ? "/admin" : "/portal"}`;
+    const redirectTo = `${getBaseUrl()}/auth/callback?next=${isAdmin ? "/admin" : "/portal"}`;
     const result = mode === "create"
       ? await supabase.auth.signUp({ email: normalized, password, options: { emailRedirectTo: portalVerificationRedirect() } })
       : await supabase.auth.signInWithPassword({ email: normalized, password });
@@ -61,7 +65,7 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
   async function google() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) { setNotice("Google sign-in will activate after Supabase is connected."); return; }
-    const redirectTo = `${window.location.origin}/auth/callback?next=${isAdmin ? "/admin" : "/portal"}`;
+    const redirectTo = `${getBaseUrl()}/auth/callback?next=${isAdmin ? "/admin" : "/portal"}`;
     const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
     if (error) setNotice(error.message);
   }

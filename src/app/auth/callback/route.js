@@ -6,7 +6,9 @@ const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 const safeDestination = (next) => next?.startsWith("/") && !next.startsWith("//") ? next : "/portal";
 
 export async function GET(request) {
-  const { searchParams, origin } = new URL(request.url);
+  const requestUrl = new URL(request.url);
+  const { searchParams } = requestUrl;
+  const origin = requestUrl.origin;
   const code = searchParams.get("code");
   const next = safeDestination(searchParams.get("next"));
   if (!code) return NextResponse.redirect(`${origin}/portal?error=auth_failed`);

@@ -26,7 +26,9 @@ export default function HomePage() {
     if (!code) return;
     params.set("next", "/portal");
     setAuthRedirecting(true);
-    router.replace(`/auth/callback?${params.toString()}`);
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    callbackUrl.search = params.toString();
+    router.replace(`${callbackUrl.pathname}${callbackUrl.search}`);
   }, [router]);
 
   if (authRedirecting) return null;
