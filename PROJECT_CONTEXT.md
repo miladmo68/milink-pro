@@ -176,6 +176,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 | `/api/send-email` | Authenticated/trusted transactional event dispatcher through Nodemailer. |
 | `/api/contact` | Frozen marketing contact-form email route, except authorized delivery/security work. |
 | `/api/admin/delete-client` | Privileged client records/storage cleanup and Supabase Auth user deletion. |
+| `/api/admin/delete-project` | Privileged, project-scoped cleanup. Deletes one `project_briefs` record and its cascaded project data/storage without deleting the client account or their other projects. |
 
 ### Active shared dashboard implementation
 
@@ -202,7 +203,8 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 - Responsive desktop sidebar, collapsed icon rail, mobile drawer, header theme control, notification bell, user/account popovers, sign-out, and unread-message indicator.
 - Mobile dashboard standards: the sidebar becomes an auto-closing slide-over drawer; all navigation and account/support targets keep a minimum 44px touch target. CRM filters remain touch-scrollable, CRM rows reflow into stacked cards, payment actions wrap rather than overflow, and chat composers remain reachable while scrolling.
-- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, `?tab=approvals`, `?tab=handoff`, and `?tab=profile`.
+- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, `?tab=approvals`, `?tab=handoff`, and `?tab=profile`. The active project is also persisted as `?project=<project_briefs.id>`; it is restored after refresh/share and defaults to the most recently updated owned project when absent or invalid.
+- **Multiple-project workspace:** a client may own any number of `project_briefs` rows. The shared portal project switcher sits under the MiLink Portal brand, names the active project, shows project stage and last activity for every owned project, and offers `+ Start a new project` without hiding prior work. It animates as a desktop panel and becomes a bottom sheet on small screens. Single-project clients remain on the same project automatically, without an additional selection burden.
 - Account settings are placed in the account/user menu rather than duplicated in primary nav where configured.
 
 #### Overview
@@ -224,7 +226,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 | Design direction | `design_style`, `brand_colors`, `reference_sites` and notes. |
 | Delivery context | assets, `budget_range`, `target_launch_date`, `additional_notes`, domain/hosting status. |
 
-- An existing brief is loaded for the current user.
+- The Project Brief tab edits only the active `?project=` brief. Starting a new brief initializes a separate draft row for the same `client_id`; it never replaces an earlier project.
 - Draft edits auto-save with a debounce and persist as `draft`; drafts are deliberately allowed before all final-required fields exist.
 - Final submission validates key business/goals/pages/features fields before setting `status: submitted`.
 - The portal listens for client-specific `project_briefs` updates so admin stage changes appear without full reloads.
@@ -243,7 +245,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 #### Messages
 
-- Project support chat reads chronological `messages`, attachment metadata, unread state, and Realtime updates.
+- Project support chat is one chronological, account-wide conversation between the client and MiLink. `project_id` remains optional message context metadata for a newly sent message, but neither the client nor the admin inbox filters history by it; messages from every project (including legacy unscoped messages) stay visible together.
 - Enter sends and Shift+Enter inserts a line.
 - Design requirement: a bounded chat card with internally scrolling history and pinned header/composer; message accumulation must not grow the entire page.
 - Opening Messages marks incoming messages and message notifications as read for the client.
@@ -281,23 +283,24 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 #### Clients directory
 
-- Queries `profiles` with nested `project_briefs`, ordered by registration.
+- Queries profiles plus all of each client’s `project_briefs`, ordered by project activity. Client filters match any of that client’s projects, while pipeline/action counts remain per-project.
 - Excludes `admin` and `super_admin` roles from clients and metrics.
 - Supports client-name/email search and filters: all, registered/no brief, brief submitted, in development, completed.
-- A selected client yields project/profile detail, requirement context, assets, file-request review, chat shortcut, stage controls, proposal controls, payment controls, and destructive deletion.
+- A selected client yields project/profile detail, requirement context, assets, file-request review, chat shortcut, stage controls, proposal controls, payment controls, and destructive deletion. When there are multiple projects, a compact stage-badged project tab strip selects the precise project; the inspector, requests, assets, approvals, timeline, handoff, and payments follow that selected project. Support chat remains intentionally account-wide.
 - The full client/project inspector contains the same **Onboarding Readiness** checklist as the client overview. Admins can toggle readiness directly; changes are persisted to the project brief and immediately become visible in the client workspace.
 - The inspector also includes **Live Project Timeline** management: the team can post a concise progress message with a category, review the client-visible stream, or remove an incorrect update. Mutations update the shared brief immediately.
 - Deletion invokes `/api/admin/delete-client`: it verifies the caller, rejects deletion of agency admin accounts, removes known storage/data, then deletes the Auth user. It is irreversible and requires explicit confirmation.
+- **Single-project deletion** is separately available in the project inspector. It requires the admin to type the current project name, removes only that brief plus its project-scoped assets and FK-cascaded data (approvals, file requests, payment/event records, and project-linked messages), and keeps the client account plus any other projects intact. It runs through `/api/admin/delete-project` using server-side admin authorization.
 
 #### Projects
 
-- Groups briefs by submitted, reviewing/proposal, in progress/client review, and completed.
-- Project selection opens the same detailed client/project context rather than a cramped split card.
+- Groups individual briefs by submitted, reviewing/proposal, in progress/client review, and completed.
+- Project selection opens the same detailed client/project context with that exact brief preselected rather than a cramped split card.
 - Updating brief status triggers client notifications and portal realtime roadmap updates.
 
 #### Messages
 
-- Admin inbox has client conversation list/search, unread markers, active thread, attachments, composer, and direct links to project/client context.
+- Admin inbox has client conversation list/search, unread markers, active thread, attachments, composer, and direct links to project/client context. Every client has one unified support thread across all of their projects; the latest message's project may be shown as context, but it never splits or filters the conversation.
 - Opening a thread marks recipient-side unread messages/notifications read.
 
 #### Payments
@@ -383,7 +386,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | --- | --- | --- |
 | `profiles` | One row per `auth.users` (`id` FK); identity, role, account profile fields. | Owner read/update own; admin read/update all. |
 | `projects` | Legacy project: `client_id → profiles`, title/email/status/stage/progress. | Owner read; admin manage. |
-| `project_briefs` | Rich primary intake: `client_id → profiles`, requirement/design/commercial/lifecycle data and Stripe/e-Transfer payment state. | Owner reads own payment state; admin manages all. A trigger prevents clients from forging payment fields. |
+| `project_briefs` | Rich primary intake: many rows may share one `client_id → profiles`; requirement/design/commercial/lifecycle data and Stripe/e-Transfer payment state belong to the individual brief. | Owner reads all of their own rows; admin manages all. A trigger prevents clients from forging payment fields. |
 | `stripe_webhook_events` | Idempotency ledger for verified Stripe event/session IDs, project brief reference, payment intent ID, amount, and processing time. | Server webhook writes via a security-definer function; admins may read audit records. |
 | `project_files` | `brief_id → project_briefs`, `client_id → profiles`; filename/path/type/size/category/description/uploader. | Owner manages own records; admin manages all. |
 | `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
