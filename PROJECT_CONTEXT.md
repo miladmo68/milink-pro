@@ -198,6 +198,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 #### Shared shell
 
 - Responsive desktop sidebar, collapsed icon rail, mobile drawer, header theme control, notification bell, user/account popovers, sign-out, and unread-message indicator.
+- Mobile dashboard standards: the sidebar becomes an auto-closing slide-over drawer; all navigation and account/support targets keep a minimum 44px touch target. CRM filters remain touch-scrollable, CRM rows reflow into stacked cards, payment actions wrap rather than overflow, and chat composers remain reachable while scrolling.
 - Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, and `?tab=profile`.
 - Account settings are placed in the account/user menu rather than duplicated in primary nav where configured.
 
@@ -260,6 +261,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Triage/KPI view for briefs awaiting review, manual payment states, unread client messages, and accounts registered without a brief after a follow-up interval.
 - Quick actions route toward Messages, file request work, Payments, and proposal/project work.
 - Pipeline summarizes brief submitted, proposal sent, in progress, ready for review, and live/completed counts.
+- **Command Palette:** `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux) opens an admin-only, keyboard-accessible command palette. It provides direct navigation to Action Center, Clients, Projects, Messages, and Payments; searches real client names/emails and opens their project detail; and switches the local dashboard light/dark theme. Arrow keys select, Enter executes, and Escape/backdrop dismisses. The same search control is exposed in the desktop header; it is intentionally hidden on compact screens.
 
 #### Clients directory
 
