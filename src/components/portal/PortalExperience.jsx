@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Bell, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, CircleDollarSign, Download, Eye, FileArchive, FileImage, FileText, FolderKanban, HelpCircle, Image as ImageIcon, KeyRound, LayoutDashboard, LockKeyhole, LogOut, Menu, MessageCircle, Moon, PanelLeftClose, PanelLeftOpen, Palette, Plus, RefreshCw, Save, Search, Send, ShieldCheck, Sparkles, Sun, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
+import { ArrowRight, Bell, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, CircleDollarSign, Download, Eye, FileArchive, FileImage, FileText, FolderKanban, HeartPulse, HelpCircle, Image as ImageIcon, KeyRound, LayoutDashboard, LockKeyhole, LogOut, Menu, MessageCircle, Moon, PanelLeftClose, PanelLeftOpen, Palette, Plus, RefreshCw, Save, Search, Send, ShieldCheck, Sparkles, Sun, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
 import baseStyles from "./PortalExperienceV4.module.css";
 import overviewRefinements from "./PortalExperienceOverviewRefinements.module.css";
 import modalStyles from "./PortalExperienceModal.module.css";
@@ -14,6 +14,7 @@ import stageAction from "./PortalStageAction.module.css";
 import projectSwitcherStyles from "./PortalProjectSwitcher.module.css";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 import { composeProjectSummary } from "../../lib/projectSummary";
+import { computeProjectHealth } from "../../lib/projectHealth";
 import { notificationKind, resolveNotificationNavigation } from "../../lib/notificationNavigation";
 
 const styles = { ...baseStyles, ...overviewRefinements, ...modalStyles, collapseButton: `${baseStyles.collapseButton} ${sidebarSeam.seamToggle}` };
@@ -40,6 +41,13 @@ const handoffUrl=value=>{const trimmed=String(value||"").trim();return trimmed?/
 const cx=(...v)=>v.filter(Boolean).join(" "); const title=(v="draft")=>v.replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase()); const initials=(v="MI")=>v.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase();
 const clientProjects=client=>client?.project_briefs||[];
 const latestClientProject=client=>clientProjects(client)[0]||null;
+// A directory row can represent several projects. Surface the most urgent
+// health signal rather than silently hiding risk behind the newest project.
+const clientHealth=client=>clientProjects(client).reduce((mostUrgent,project)=>{
+  const candidate=project?.health;
+  if(!candidate)return mostUrgent;
+  return !mostUrgent||(candidate.priority||0)>(mostUrgent.priority||0)?candidate:mostUrgent;
+},null);
 const clientHasProjectStatus=(client,statuses)=>clientProjects(client).some(project=>statuses.includes(project.status));
 const formatCad=(cents)=>new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format((Number(cents)||0)/100);
 async function dispatchEmailEvent(event,resourceId){try{const s=getSupabaseBrowserClient();const {data:{session}}=await s.auth.getSession();if(!session?.access_token)return;const response=await fetch("/api/send-email",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session.access_token}`},body:JSON.stringify({event,resourceId})});if(!response.ok)console.warn("Email event was not delivered",event,await response.text());}catch(error){console.warn("Email dispatch is unavailable",error);}}
@@ -163,15 +171,41 @@ function AdminWorkspace({ currentTab, onNavigate }) {
   const fetchClients = useCallback(async () => {
     const supabase = getSupabaseBrowserClient(); if (!supabase) { setError("Supabase is not configured."); setLoading(false); return; }
     setLoading(true); setError("");
-    const [{ data: profiles, error: clientsError }, { data: briefRows, error: briefsError }] = await Promise.all([
+    const [{ data: profiles, error: clientsError }, { data: briefRows, error: briefsError }, { data: messageRows, error: messagesError }, { data: approvalRows, error: approvalsError }, { data: fileRequestRows, error: fileRequestsError }] = await Promise.all([
       supabase.from("profiles").select("id, email, full_name, role, created_at").order("created_at", { ascending:false }),
       supabase.from("project_briefs").select("*").order("updated_at", { ascending:false }),
+      supabase.from("messages").select("sender_id, recipient_id, created_at"),
+      supabase.from("approvals").select("project_id, status, created_at"),
+      supabase.from("file_requests").select("project_id, status, admin_decision, created_at"),
     ]);
     if (clientsError || briefsError) { const fetchError=clientsError||briefsError; console.error("Admin CRM fetch failed:", fetchError); failedRef.current = true; setError(`Could not load clients: ${fetchError.message}`); setClients([]); }
-    else { const briefsByClient=new Map();(briefRows||[]).forEach(brief=>{const current=briefsByClient.get(brief.client_id)||[];current.push(brief);briefsByClient.set(brief.client_id,current);});const clientRows=(profiles||[]).filter((profile)=>!["admin","super_admin"].includes(profile.role)&&!["miladmo68@gmail.com","info@milink.ca"].includes(profile.email?.toLowerCase())).map(profile=>({...profile,project_briefs:briefsByClient.get(profile.id)||[]})); failedRef.current = false; setClients(clientRows); setSelected((current) => current ? clientRows.find((client) => client.id === current.id) || null : null); }
+    else {
+      if (messagesError || approvalsError || fileRequestsError) console.warn("Admin project health is using the available data only.", messagesError || approvalsError || fileRequestsError);
+      const adminIds = (profiles || []).filter(profile => ["admin", "super_admin"].includes(profile.role) || ["miladmo68@gmail.com", "info@milink.ca"].includes(profile.email?.toLowerCase())).map(profile => profile.id);
+      const messagesByClient = new Map();
+      (messageRows || []).forEach(message => {
+        [message.sender_id, message.recipient_id].forEach(userId => {
+          if (!userId) return;
+          const values = messagesByClient.get(userId) || [];
+          values.push(message); messagesByClient.set(userId, values);
+        });
+      });
+      const approvalsByProject = new Map();
+      (approvalRows || []).forEach(approval => { const values = approvalsByProject.get(approval.project_id) || []; values.push(approval); approvalsByProject.set(approval.project_id, values); });
+      const requestsByProject = new Map();
+      (fileRequestRows || []).forEach(request => { const values = requestsByProject.get(request.project_id) || []; values.push(request); requestsByProject.set(request.project_id, values); });
+      const briefsByClient=new Map();
+      (briefRows||[]).forEach(rawBrief=>{
+        const brief = { ...rawBrief, health: computeProjectHealth({ brief:rawBrief, messages:messagesByClient.get(rawBrief.client_id)||[], approvals:approvalsByProject.get(rawBrief.id)||[], fileRequests:requestsByProject.get(rawBrief.id)||[], adminIds }) };
+        const current=briefsByClient.get(brief.client_id)||[]; current.push(brief); briefsByClient.set(brief.client_id,current);
+      });
+      const clientRows=(profiles||[]).filter((profile)=>!["admin","super_admin"].includes(profile.role)&&!["miladmo68@gmail.com","info@milink.ca"].includes(profile.email?.toLowerCase())).map(profile=>({...profile,project_briefs:briefsByClient.get(profile.id)||[]}));
+      failedRef.current = false; setClients(clientRows);
+      setSelected((current) => { const next = current ? clientRows.find((client) => client.id === current.id) : null; return next ? { ...next, _openProjectId: current?._openProjectId } : null; });
+    }
     setLoading(false);
   }, []);
-  useEffect(() => { fetchClients(); const supabase = getSupabaseBrowserClient(); if (!supabase) return undefined; let timer; const refresh = () => { if (failedRef.current) return; window.clearTimeout(timer); timer = window.setTimeout(() => fetchClients(), 200); }; const channel = supabase.channel("public:profiles").on("postgres_changes", { event:"*", schema:"public", table:"profiles" }, refresh).on("postgres_changes", { event:"*", schema:"public", table:"project_briefs" }, refresh).subscribe((status) => { if (status === "CHANNEL_ERROR") console.error("Admin CRM realtime channel error"); }); return () => { window.clearTimeout(timer); supabase.removeChannel(channel); }; }, [fetchClients]);
+  useEffect(() => { fetchClients(); const supabase = getSupabaseBrowserClient(); if (!supabase) return undefined; let timer; const refresh = () => { if (failedRef.current) return; window.clearTimeout(timer); timer = window.setTimeout(() => fetchClients(), 200); }; const channel = supabase.channel("admin-project-health").on("postgres_changes", { event:"*", schema:"public", table:"profiles" }, refresh).on("postgres_changes", { event:"*", schema:"public", table:"project_briefs" }, refresh).on("postgres_changes", { event:"*", schema:"public", table:"messages" }, refresh).on("postgres_changes", { event:"*", schema:"public", table:"approvals" }, refresh).on("postgres_changes", { event:"*", schema:"public", table:"file_requests" }, refresh).subscribe((status) => { if (status === "CHANNEL_ERROR") console.error("Admin CRM realtime channel error"); }); return () => { window.clearTimeout(timer); supabase.removeChannel(channel); }; }, [fetchClients]);
   useEffect(() => {
     const openClient = (event) => {
       const client = clients.find((item) => item.id === event.detail?.clientId);
@@ -252,10 +286,15 @@ function ActionCenter({clients,briefs,submitted,noBrief,refresh,onNavigate,onOpe
     {label:"Review e-Transfers",hint:pendingPayments.length?`${pendingPayments.length} waiting`:"Open payment queue",icon:CircleDollarSign,onClick:()=>onNavigate("Payments")},
     {label:"New proposal",hint:"Prepare scope & pricing",icon:FileText,onClick:()=>setTool("proposal")}
   ];
+  const atRiskProjects=briefs.filter(brief=>brief.health?.level==="at_risk").sort((a,b)=>(b.health?.priority||0)-(a.health?.priority||0));
   return <div className={cx("mi-command-center",styles.adminCommandCenter)}>
     <div className="mi-command-head"><div><span className={styles.eyebrow}>MIlink command center</span><h2>Keep the agency moving.</h2><p>Prioritize the few actions that unblock clients and projects today.</p></div><button className={styles.secondaryButton} onClick={refresh}><RefreshCw size={16}/>Refresh live data</button></div>
     <section className="mi-command-tools" aria-label="Quick actions">{quickActions.map(action=>{const Icon=action.icon;return <button key={action.label} onClick={action.onClick}><i className={styles.commandToolIcon}><Icon size={18}/></i><span><b>{action.label}</b><small>{action.hint}</small></span><ChevronRight className={styles.commandToolArrow} size={16} aria-hidden="true"/></button>})}</section>
     <section className="mi-pipeline" aria-label="Project pipeline">{stages.map(([label,status],index)=>{const count=briefs.filter(brief=>brief.status===status).length;return <div key={status} className={cx(styles.pipelineStage,count>0?"is-active":styles.pipelineStageDormant)}><span className={styles.pipelineOrder}>Stage {index+1}</span><b className={styles.pipelineCount}>{count}</b><small>{label}</small></div>})}</section>
+    <section className={styles.healthRiskPanel} aria-label="Project health risk signals">
+      <div className={styles.healthRiskIntro}><span className={styles.eyebrow}>Project health</span><h3>Needs attention now</h3><p>{atRiskProjects.length?`${atRiskProjects.length} project${atRiskProjects.length===1?" is":"s are"} at risk based on real activity signals.`:"No relationship or delivery risks are currently detected."}</p></div>
+      {atRiskProjects.length?<div className={styles.healthRiskList}>{atRiskProjects.slice(0,4).map(brief=><button type="button" key={brief.id} className={styles.healthRiskRow} onClick={()=>onOpenProject?.(brief)}><i><HeartPulse size={17}/></i><span><b>{brief.business_name||brief.client?.full_name||brief.client?.email||"Untitled project"}</b><small>{brief.health.reason}</small></span><ProjectHealthBadge health={brief.health}/><ChevronRight size={16}/></button>)}</div>:<div className={styles.healthRiskEmpty}><CheckCircle2 size={17}/><span>Projects will appear here only when a real follow-up risk is detected.</span></div>}
+    </section>
     <section className="mi-command-grid">
       <CommandCard title="Needs review" eyebrow="New project briefs" icon={FileText} empty="No briefs are waiting for review.">{submitted.filter(brief=>["submitted","reviewing"].includes(brief.status)).slice(0,4).map(brief=><div className="mi-command-row" key={brief.id}><i>{initials(brief.client.full_name||brief.client.email)}</i><span><b>{brief.business_name||brief.client.full_name||brief.client.email}</b><small>{brief.client.email}</small></span><button onClick={()=>onOpenProject?.(brief)}>Review brief<ChevronRight size={13}/></button></div>)}</CommandCard>
       <CommandCard title="Pending payments" eyebrow="Manual e-transfer" icon={CircleDollarSign} empty="No receipts need review.">{pendingPayments.slice(0,4).map(brief=><div className="mi-command-row" key={brief.id}><i>{initials(brief.client.full_name||brief.client.email)}</i><span><b>{brief.business_name||brief.client.email}</b><small>Client marked transfer as sent</small></span><button onClick={()=>approve(brief,"confirm")}>Mark as received<Check size={13}/></button><button className="mi-command-danger" onClick={()=>approve(brief,"reject")}>Not received</button></div>)}</CommandCard>
@@ -269,11 +308,27 @@ function ActionCenter({clients,briefs,submitted,noBrief,refresh,onNavigate,onOpe
 
 function CommandCard({title,eyebrow,icon:Icon,empty,children}) { const rows=Array.isArray(children)?children.filter(Boolean):children; return <section className="mi-command-card"><header><div><span>{eyebrow}</span><h3>{title}</h3></div><i className={styles.commandCardIcon}><Icon size={18}/></i></header><div>{rows?.length?rows:<div className={styles.commandEmpty}><i><Icon size={18}/></i><p>{empty}</p></div>}</div></section>; }
 
+function ProjectHealthBadge({health,detail=false}) {
+  if (!health || health.level === "neutral") return null;
+  const labels={on_track:"On track",needs_attention:"Needs attention",at_risk:"At risk"};
+  const levelClass=health.level==="on_track"?styles.healthOnTrack:health.level==="needs_attention"?styles.healthNeedsAttention:styles.healthAtRisk;
+  return <span className={cx(styles.healthBadge,levelClass)} title={health.reason} aria-label={`${labels[health.level]}: ${health.reason}`}><i aria-hidden="true"/><b>{labels[health.level]}</b>{detail&&<small>{health.reason}</small>}</span>;
+}
+
 function ClientDirectory({ clients, refresh, onNavigate }) {
   const [selected,setSelected]=useState(null),[query,setQuery]=useState(""),[filter,setFilter]=useState("all");
   const rows=clients.filter(client=>{const projects=clientProjects(client);const matches=`${client.full_name||""} ${client.email||""}`.toLowerCase().includes(query.toLowerCase());return matches&&(filter==="all"||filter==="registered"&&!projects.length||filter==="submitted"&&clientHasProjectStatus(client,["submitted","reviewing","proposal_sent"])||filter==="development"&&clientHasProjectStatus(client,["in_progress","client_review"])||filter==="completed"&&clientHasProjectStatus(client,["completed"]));});
   if(selected)return <ClientFullView record={selected} refresh={refresh} onBack={()=>setSelected(null)} onNavigate={onNavigate}/>;
-  return <div className={cx("mi-crm-page mi-admin-view",styles.adminCrmPage)}><div className="mi-command-head"><div><span className={cx(styles.eyebrow,styles.adminMicroLabel)}>Client relationship manager</span><h2>Your client directory.</h2><p>A clean record of every real account, project stage, and next conversation.</p></div><button className={styles.secondaryButton} onClick={refresh}><RefreshCw size={16}/>Refresh</button></div><section className={cx("mi-crm-table-card",styles.adminTableCard)}><div className={cx("mi-crm-toolbar",styles.adminTableToolbar)}><label><Search size={16}/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search client name or email"/></label><div>{[["all","All"],["registered","Registered"],["submitted","Brief submitted"],["development","In development"],["completed","Completed"]].map(([value,label])=><button key={value} onClick={()=>setFilter(value)} className={cx(styles.adminFilterButton,filter===value&&styles.adminFilterActive)}>{label}</button>)}</div></div><div className="mi-crm-table"><div className={cx("mi-crm-table-head",styles.adminTableHead)}><span>Client</span><span>Email</span><span>Current stage</span><span>Joined</span><span>Actions</span></div>{rows.length?rows.map(client=>{const brief=latestClientProject(client),projectCount=clientProjects(client).length;return <div className={cx("mi-crm-table-row",styles.adminTableRow)} key={client.id}><button onClick={()=>setSelected(client)} className="mi-crm-person"><i>{initials(client.full_name||client.email)}</i><b>{client.full_name||"No name provided"}</b></button><span>{client.email}</span><span><em className={`mi-stage ${brief?.status||"registered"}`}>{brief?title(brief.status):"Registered"}</em>{projectCount>1&&<small className="mi-project-count">{projectCount} projects</small>}</span><time>{new Date(client.created_at).toLocaleDateString()}</time><div><button title="Message" onClick={()=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",client.id);onNavigate("Messages");}}><MessageCircle size={16}/></button><button title="View details" onClick={()=>setSelected(client)}><ChevronRight size={16}/></button><button title="Delete client" className="is-danger" onClick={()=>setSelected({...client,_delete:true})}><X size={16}/></button></div></div>}) :<div className={cx("mi-crm-empty",styles.adminEmptyState)}>No clients match this view.</div>}</div></section>{selected&&<div className="mi-crm-drawer-backdrop" onClick={()=>setSelected(null)}><aside className="mi-crm-drawer" onClick={event=>event.stopPropagation()}><button className="mi-modal-close" onClick={()=>setSelected(null)}><X size={17}/></button><ClientDetailWithDelete record={selected} onDeleted={()=>{setSelected(null);refresh();}}/></aside></div>}</div>;
+  return <div className={cx("mi-crm-page mi-admin-view",styles.adminCrmPage)}>
+    <div className="mi-command-head"><div><span className={cx(styles.eyebrow,styles.adminMicroLabel)}>Client relationship manager</span><h2>Your client directory.</h2><p>A clean record of every real account, project stage, and next conversation.</p></div><button className={styles.secondaryButton} onClick={refresh}><RefreshCw size={16}/>Refresh</button></div>
+    <section className={cx("mi-crm-table-card",styles.adminTableCard)}>
+      <div className={cx("mi-crm-toolbar",styles.adminTableToolbar)}><label><Search size={16}/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search client name or email"/></label><div>{[["all","All"],["registered","Registered"],["submitted","Brief submitted"],["development","In development"],["completed","Completed"]].map(([value,label])=><button key={value} onClick={()=>setFilter(value)} className={cx(styles.adminFilterButton,filter===value&&styles.adminFilterActive)}>{label}</button>)}</div></div>
+      <div className="mi-crm-table">
+        <div className={cx("mi-crm-table-head",styles.adminTableHead,styles.adminHealthTableHead)}><span>Client</span><span>Email</span><span>Current stage</span><span>Health</span><span>Joined</span><span>Actions</span></div>
+        {rows.length?rows.map(client=>{const brief=latestClientProject(client),projectCount=clientProjects(client).length,health=clientHealth(client);return <div className={cx("mi-crm-table-row",styles.adminTableRow,styles.adminHealthTableRow)} key={client.id}><button onClick={()=>setSelected(client)} className="mi-crm-person"><i>{initials(client.full_name||client.email)}</i><b>{client.full_name||"No name provided"}</b></button><span>{client.email}</span><span><em className={`mi-stage ${brief?.status||"registered"}`}>{brief?title(brief.status):"Registered"}</em>{projectCount>1&&<small className="mi-project-count">{projectCount} projects</small>}</span><span className={styles.directoryHealth}><ProjectHealthBadge health={health}/>{!health||health.level==="neutral"?<span className={styles.healthNeutral}>—</span>:null}</span><time>{new Date(client.created_at).toLocaleDateString()}</time><div><button title="Message" onClick={()=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",client.id);onNavigate("Messages");}}><MessageCircle size={16}/></button><button title="View details" onClick={()=>setSelected(client)}><ChevronRight size={16}/></button><button title="Delete client" className="is-danger" onClick={()=>setSelected({...client,_delete:true})}><X size={16}/></button></div></div>}) :<div className={cx("mi-crm-empty",styles.adminEmptyState)}>No clients match this view.</div>}
+      </div>
+    </section>
+  </div>;
 }
 
 function ProjectTabs({projects,activeId,onSelect}){if(projects.length<2)return null;return <div className="mi-admin-project-tabs" role="tablist" aria-label="Client projects">{projects.map(project=><button type="button" role="tab" aria-selected={project.id===activeId} key={project.id} className={project.id===activeId?"is-active":""} onClick={()=>onSelect(project.id)}><span>{project.business_name||project.industry||"Untitled project"}</span><em className={`mi-stage ${project.status||"draft"}`}>{title(project.status||"draft")}</em></button>)}</div>}
@@ -306,7 +361,7 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
   </>;
   return <div className={cx("mi-client-full",styles.adminInspector)}>
     <button className="mi-back" onClick={onBack}><ChevronLeft size={17}/>Back to Clients</button>
-    <header className="mi-client-full-header"><div className="mi-client-identity"><i>{initials(record.full_name||record.email)}</i><div><span>Client profile</span><h2>{record.full_name||"No name provided"}</h2><p>{record.email} · Joined {new Date(record.created_at).toLocaleDateString()}</p></div></div><div className="mi-client-stage"><select value={status} onChange={event=>setStatus(event.target.value)} disabled={!brief}>{["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"].map(value=><option key={value} value={value}>{title(value)}</option>)}</select><button className={stageAction.button} disabled={!brief} onClick={saveStatus}><Save size={15}/>Update stage</button></div></header>
+    <header className="mi-client-full-header"><div className="mi-client-identity"><i>{initials(record.full_name||record.email)}</i><div><span>Client profile</span><h2>{record.full_name||"No name provided"}</h2><p>{record.email} · Joined {new Date(record.created_at).toLocaleDateString()}</p></div></div><div className={styles.inspectorStatusArea}>{brief?.health&&<ProjectHealthBadge health={brief.health} detail/>}<div className="mi-client-stage"><select value={status} onChange={event=>setStatus(event.target.value)} disabled={!brief}>{["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"].map(value=><option key={value} value={value}>{title(value)}</option>)}</select><button className={stageAction.button} disabled={!brief} onClick={saveStatus}><Save size={15}/>Update stage</button></div></div></header>
     <ProjectTabs projects={projects} activeId={activeProjectId} onSelect={onSelectProject}/>
     <section className="mi-client-actions"><button onClick={openChat}><MessageCircle size={17}/>Open direct chat</button><button onClick={()=>document.getElementById("mi-request-file")?.scrollIntoView({behavior:"smooth",block:"center"})}><Upload size={17}/>Request missing file</button><button onClick={()=>setShowQuote(true)} disabled={!brief}><CircleDollarSign size={17}/>Send scope & quote</button>{brief&&<ProjectDeleteAction brief={brief} clientName={record.full_name||record.email} onDeleted={onProjectDeleted}/>}<ClientDeleteAction record={record} onDeleted={()=>{refresh();onBack();}}/></section>
     <div className={styles.inspectorSections}>{sections||<section className="mi-brief-section mi-no-brief"><Users size={26}/><h3>This client has not submitted a project brief yet.</h3><p>You can send a reminder or start a direct conversation from the actions above.</p></section>}</div>
