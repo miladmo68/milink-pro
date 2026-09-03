@@ -214,6 +214,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Roadmap stages: brief submitted, MiLink review, proposal & scope, development, client review, launch.
 - **Onboarding Readiness:** when a client has a brief, the Overview includes a live readiness card beside the roadmap. It tracks vector logo/brand assets, page copywriting, domain/DNS details, and colour/typography approval. Each item can be toggled between `pending` and `ready`, displays completion percentage/progress, auto-saves optimistically, and synchronizes with the agency team through the existing brief Realtime listener.
 - **Live Progress Updates:** active projects show a vertical changelog beside the roadmap. Each update has a category (`Design`, `Development`, `Milestone`, or `Note`), concise message, and localized timestamp. Until the first update arrives, the card displays a calm empty state rather than placeholder content.
+- **Project Insight:** the top of Overview renders one compact, client-safe **AI Insight** card. `src/lib/projectSummary.js` contains the pure `composeProjectSummary()` rules engine—the intentional seam for a future server-side LLM. It synthesizes the active brief’s lifecycle stage, newest `timeline_updates` message, onboarding-ready count, target launch date, payment/proposal state, and project-scoped pending `file_requests`/`approvals` into a primary narrative plus a conditional “what’s needed from you” line. The card re-composes when the existing brief Realtime state changes and independently listens to pending requests/approvals for that active project; it does not call an external AI service on page load.
 - Includes next-step, privacy reassurance, support card, pending file requests, and an optional compact asset context.
 
 #### Project Brief — fields, validation, persistence
@@ -277,7 +278,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 #### Action Center
 
 - Triage/KPI view for briefs awaiting review, manual payment states, unread client messages, and accounts registered without a brief after a follow-up interval.
-- Quick actions route toward Messages, file request work, Payments, and proposal/project work.
+- **Quick actions are operational shortcuts, not decorative cards:** “Message a client” opens the account-wide Messages inbox and its client picker; “Request assets / files” opens a project chooser then focuses the existing request form; “Review e-Transfers” opens the Payments verification queue even when empty; and “New proposal” opens a project chooser then the existing scope/price/timeline modal.
 - Pipeline summarizes brief submitted, proposal sent, in progress, ready for review, and live/completed counts.
 - **Command Palette:** `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux) opens an admin-only, keyboard-accessible command palette. It provides direct navigation to Action Center, Clients, Projects, Messages, and Payments; searches real client names/emails and opens their project detail; and switches the local dashboard light/dark theme. Arrow keys select, Enter executes, and Escape/backdrop dismisses. The same search control is exposed in the desktop header; it is intentionally hidden on compact screens.
 
@@ -340,7 +341,7 @@ Portal and Admin must share one operational design system, strictly separate fro
 
 - **Sidebar:** expanded about `w-64`, collapsed about `w-20`; seam-mounted toggle cannot overlap logo. Collapsed icons are centered and show accessible hover/focus tooltips outside the rail.
 - **Header:** stable height, theme control, notification bell, and role-aware account dropdown.
-- **Notification dropdown:** Portal/Admin must use an opaque shared popover. In dark mode body and `Clear all` footer both use `#0B101B`; in light mode both use coordinated white/slate. No mismatched hard-coded footer color.
+- **Notification dropdown:** Portal/Admin must use an opaque shared popover. In dark mode body and `Clear all` footer both use `#0B101B`; in light mode both use coordinated white/slate. No mismatched hard-coded footer color. Every notification is resolved by the shared `src/lib/notificationNavigation.js` contract: explicit `link` query data wins, the `project` query/row field selects the exact brief, and a safe type-based fallback keeps historic rows useful. Messages remain account-wide and deliberately do not filter their conversation by project.
 - **Messages:** matching Portal/Admin chat surface, readable solid-blue outgoing bubbles, neutral incoming bubbles, internal scroll, pinned composer.
 - **Modals:** `fixed inset-0` viewport overlay, high z-index, independent centering, scroll lock, and enough input/action spacing.
 - **Mobile:** sidebar becomes drawer; directories drill down; tables/cards reflow; pipelines may horizontally scroll rather than compressing unreadably.
@@ -392,7 +393,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
 | `messages` | `project_id → project_briefs`; sender/recipient → `profiles`; content, JSON attachments, read/timestamp. | Participants and admins under policy. |
 | `file_requests` | Client/project asset request, creator, title/description, client response, decision. | Client responds to own; admin creates/reviews. |
-| `notifications` | Recipient/sender, title/body/message/link/type/read/timestamp; compatibility columns may exist. | Recipient own state; admin creation/management. |
+| `notifications` | Recipient/sender, optional `project_id`, title/body/message/link/type/read/timestamp; compatibility columns may exist. Notification deep links use `/portal` or `/admin` plus `tab` and, for project-specific activity, `project`. | Recipient own state; admin creation/management. |
 | `invoices` | Legacy invoice linked to `projects`. | Client read own project invoices; admin manage. |
 | `email_outbox` | Email queue/audit foundation, recipient/template/payload/status. | Admin management. It does not deliver SMTP itself. |
 

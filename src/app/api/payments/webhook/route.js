@@ -127,7 +127,7 @@ export async function POST(request) {
             .eq("recipient_id", admin.id)
             .eq("sender_id", matchingBrief.client_id)
             .eq("type", "payment")
-            .eq("link", "/admin?tab=payments")
+            .eq("link", `/admin?tab=payments&project=${briefId}`)
             .eq("message", message)
             .limit(1);
           if (existingError) console.error("[stripe-webhook] could not check existing payment notification", { eventId: event.id, error: existingError.message });
@@ -137,7 +137,7 @@ export async function POST(request) {
           sender_id: matchingBrief.client_id,
           title: "Stripe payment received",
           message,
-          link: "/admin?tab=payments",
+          link: `/admin?tab=payments&project=${briefId}`,
           type: "payment",
           is_read: false,
           };

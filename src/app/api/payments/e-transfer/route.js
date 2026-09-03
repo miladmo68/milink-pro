@@ -91,7 +91,7 @@ export async function POST(request) {
         sender_id: brief.client_id,
         title: "e-Transfer marked as sent",
         message: `${projectName} marked an e-Transfer as sent — verify and confirm in Payments.`,
-        link: "/admin?tab=payments",
+        link: `/admin?tab=payments&project=${brief.id}`,
         type: "payment",
         is_read: false,
       })));
@@ -137,7 +137,7 @@ export async function POST(request) {
       message: confirming
         ? "Your payment has been confirmed — thank you!"
         : `We could not confirm the e-Transfer for ${projectName}. Please resend it or contact MiLink support.`,
-      link: "/portal?tab=payments",
+      link: `/portal?tab=payments&project=${brief.id}`,
       type: "payment",
       is_read: false,
     }]);
