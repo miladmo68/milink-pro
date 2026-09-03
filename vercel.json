@@ -1,0 +1,8 @@
+{
+    "crons": [
+      {
+        "path": "/api/notifications/send-digests",
+        "schedule": "0 13 * * *"
+      }
+    ]
+  }

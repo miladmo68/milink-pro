@@ -123,6 +123,8 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 | `REPLY_TO_EMAIL` | Default transactional reply address. |
 | `BUSINESS_ADDRESS` | Email footer business address. |
 | `EMAIL_DISPATCH_SECRET` | Optional trusted server-job secret for `/api/send-email`. |
+| `NOTIFICATION_DIGEST_SECRET` | Server-only bearer secret for the scheduled notification digest route. |
+| `CRON_SECRET` | Optional Vercel Cron bearer secret; accepted as an alternative by the digest route. |
 
 `/.env.local` is local-only and must never be committed. Supabase Redirect URLs must allow the exact callback routes for both localhost and production.
 
@@ -378,7 +380,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
@@ -419,6 +421,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 - `info@milink.ca` is seeded/mapped to `admin`.
 - Other users default to `client`.
 - Extended settings: `company_name`, `job_title`, `phone`, `company_website`, `timezone` (default `America/Toronto`), and `preferred_contact` (`email`, `portal`, `whatsapp`).
+- Email delivery preferences: `notification_email_mode` defaults to `instant` and accepts `instant`, `daily_digest`, `weekly_digest`, or `off`; `last_digest_sent_at` is the server-side digest checkpoint/claim timestamp. In-app notification rows are always created and delivered in real time regardless of this preference.
 
 ### Storage buckets
 
@@ -436,7 +439,8 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 3. Brief status changes → client gets a status notification.
 4. New `messages` row → recipient gets notification labelled `New message`.
 5. New `file_requests` row → client alert; completed response → admin alert.
-6. UI/trusted job calls `/api/send-email` for SMTP dispatch. `email_outbox` tracks/foundational state but is not a DB-native mail worker.
+6. UI/trusted job calls `/api/send-email` for SMTP dispatch. `email_outbox` tracks/foundational state but is not a DB-native mail worker. The route reads the recipient profile's `notification_email_mode`: `instant` sends immediately; `off` suppresses only the email; digest modes defer the email while leaving in-app notifications intact.
+7. `/api/notifications/send-digests` is a protected Node route for a scheduler. `src/lib/notificationDigest.js` compiles each due recipient's recent notifications into the same branded transactional template, links every item back to its stored deep link, and uses an atomic `last_digest_sent_at` claim to avoid concurrent duplicate sends. It supports both POST (trusted scheduler/manual job) and GET (Vercel Cron).
 
 ### Realtime channels
 
@@ -559,6 +563,8 @@ Known email handling in frontend is UI convenience only. Sensitive actions must 
 - Client notifications use **MiLink Team** branding and avoid exposing personal admin identity or raw private message previews.
 - Detailed project/client/message metadata is reserved for admin alerts.
 - Email delivery includes HTML plus plain text, full URLs, reply-to, normal-priority/reference headers, logo, business address, and copyright/security footer.
+- **Notification email preferences:** Portal → Profile & Settings → Regional & communication includes immediate-save controls for Instant, Daily digest, Weekly digest, and Off. `off` never suppresses the notification bell; it only suppresses SMTP delivery. There is no separate Admin profile-settings page today, so admin preference controls are intentionally not duplicated until that existing surface exists.
+- **Digest scheduling:** configure a Vercel Cron entry for `GET /api/notifications/send-digests` (for example `0 13 * * *` for a daily 13:00 UTC run), set `CRON_SECRET` in Vercel, and set the same value locally only when manually invoking the protected endpoint. Daily recipients are due after 24 hours; weekly recipients after seven days. The route can also accept `Authorization: Bearer $NOTIFICATION_DIGEST_SECRET` for another scheduler.
 - `/api/contact` sends marketing inquiries to `TO_EMAIL`; it remains under the marketing freeze except expressly authorized delivery/security work.
 
 ---
