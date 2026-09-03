@@ -387,7 +387,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `notification_deep_links_v1.sql`, `onboarding_checklist_v1.sql`, `project_briefs_missing_columns_v1.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`, `activity_log_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `notification_deep_links_v1.sql`, `onboarding_checklist_v1.sql`, `project_briefs_missing_columns_v1.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `notifications_project_briefs_fk_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`, `activity_log_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
