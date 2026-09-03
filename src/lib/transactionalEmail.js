@@ -2,8 +2,12 @@ import nodemailer from "nodemailer";
 import { randomUUID } from "crypto";
 
 export const getAppUrl = () => {
-  const value = (process.env.NEXT_PUBLIC_SITE_URL || "https://milink.ca").replace(/\/$/, "");
-  return /^https:\/\//i.test(value) ? value : `https://${value.replace(/^https?:\/\//i, "")}`;
+  // Email links are generated server-side, so they must never use a request
+  // origin or browser origin. NEXT_PUBLIC_SITE_URL is the single canonical
+  // deployment URL; the localhost fallback exists only for local development.
+  const value = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim();
+  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  return new URL(withProtocol).origin;
 };
 
 const escapeHtml = (value = "") => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[character]));

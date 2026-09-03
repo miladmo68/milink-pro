@@ -19,8 +19,20 @@ export function isDigestDue(profile, now = new Date()) {
 
 const toAbsoluteHref = (href, fallback) => {
   if (!href) return fallback;
-  if (/^https?:\/\//i.test(href)) return href;
-  return `${getAppUrl()}${href.startsWith("/") ? href : `/${href}`}`;
+  if (!/^https?:\/\//i.test(href)) return `${getAppUrl()}${href.startsWith("/") ? href : `/${href}`}`;
+
+  // Notifications created before a deployment can contain an absolute local
+  // development URL. Rebase those internal links onto the canonical email URL
+  // so digest recipients never receive a localhost link from production.
+  try {
+    const parsed = new URL(href);
+    if (["localhost", "127.0.0.1"].includes(parsed.hostname)) {
+      return `${getAppUrl()}${parsed.pathname}${parsed.search}${parsed.hash}`;
+    }
+    return parsed.toString();
+  } catch {
+    return fallback;
+  }
 };
 
 export async function compileNotificationDigest({ supabase, profile, now = new Date() }) {
