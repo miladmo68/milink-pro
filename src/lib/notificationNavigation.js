@@ -9,6 +9,8 @@ const clientTabs = {
   assets: "Assets",
   messages: "Messages",
   approvals: "Approvals",
+  contract: "Contracts",
+  contracts: "Contracts",
   handoff: "Handoff & Docs",
   handoff_docs: "Handoff & Docs",
   payments: "Payments",
@@ -25,6 +27,8 @@ const adminTabs = {
   project_brief: "Projects",
   assets: "Projects",
   approvals: "Projects",
+  contract: "Projects",
+  contracts: "Projects",
   handoff: "Projects",
   handoff_docs: "Projects",
   messages: "Messages",
@@ -35,6 +39,7 @@ export function notificationKind(note = {}) {
   const type = String(note.type || "").toLowerCase();
   const text = `${note.title || ""} ${note.message || ""}`.toLowerCase();
   if (type.includes("message") || text.includes("message")) return "message";
+  if (type.includes("contract") || text.includes("contract") || text.includes("agreement")) return "contract";
   if (type.includes("approval") || text.includes("approval") || text.includes("deliverable")) return "approval";
   if (type.includes("file") || text.includes("file") || text.includes("upload") || text.includes("action required")) return "file_request";
   if (type.includes("payment") || text.includes("payment") || text.includes("transfer") || text.includes("stripe")) return "payment";
@@ -62,6 +67,7 @@ function fallbackSection(kind, admin) {
   if (kind === "message") return "Messages";
   if (kind === "file_request") return "Assets";
   if (kind === "approval") return "Approvals";
+  if (kind === "contract") return "Contracts";
   if (kind === "payment") return "Payments";
   if (kind === "brief") return "Project brief";
   if (kind === "handoff") return "Handoff & Docs";

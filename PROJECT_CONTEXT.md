@@ -203,7 +203,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 - Responsive desktop sidebar, collapsed icon rail, mobile drawer, header theme control, notification bell, user/account popovers, sign-out, and unread-message indicator.
 - Mobile dashboard standards: the sidebar becomes an auto-closing slide-over drawer; all navigation and account/support targets keep a minimum 44px touch target. CRM filters remain touch-scrollable, CRM rows reflow into stacked cards, payment actions wrap rather than overflow, and chat composers remain reachable while scrolling.
-- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, `?tab=approvals`, `?tab=handoff`, and `?tab=profile`. The active project is also persisted as `?project=<project_briefs.id>`; it is restored after refresh/share and defaults to the most recently updated owned project when absent or invalid.
+- Client query state maps to `?tab=overview`, `?tab=brief`, `?tab=assets`, `?tab=messages`, `?tab=approvals`, `?tab=contracts`, `?tab=handoff`, and `?tab=profile`. The active project is also persisted as `?project=<project_briefs.id>`; it is restored after refresh/share and defaults to the most recently updated owned project when absent or invalid.
 - **Multiple-project workspace:** a client may own any number of `project_briefs` rows. The shared portal project switcher sits under the MiLink Portal brand, names the active project, shows project stage and last activity for every owned project, and offers `+ Start a new project` without hiding prior work. It animates as a desktop panel and becomes a bottom sheet on small screens. Single-project clients remain on the same project automatically, without an additional selection burden.
 - Account settings are placed in the account/user menu rather than duplicated in primary nav where configured.
 
@@ -256,6 +256,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `/portal?tab=approvals` is a live client sign-off workspace. Pending deliverables can be approved after confirmation or sent back with inline revision feedback; completed cards expose status badges and decision timestamps.
 - Deliverable types include `link`, `figma`, `staging`, and `document`; secure preview links open in a new tab when supplied.
 - The Admin project detail includes an **Approvals & Deliverables** section. Team members create a deliverable review with title, description, type, and optional URL, and can see live status plus exact client revision feedback.
+- **Contracts:** `/portal?tab=contracts` is the project-agreement workspace. A client can read a pending text agreement, type their full legal name as an electronic signature, and sign once; or decline with a required explanation. Signed and declined contracts become read-only in the portal. The Admin project inspector provides the matching Contracts & Agreements creator and audit view. Contract notifications deep-link to the exact project and Contracts tab.
 - **Dual payment methods:** the Payments tab supports both hosted Stripe Checkout and a distinct manual e-Transfer workflow. A confirmed proposal amount is always sourced from the trusted `project_briefs.proposal_amount_cents` value, never a browser-supplied amount. Stripe Checkout redirects to Stripe’s hosted page; raw card information is never handled or stored by MiLink.
 - The manual card tells the client to send an Interac e-Transfer to `miladmo68@gmail.com` and include the project/business name as the transfer reference. Selecting `I've sent my e-Transfer` only records `e_transfer_submitted`; it never marks the payment paid.
 - Stripe webhook completion writes the verified paid amount, provider IDs, payment method, and paid timestamp back to the project brief. The client view updates through its existing project-brief Realtime listener. Manual e-Transfer review/confirm/reject remains intact and is explicitly identified as a separate method.
@@ -377,7 +378,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
@@ -391,6 +392,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | `stripe_webhook_events` | Idempotency ledger for verified Stripe event/session IDs, project brief reference, payment intent ID, amount, and processing time. | Server webhook writes via a security-definer function; admins may read audit records. |
 | `project_files` | `brief_id → project_briefs`, `client_id → profiles`; filename/path/type/size/category/description/uploader. | Owner manages own records; admin manages all. |
 | `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
+| `contracts` | Text project agreement: `project_id → project_briefs`, with title/body, `pending`/`signed`/`declined` status, typed signer name/signature, optional decline reason, timestamps, optional IP audit field, and `created_by → profiles`. | A client can read contracts for their own project and make exactly one protected signed/declined decision; trigger guards prevent client edits to agreement content, ownership, audit fields, or completed decisions. Admins have full access through `public.is_admin()`. |
 | `messages` | `project_id → project_briefs`; sender/recipient → `profiles`; content, JSON attachments, read/timestamp. | Participants and admins under policy. |
 | `file_requests` | Client/project asset request, creator, title/description, client response, decision. | Client responds to own; admin creates/reviews. |
 | `notifications` | Recipient/sender, optional `project_id`, title/body/message/link/type/read/timestamp; compatibility columns may exist. Notification deep links use `/portal` or `/admin` plus `tab` and, for project-specific activity, `project`. | Recipient own state; admin creation/management. |
@@ -448,8 +450,21 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - Messages components subscribe to conversation changes; file-request/file flows depend on relevant publication setup.
 - Both the Client and Admin Asset Hubs subscribe to `project_files` changes scoped by `brief_id`, so uploads and removals update without refresh.
 - Client Approval cards and the Admin Deliverables manager subscribe to `approvals` changes scoped by `project_id`, keeping new reviews, decisions, and revision feedback synchronized in real time.
+- Client Contracts and the Admin Contracts manager subscribe to `contracts` changes scoped by `project_id`, so a newly sent agreement and the client’s signed or declined decision update without a browser refresh.
 
-Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, and `approvals` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
+Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, `approvals`, and `contracts` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
+
+### Contract signing workflow
+
+`supabase/contracts_v1.sql` adds `public.contracts` as the lightweight proposal/agreement signing engine. It deliberately uses a typed full-name electronic signature rather than a third-party e-sign provider or a fragile canvas-only capture: this is clear, mobile-friendly, and auditable while keeping the first implementation simple.
+
+`supabase/contracts_notification_fk_fix_v1.sql` is a safe post-deployment repair for installations where the legacy `notifications.project_id` foreign key still points to `public.projects`. Contract notifications preserve project context in their deep links (`?project=<project_briefs.id>`) instead of writing an incompatible `project_briefs` UUID into that legacy column.
+
+1. An admin creates a title and full agreement body inside the selected project inspector. The row is tied to that `project_briefs` record and stores the creating admin ID.
+2. An `AFTER INSERT` notification sends the client to `/portal?tab=contracts&project=<id>`.
+3. The client may sign a pending agreement only after entering a full typed name, or decline it with a required reason. The database guard stamps `signed_at` itself and removes irrelevant signature/decline fields for the chosen outcome.
+4. An `AFTER UPDATE` notification sends all agency admins to `/admin?tab=projects&project=<id>` when the client signs or declines. Shared notification navigation maps the `contract` type to the client Contracts tab and Admin Projects inspector.
+5. `contracts` is included in the Realtime publication. The RLS policies join only through `project_briefs.client_id` for client ownership and use the existing non-recursive `public.is_admin()` function for agency access; no `profiles` lookup is embedded in a `profiles` policy.
 
 ### Stripe Checkout payment workflow
 
