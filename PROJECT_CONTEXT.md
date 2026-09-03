@@ -283,7 +283,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Triage/KPI view for briefs awaiting review, manual payment states, unread client messages, and accounts registered without a brief after a follow-up interval.
 - **Quick actions are operational shortcuts, not decorative cards:** “Message a client” opens the account-wide Messages inbox and its client picker; “Request assets / files” opens a project chooser then focuses the existing request form; “Review e-Transfers” opens the Payments verification queue even when empty; and “New proposal” opens a project chooser then the existing scope/price/timeline modal.
 - Pipeline summarizes brief submitted, proposal sent, in progress, ready for review, and live/completed counts.
-- **Command Palette:** `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux) opens an admin-only, keyboard-accessible command palette. It provides direct navigation to Action Center, Clients, Projects, Messages, and Payments; searches real client names/emails and opens their project detail; and switches the local dashboard light/dark theme. Arrow keys select, Enter executes, and Escape/backdrop dismisses. The same search control is exposed in the desktop header; it is intentionally hidden on compact screens.
+- **Command Palette and global search:** `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux) opens an admin-only, keyboard-accessible palette. It provides direct navigation to Action Center, Clients, Projects, Messages, and Payments; switches the local dashboard light/dark theme; and, after a short debounce, searches client names/emails plus message content, project-file names/descriptions, contract titles, and approval/deliverable titles. Results are grouped, capped per type, and deep-link to the right client conversation or selected project inspector section (`Assets`, `Contracts`, or `Approvals`). Arrow keys select, Enter executes, and Escape/backdrop dismisses. The same search control is exposed in the desktop header; it is intentionally hidden on compact screens.
 
 #### Clients directory
 
@@ -380,7 +380,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`, `activity_log_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
@@ -395,6 +395,7 @@ Later RLS repairs intentionally remove/recreate policies, not customer rows. Nev
 | `project_files` | `brief_id → project_briefs`, `client_id → profiles`; filename/path/type/size/category/description/uploader. | Owner manages own records; admin manages all. |
 | `approvals` | Client review request: `project_id → project_briefs`, `client_id → profiles`; title, deliverable type/URL, status, feedback, and decision timestamp. | Client reads own and may submit decision/feedback only; admins have full access. |
 | `contracts` | Text project agreement: `project_id → project_briefs`, with title/body, `pending`/`signed`/`declined` status, typed signer name/signature, optional decline reason, timestamps, optional IP audit field, and `created_by → profiles`. | A client can read contracts for their own project and make exactly one protected signed/declined decision; trigger guards prevent client edits to agreement content, ownership, audit fields, or completed decisions. Admins have full access through `public.is_admin()`. |
+| `activity_log` | Immutable project audit trail: `project_id → project_briefs`, optional actor profile, actor role, normalized action, human-readable description, and timestamp. | Admins may read through `public.is_admin()` only. There are deliberately no browser write policies; security-definer database triggers are the sole write path. |
 | `messages` | `project_id → project_briefs`; sender/recipient → `profiles`; content, JSON attachments, read/timestamp. | Participants and admins under policy. |
 | `file_requests` | Client/project asset request, creator, title/description, client response, decision. | Client responds to own; admin creates/reviews. |
 | `notifications` | Recipient/sender, optional `project_id`, title/body/message/link/type/read/timestamp; compatibility columns may exist. Notification deep links use `/portal` or `/admin` plus `tab` and, for project-specific activity, `project`. | Recipient own state; admin creation/management. |
@@ -441,6 +442,7 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 5. New `file_requests` row → client alert; completed response → admin alert.
 6. UI/trusted job calls `/api/send-email` for SMTP dispatch. `email_outbox` tracks/foundational state but is not a DB-native mail worker. The route reads the recipient profile's `notification_email_mode`: `instant` sends immediately; `off` suppresses only the email; digest modes defer the email while leaving in-app notifications intact.
 7. `/api/notifications/send-digests` is a protected Node route for a scheduler. `src/lib/notificationDigest.js` compiles each due recipient's recent notifications into the same branded transactional template, links every item back to its stored deep link, and uses an atomic `last_digest_sent_at` claim to avoid concurrent duplicate sends. It supports both POST (trusted scheduler/manual job) and GET (Vercel Cron).
+8. `activity_log_v1.sql` uses security-definer triggers—not scattered UI inserts—to record submitted briefs/stage and payment-state changes, approval decisions, contract signatures/declines, and created file requests. The Admin Project Inspector renders this stream in reverse chronological order; it is intentionally admin-only and read-only.
 
 ### Realtime channels
 
@@ -455,6 +457,7 @@ Keep canonical bucket/path plus metadata in `project_files`; private assets shou
 - Both the Client and Admin Asset Hubs subscribe to `project_files` changes scoped by `brief_id`, so uploads and removals update without refresh.
 - Client Approval cards and the Admin Deliverables manager subscribe to `approvals` changes scoped by `project_id`, keeping new reviews, decisions, and revision feedback synchronized in real time.
 - Client Contracts and the Admin Contracts manager subscribe to `contracts` changes scoped by `project_id`, so a newly sent agreement and the client’s signed or declined decision update without a browser refresh.
+- The Admin Project Inspector subscribes to `activity_log` changes scoped by `project_id`; after `activity_log_v1.sql` is applied, audit entries appear without a manual refresh.
 
 Migrations add `profiles`, `project_briefs`, `project_files`, `messages`, `file_requests`, `notifications`, `approvals`, and `contracts` to `supabase_realtime` duplicate-safely. Confirm actual publication membership in Supabase.
 
