@@ -1,6 +1,6 @@
 # MiLink — Single Source of Truth
 
-> **Audit status:** 2026-09-02. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
+> **Audit status:** 2026-09-03. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
 
 ## 1. Strict Development Guardrail: MARKETING FROZEN (Zero-Touch Policy)
 
@@ -67,7 +67,7 @@ The business value is a single private project workspace replacing fragmented em
 
 | Area | Current implementation |
 | --- | --- |
-| Framework | Next.js `14.2.0`, **App Router**, under `src/app`. |
+| Framework | Next.js `14.2.x`, **App Router**, under `src/app`. |
 | UI runtime | React `18.3.1` / `react-dom` `18.3.1`. |
 | Styling | Tailwind CSS `3.4.17`, CSS Modules, and legacy/global CSS. |
 | Icons/motion | Lucide React, Heroicons, Framer Motion. |
@@ -283,6 +283,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - Triage/KPI view for briefs awaiting review, manual payment states, unread client messages, and accounts registered without a brief after a follow-up interval.
 - **Quick actions are operational shortcuts, not decorative cards:** “Message a client” opens the account-wide Messages inbox and its client picker; “Request assets / files” opens a project chooser then focuses the existing request form; “Review e-Transfers” opens the Payments verification queue even when empty; and “New proposal” opens a project chooser then the existing scope/price/timeline modal.
 - Pipeline summarizes brief submitted, proposal sent, in progress, ready for review, and live/completed counts.
+- **Client Health:** `src/lib/projectHealth.js` is a pure, read-only project signal used in the directory, inspector, and Action Center risk panel. It intentionally remains neutral for drafts/new work; otherwise it highlights an e-Transfer unconfirmed for 3+ days, client waiting for a reply for 4+ days, approvals/files pending for 7+ days, or an in-progress project with no timeline update for 10+ days as `at_risk`. Lower thresholds (2, 3, and 7 days respectively) become `needs_attention`; remaining active/completed projects are `on_track`. The inspector exposes the reason as accessible title/detail text. The thresholds are code-commented and are deliberately simple to tune without changing UI or data.
 - **Command Palette and global search:** `Cmd+K` (macOS) / `Ctrl+K` (Windows/Linux) opens an admin-only, keyboard-accessible palette. It provides direct navigation to Action Center, Clients, Projects, Messages, and Payments; switches the local dashboard light/dark theme; and, after a short debounce, searches client names/emails plus message content, project-file names/descriptions, contract titles, and approval/deliverable titles. Results are grouped, capped per type, and deep-link to the right client conversation or selected project inspector section (`Assets`, `Contracts`, or `Approvals`). Arrow keys select, Enter executes, and Escape/backdrop dismisses. The same search control is exposed in the desktop header; it is intentionally hidden on compact screens.
 
 #### Clients directory
@@ -364,6 +365,12 @@ Portal and Admin must share one operational design system, strictly separate fro
 - Do not add blind global CSS to repair one component; edit its actual JSX/CSS module.
 - Treat sidebar, surface card, modal, popover, badge, button, and chat bubble as shared primitives—not copy/pasted variants.
 
+### Final dashboard hardening pass
+
+The active V4 dashboard module defines a scoped final token tier on `.app` only: modular spacing, control/card/modal radii, shared card elevation, visible keyboard focus, reduced-motion behavior, mobile safe-area padding, and consistent 44px dashboard controls. It is intentionally not a global or marketing stylesheet. The final UI audit covers Portal Overview/Assets, Admin Action Center, CRM directory/inspector, payment/approval/contract/file surfaces, empty/loading states, modals, popovers, the shared header/sidebar, and mobile reflow. `AdminModal` now traps Tab focus inside its portal-mounted dialog, focuses itself on open, closes on Escape/backdrop, and restores body scrolling on close.
+
+Visual verification rule: a running local server and an authenticated browser session are both required to judge private Portal/Admin screens. A reachable login page alone proves server availability but not client/admin dashboard state; do not claim signed-in visual testing without that session.
+
 ---
 
 ## 7. Database Schemas, Storage & Data Flow
@@ -380,7 +387,7 @@ Logical order:
 4. `fix_rls_recursion.sql` — non-recursive admin RLS repair.
 5. `portal_v4_realtime_fix.sql` — auth/profile sync/backfill and realtime repair.
 6. `portal_v5_features.sql` — messages, file requests, storage, triggers/realtime.
-7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`, `activity_log_v1.sql`.
+7. Extensions: `profile_account_settings.sql`, `notification_email_preferences_v1.sql`, `project_asset_hub.sql`, `file_request_client_responses.sql`, `file_request_admin_review.sql`, `notifications_v6.sql`, `notification_label_cleanup.sql`, `notification_deep_links_v1.sql`, `onboarding_checklist_v1.sql`, `project_briefs_missing_columns_v1.sql`, `approvals_v1.sql`, `contracts_v1.sql`, `contracts_notification_fk_fix_v1.sql`, `stripe_payments_v1.sql`, `e_transfer_payments_v1.sql`, `activity_log_v1.sql`.
 
 Later RLS repairs intentionally remove/recreate policies, not customer rows. Never run an older migration blindly against production.
 
