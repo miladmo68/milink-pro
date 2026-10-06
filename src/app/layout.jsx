@@ -1,8 +1,5 @@
 import { Syne, DM_Sans } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
-
-const CustomCursor = dynamic(() => import("../components/ui/CustomCursor.jsx"), { ssr: false });
 
 const syne = Syne({
   subsets: ["latin"],
@@ -202,7 +199,6 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-sans antialiased">
-        <CustomCursor />
         {children}
       </body>
     </html>

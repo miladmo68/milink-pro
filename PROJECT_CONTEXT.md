@@ -195,6 +195,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `src/sections/FAQ.jsx` is the active homepage FAQ. It is a controlled, keyboard-accessible accordion with semantic question buttons, `aria-expanded`/`aria-controls`, restrained motion, and a mobile-safe single-column layout. Its visible content comes from `faqs` in `src/data/content.js`.
 - `src/data/content.js` also exports `faqJsonLd`, generated from that same visible `faqs` array. `src/app/page.jsx` serializes it only on `/`, preventing duplicate/conflicting FAQ markup on standalone marketing routes.
 - The homepage navbar uses canonical `/#services`, `/#work`, `/#pricing`, `/#testimonials`, `/#faq`, and `/#contact` anchors. Client-side scrolling compensates for the sticky header; the target IDs are unique and retain CSS scroll margins so direct hash links and no-JavaScript navigation keep headings visible.
+- The root layout intentionally does not mount the legacy animated `CustomCursor`; all routes use the normal system pointer, avoiding the delayed dot/ring cursor effect.
 
 ### Legacy/debt inventory
 
