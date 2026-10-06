@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { faqs } from "../data/content.js";
 import { Reveal } from "../components/scroll-reveal.jsx";
+import ScrollParallax from "../components/ScrollParallax.jsx";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -10,6 +11,16 @@ export default function FAQ() {
 
   return (
     <section id="faq" className="relative scroll-mt-24 overflow-hidden bg-base-100 py-24 dark:!bg-transparent">
+      <ScrollParallax
+        className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
+        offset={45}
+      >
+        <div className="section-depth-faq" />
+      </ScrollParallax>
+      <ScrollParallax className="absolute inset-0 -z-10 pointer-events-none" offset={30}>
+        <div className="bg-orb bg-orb--top-right" aria-hidden="true" />
+        <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
+      </ScrollParallax>
       <div className="container">
         <Reveal from="up" distance={12}>
           <div className="mx-auto max-w-2xl text-center">

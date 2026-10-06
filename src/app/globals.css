@@ -530,6 +530,7 @@ html[data-theme="dark"] #services,
 html[data-theme="dark"] #work,
 html[data-theme="dark"] #pricing,
 html[data-theme="dark"] #testimonials,
+html[data-theme="dark"] #faq,
 html[data-theme="dark"] #contact {
   isolation: isolate;
 }
@@ -540,6 +541,7 @@ html[data-theme="dark"] #contact {
 .section-depth-work,
 .section-depth-pricing,
 .section-depth-quote,
+.section-depth-faq,
 .section-depth-contact,
 .section-depth-footer {
   position: absolute;
@@ -580,6 +582,13 @@ html[data-theme="dark"] .section-depth-quote {
     radial-gradient(140% 40% at 50% 52%, oklch(0.28 0.056 261 / 0.16) 0%, transparent 65%),
     linear-gradient(180deg, var(--section-quote-t) 0%, var(--section-quote-m) 48%, var(--section-quote-b) 100%);
   background-color: var(--section-quote-b);
+}
+html[data-theme="dark"] .section-depth-faq {
+  /* Quiet bridge from client stories into the closing contact section. */
+  background:
+    radial-gradient(90% 56% at 100% 0%, oklch(0.28 0.058 261 / 0.13) 0%, transparent 67%),
+    linear-gradient(180deg, var(--section-quote-b) 0%, var(--section-contact-t) 100%);
+  background-color: var(--section-contact-t);
 }
 html[data-theme="dark"] .section-depth-contact {
   /* Closing ramp — bottom bloom locks seam with footer */
