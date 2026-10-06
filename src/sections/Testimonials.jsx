@@ -114,7 +114,7 @@ export default function Testimonials3DPro() {
   return (
     <section
       id="testimonials"
-      className="relative overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
+      className="relative scroll-mt-24 overflow-hidden py-24 bg-base-200 dark:!bg-transparent"
       style={{
         ["--card-h"]: "clamp(300px, 36vw, 380px)",
       }}

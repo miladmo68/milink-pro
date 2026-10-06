@@ -1,6 +1,6 @@
 # MiLink — Single Source of Truth
 
-> **Audit status:** 2026-09-03. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
+> **Audit status:** 2026-10-06. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
 
 ## 1. Strict Development Guardrail: MARKETING FROZEN (Zero-Touch Policy)
 
@@ -18,6 +18,8 @@ Under **no circumstances** may future automated or manual work alter, refactor, 
 - Marketing routes: `/contact`, `/pricing`, `/services`, `/services/[id]`, `/testimonials`, `/work`.
 - Marketing data/copy in `src/data/content.js` and public marketing assets.
 - Root marketing metadata/structured data, except for an explicitly authorized auth/security continuity fix.
+
+The current homepage FAQ, its `FAQPage` JSON-LD, its homepage anchor, and the Hero counter progressive-enhancement behavior were added under explicit marketing authorization on 2026-10-06. They are now part of the frozen marketing baseline.
 
 ### Permitted dashboard scope
 
@@ -74,6 +76,7 @@ The business value is a single private project workspace replacing fragmented em
 | UI dependency | DaisyUI is installed and custom themes are defined. |
 | Files | `jszip` and `file-saver` are installed for asset export/download workflows. |
 | Email | Nodemailer `7.0.6` via Node.js Next route handlers. |
+| Homepage SEO | Root layout emits Organization/WebSite/WebPage/ProfessionalService JSON-LD; the home page alone emits matching `FAQPage` JSON-LD from the visible FAQ source data. |
 | Build | `npm run build` runs `next build`; `reactStrictMode` is enabled. |
 
 ### Supabase architecture
@@ -96,6 +99,7 @@ Browser access is centralized at `src/lib/supabase/client.js` through `getSupaba
 - The active shared Dashboard shell is `src/components/portal/PortalExperience.jsx`, styled principally by `PortalExperienceV4.module.css` token variables: background, surface, text, muted, line, and accent.
 - The shell also imports targeted overview, modal, notification, sidebar-seam, and stage-control refinement modules.
 - `src/app/globals.css` contains base/marketing styles and some dashboard `mi-*` selectors. It is a shared risk area: dashboard-only visual fixes should prefer the actual dashboard component/CSS module.
+- **Homepage counters:** `src/components/CountUp.jsx` server-renders its configured final value before any client effect. IntersectionObserver animation is a progressive enhancement only, respects `prefers-reduced-motion`, and leaves the static value intact if JavaScript fails.
 
 ### State and data fetching
 
@@ -169,7 +173,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 
 | Route | Responsibility |
 | --- | --- |
-| `/` | Frozen marketing landing. On a stray auth `?code=`, it forwards the user on the same origin to `/auth/callback`. |
+| `/` | Frozen marketing landing, including Hero counters and the FAQ section. On a stray auth `?code=`, it forwards the user on the same origin to `/auth/callback`. The home page emits page-specific FAQ JSON-LD in addition to the global organization graph. |
 | `/portal` | Client route wrapper; unauthenticated users see `SecureAccess`, authenticated users see `ClientExperience`. |
 | `/admin` | Admin route wrapper; renders admin sign-in or `AdminExperience`. |
 | `/auth/callback` | Exchanges Supabase code/session, resolves role, redirects to portal/admin. |
@@ -188,6 +192,9 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `src/app/portal/ClientPortal.jsx` and `src/app/admin/AdminPortal.jsx` are route adapters. They retain prototype JSX below current return paths; it is inactive and must not be revived.
 - `src/components/auth/SecureAccess.jsx` owns email/password auth, confirmation resend, Google OAuth initiation, and dynamic origin logic.
 - `src/components/auth/PasswordRecovery.jsx` owns password-recovery request and reset logic.
+- `src/sections/FAQ.jsx` is the active homepage FAQ. It is a controlled, keyboard-accessible accordion with semantic question buttons, `aria-expanded`/`aria-controls`, restrained motion, and a mobile-safe single-column layout. Its visible content comes from `faqs` in `src/data/content.js`.
+- `src/data/content.js` also exports `faqJsonLd`, generated from that same visible `faqs` array. `src/app/page.jsx` serializes it only on `/`, preventing duplicate/conflicting FAQ markup on standalone marketing routes.
+- The homepage navbar uses canonical `/#services`, `/#work`, `/#pricing`, `/#testimonials`, `/#faq`, and `/#contact` anchors. Client-side scrolling compensates for the sticky header; the target IDs are unique and retain CSS scroll margins so direct hash links and no-JavaScript navigation keep headings visible.
 
 ### Legacy/debt inventory
 

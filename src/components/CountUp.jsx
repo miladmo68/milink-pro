@@ -18,16 +18,16 @@ export default function CountUp({
 }) {
   const ref = useRef(null);
   const reduced = useReducedMotion();
-  const [value, setValue] = useState(reduced ? to : from);
+  // Render the actual target immediately so the static HTML is useful to
+  // crawlers, no-JS visitors, and users before the enhancement starts.
+  const [value, setValue] = useState(to);
   const startedRef = useRef(false);
 
   useEffect(() => {
-    if (reduced) {
-      setValue(to);
-      return;
-    }
+    if (reduced) return;
     const node = ref.current;
     if (!node) return;
+    let animationFrame = 0;
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -36,34 +36,35 @@ export default function CountUp({
           if (once && startedRef.current) return;
           startedRef.current = true;
 
+          setValue(from);
           const start = performance.now();
-          let raf = 0;
           const tick = (now) => {
             const t = Math.min(1, (now - start) / duration);
             const eased = easeOutCubic(t);
             setValue(from + (to - from) * eased);
-            if (t < 1) raf = requestAnimationFrame(tick);
+            if (t < 1) animationFrame = requestAnimationFrame(tick);
           };
-          raf = requestAnimationFrame(tick);
+          animationFrame = requestAnimationFrame(tick);
 
           if (once) io.disconnect();
-          return () => cancelAnimationFrame(raf);
         });
       },
       { threshold: amount }
     );
 
     io.observe(node);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(animationFrame);
+    };
   }, [to, from, duration, once, amount, reduced]);
 
   const display = Number.isFinite(value) ? value.toFixed(decimals) : `${to}`;
 
   return (
     <span ref={ref} className={className} style={style}>
-      {prefix}
-      {display}
-      {suffix}
+      <span aria-hidden="true">{prefix}{display}{suffix}</span>
+      <span className="sr-only">{prefix}{Number(to).toFixed(decimals)}{suffix}</span>
     </span>
   );
 }

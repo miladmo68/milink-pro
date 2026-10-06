@@ -9,7 +9,9 @@ import Services from "../sections/Services.jsx";
 import Work from "../sections/Work.jsx";
 import Pricing from "../sections/Pricing.jsx";
 import Testimonials from "../sections/Testimonials.jsx";
+import FAQ from "../sections/FAQ.jsx";
 import Contact from "../sections/Contact.jsx";
+import { faqJsonLd } from "../data/content.js";
 
 const Modal = lazy(() => import("../components/Modal.jsx"));
 const Lightbox = lazy(() => import("../components/Lightbox.jsx"));
@@ -43,10 +45,11 @@ export default function HomePage() {
         </h1>
 
         <nav aria-label="Primary internal links" className="sr-only">
-          <a href="/services">Our Services</a> • <a href="/work">Work</a> •{" "}
-          <a href="/pricing">Pricing</a> •{" "}
-          <a href="/testimonials">Testimonials</a> •{" "}
-          <a href="/contact">Contact</a>
+          <a href="/#services">Our Services</a> • <a href="/#work">Work</a> •{" "}
+          <a href="/#pricing">Pricing</a> •{" "}
+          <a href="/#testimonials">Testimonials</a> •{" "}
+          <a href="/#faq">FAQ</a> •{" "}
+          <a href="/#contact">Contact</a>
         </nav>
 
         <section id="hero" aria-label="Hero">
@@ -54,31 +57,38 @@ export default function HomePage() {
           <Hero onOpenLightbox={(img) => setLightbox(img)} />
         </section>
 
-        <section id="services" aria-label="Our Services">
+        <section aria-label="Our Services">
           <h2 className="sr-only">Our Services</h2>
           <Services onOpen={(payload) => setModal(payload)} />
         </section>
 
-        <section id="work" aria-label="Selected Work">
+        <section aria-label="Selected Work">
           <h2 className="sr-only">Selected Work & Case Studies</h2>
           <Work onOpen={(payload) => setModal(payload)} />
         </section>
 
-        <section id="pricing" aria-label="Pricing & Packages">
+        <section aria-label="Pricing & Packages">
           <h2 className="sr-only">Pricing & Packages</h2>
           <Pricing />
         </section>
 
-        <section id="testimonials" aria-label="Testimonials">
+        <section aria-label="Testimonials">
           <h2 className="sr-only">Testimonials</h2>
           <Testimonials />
         </section>
 
-        <section id="contact" aria-label="Contact">
+        <FAQ />
+
+        <section aria-label="Contact">
           <h2 className="sr-only">Contact</h2>
           <Contact />
         </section>
       </main>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c") }}
+      />
 
       <Footer />
 

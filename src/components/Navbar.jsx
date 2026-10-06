@@ -7,6 +7,7 @@ import { nav } from "../data/content.js";
 import ThemeToggle from "./ThemeToggle.jsx";
 
 const EASE = [0.25, 0.1, 0.25, 1];
+const sectionIdFromHref = (href) => href.split("#")[1] || "";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -27,12 +28,12 @@ export default function Navbar() {
       return;
     }
 
-    const sections = nav.map((n) => n.href.replace("/", ""));
+    const sections = nav.map((n) => sectionIdFromHref(n.href)).filter(Boolean);
     const observers = sections.map((id) => {
       const el = document.getElementById(id);
       if (!el) return null;
       const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActive(`/${id}`); },
+        ([e]) => { if (e.isIntersecting) setActive(`/#${id}`); },
         { threshold: 0.3 }
       );
       obs.observe(el);
@@ -46,21 +47,26 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  const scrollTo = useCallback((href) => {
+  const scrollTo = useCallback((id) => {
     setOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height || 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+    window.history.pushState(null, "", `/#${id}`);
+    window.requestAnimationFrame(() => window.scrollTo({ top: Math.max(0, top), behavior: "smooth" }));
   }, []);
 
   const handleNavClick = useCallback((e, href) => {
     setOpen(false);
     if (!isHome) return;
 
-    const id = href.replace("/", "");
+    const id = sectionIdFromHref(href);
     const el = document.getElementById(id);
     if (el) {
       e.preventDefault();
-      scrollTo(`#${id}`);
+      scrollTo(id);
     }
   }, [isHome, scrollTo]);
 

@@ -1,9 +1,10 @@
 export const nav = [
-  { label: "Services", href: "/services" },
-  { label: "Work", href: "/work" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Testimonials", href: "/testimonials" },
-  { label: "Contact", href: "/contact" },
+  { label: "Services", href: "/#services" },
+  { label: "Work", href: "/#work" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Testimonials", href: "/#testimonials" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const services = [
@@ -275,27 +276,52 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How long does it take to build a website?",
-    a: "Most standard sites launch in 2–4 weeks, depending on scope, content readiness, and feedback speed.",
+    q: "How much does a website cost?",
+    a: "Every project is different. Pricing depends on the size of the website, design requirements, functionality, content, integrations, and whether you need e-commerce. Milink offers options for one-page websites, multi-page business websites, and e-commerce or custom projects. Tell us what you need and we'll recommend the right scope and provide a clear quote.",
   },
   {
-    q: "Do you provide ongoing support and maintenance?",
-    a: "Yes — we offer monthly care plans that cover updates, security, SEO monitoring, and performance improvements.",
+    q: "How long does it take to design and build a website?",
+    a: "The timeline depends on the size and complexity of the project. A simple website can usually be completed faster than a multi-page, e-commerce, or custom build. Content readiness, integrations, revisions, and feedback can also affect timing. We provide a clear project timeline before development begins.",
+  },
+  {
+    q: "Do you only work with businesses in Toronto?",
+    a: "Milink is based in the Greater Toronto Area and works primarily with businesses in Toronto and the GTA. Because our process can be handled remotely, businesses outside the GTA can also contact us to discuss their project.",
+  },
+  {
+    q: "What platforms do you use?",
+    a: "We choose the platform based on the project's requirements rather than forcing every business into the same solution. For e-commerce, Milink works with Shopify and WordPress/WooCommerce. For business websites, we can recommend an appropriate modern CMS or development approach based on performance, content management, and functionality needs.",
+  },
+  {
+    q: "Is SEO included with a new website?",
+    a: "Every Milink website is built with SEO-friendly foundations such as clean structure, responsive design, performance considerations, and appropriate on-page setup. More advanced SEO, technical optimization, schema, keyword strategy, and ongoing search optimization can also be provided through our SEO & Performance Optimization service.",
   },
   {
     q: "Can you redesign my existing website?",
-    a: "Absolutely. We can refresh the design, improve speed and SEO, and align it with your brand and goals.",
+    a: "Yes. If your current website looks outdated, loads slowly, is difficult to use, or is no longer supporting your business goals, we can review the existing site and recommend whether a redesign, rebuild, or targeted improvements make the most sense.",
   },
   {
-    q: "Do you work with e-commerce platforms like Shopify?",
-    a: "Yes, we specialize in Shopify stores, optimized product pages, and high-conversion checkouts.",
+    q: "Do you build e-commerce websites?",
+    a: "Yes. Milink builds online stores using Shopify and WooCommerce. Depending on the project, this can include product pages, checkout and payment setup, responsive store design, conversion-focused layouts, and custom functionality or integrations.",
   },
   {
-    q: "How much does a website cost?",
-    a: "Pricing depends on your project scope and goals. Share your requirements, and we’ll send you a tailored proposal quickly.",
+    q: "Will my website work properly on mobile devices?",
+    a: "Yes. Milink websites are designed to be responsive and work across mobile, tablet, and desktop screen sizes. We also pay attention to usability, performance, navigation, and conversion paths on smaller screens.",
   },
   {
-    q: "What if I need something custom?",
-    a: "No problem — we create custom solutions for unique needs. Reach out and we’ll respond promptly with options.",
+    q: "Do you provide support after the website launches?",
+    a: "Yes. Milink offers website maintenance and ongoing support for businesses that need help after launch. This can include updates, backups, security monitoring, content changes, performance improvements, and other website maintenance needs.",
   },
 ];
+
+export const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: a,
+    },
+  })),
+};

@@ -7,7 +7,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
+      className="relative scroll-mt-24 overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
       <ScrollParallax className="pointer-events-none absolute inset-0 -z-10" offset={70}>
         <div className="section-depth-pricing" />

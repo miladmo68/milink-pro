@@ -306,7 +306,7 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
+      className="relative scroll-mt-24 overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
       <ScrollParallax
         className="absolute inset-0 -z-10 pointer-events-none hidden dark:block"
