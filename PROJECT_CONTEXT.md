@@ -76,7 +76,7 @@ The business value is a single private project workspace replacing fragmented em
 | UI dependency | DaisyUI is installed and custom themes are defined. |
 | Files | `jszip` and `file-saver` are installed for asset export/download workflows. |
 | Email | Nodemailer `7.0.6` via Node.js Next route handlers. |
-| Homepage SEO | Root layout emits Organization/WebSite/WebPage/ProfessionalService JSON-LD; the home page alone emits matching `FAQPage` JSON-LD from the visible FAQ source data. |
+| Homepage SEO | Root layout emits one server-rendered schema graph for `Organization`, `WebSite`, `WebPage`, a service-area-only `ProfessionalService`, and the six visible `Service` offerings. The home page alone emits matching `FAQPage` JSON-LD from the visible FAQ source data. |
 | Build | `npm run build` runs `next build`; `reactStrictMode` is enabled. |
 
 ### Supabase architecture
@@ -196,6 +196,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `src/data/content.js` also exports `faqJsonLd`, generated from that same visible `faqs` array. `src/app/page.jsx` serializes it only on `/`, preventing duplicate/conflicting FAQ markup on standalone marketing routes.
 - The homepage navbar uses canonical `/#services`, `/#work`, `/#pricing`, `/#testimonials`, `/#faq`, and `/#contact` anchors. Client-side scrolling compensates for the sticky header; the target IDs are unique and retain CSS scroll margins so direct hash links and no-JavaScript navigation keep headings visible.
 - The root layout intentionally does not mount the legacy animated `CustomCursor`; all routes use the normal system pointer, avoiding the delayed dot/ring cursor effect.
+- The root schema graph in `src/app/layout.jsx` is the structured-data source of truth: `https://milink.ca/#organization`, `#website`, `#webpage`, `#localbusiness`, and `#service-*` IDs. It uses only the public phone, verified Instagram account, logo, and stated Toronto/GTA/Ontario/Canada service area. The `ProfessionalService` node intentionally has no street address, price range, opening hours, ratings, reviews, or unsupported claims.
 
 ### Legacy/debt inventory
 

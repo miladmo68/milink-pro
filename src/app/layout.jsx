@@ -1,5 +1,6 @@
 import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { services } from "../data/content.js";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -17,6 +18,15 @@ const dmSans = DM_Sans({
 
 const BASE_URL = "https://milink.ca";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
+const ORGANIZATION_ID = `${BASE_URL}/#organization`;
+const LOCAL_BUSINESS_ID = `${BASE_URL}/#localbusiness`;
+const WEBSITE_ID = `${BASE_URL}/#website`;
+const SERVICE_AREAS = [
+  { "@type": "City", name: "Toronto" },
+  { "@type": "AdministrativeArea", name: "Greater Toronto Area" },
+  { "@type": "AdministrativeArea", name: "Ontario" },
+  { "@type": "Country", name: "Canada" },
+];
 
 export const viewport = {
   themeColor: [
@@ -94,9 +104,11 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": `${BASE_URL}/#organization`,
+      "@id": ORGANIZATION_ID,
       name: "Milink Digital Agency",
       url: BASE_URL,
+      description:
+        "Web Design and Development, E-Commerce Solutions, SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Toronto.",
       logo: {
         "@type": "ImageObject",
         url: `${BASE_URL}/icon.png`,
@@ -107,36 +119,28 @@ const jsonLd = {
         "@type": "ContactPoint",
         telephone: "+1-437-600-3139",
         contactType: "customer service",
-        areaServed: "CA",
-        availableLanguage: "English",
+        areaServed: SERVICE_AREAS,
       },
-      sameAs: [
-        "https://www.instagram.com/milink.ca",
-        "https://www.facebook.com/milink.ca",
-      ],
+      areaServed: SERVICE_AREAS,
+      sameAs: ["https://www.instagram.com/milink.ca"],
     },
     {
       "@type": "WebSite",
-      "@id": `${BASE_URL}/#website`,
+      "@id": WEBSITE_ID,
       url: BASE_URL,
       name: "MILINK — Web Design, E-Commerce, SEO & Branding",
       description:
         "Web Design, E-Commerce Solutions, SEO, UI/UX & Branding in Toronto.",
-      publisher: { "@id": `${BASE_URL}/#organization` },
+      publisher: { "@id": ORGANIZATION_ID },
       inLanguage: "en-CA",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: { "@type": "EntryPoint", url: `${BASE_URL}/#contact` },
-        "query-input": "required name=search_term_string",
-      },
     },
     {
       "@type": "WebPage",
       "@id": `${BASE_URL}/#webpage`,
       url: BASE_URL,
       name: "MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding",
-      isPartOf: { "@id": `${BASE_URL}/#website` },
-      about: { "@id": `${BASE_URL}/#organization` },
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": ORGANIZATION_ID },
       primaryImageOfPage: {
         "@type": "ImageObject",
         url: DEFAULT_IMAGE,
@@ -144,30 +148,24 @@ const jsonLd = {
     },
     {
       "@type": "ProfessionalService",
-      "@id": `${BASE_URL}/#localbusiness`,
+      "@id": LOCAL_BUSINESS_ID,
       name: "Milink Digital Agency",
       image: DEFAULT_IMAGE,
       url: BASE_URL,
       telephone: "+1-437-600-3139",
-      address: {
-        "@type": "PostalAddress",
-        addressRegion: "Ontario",
-        addressCountry: "CA",
-      },
-      priceRange: "$$",
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-        ],
-        opens: "09:00",
-        closes: "18:00",
-      },
+      description:
+        "Web Design and Development, E-Commerce Solutions, SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Toronto.",
+      parentOrganization: { "@id": ORGANIZATION_ID },
+      areaServed: SERVICE_AREAS,
     },
+    ...services.map((service) => ({
+      "@type": "Service",
+      "@id": `${BASE_URL}/#service-${service.id}`,
+      name: service.title,
+      description: service.desc,
+      provider: { "@id": ORGANIZATION_ID },
+      areaServed: SERVICE_AREAS,
+    })),
   ],
 };
 
@@ -195,7 +193,7 @@ export default function RootLayout({ children }) {
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
       </head>
       <body className="font-sans antialiased">
