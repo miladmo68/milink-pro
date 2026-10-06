@@ -8,7 +8,7 @@ const EASE = [0.25, 0.1, 0.25, 1];
 const STATS = [
   { to: 50, suffix: "+", label: "Projects" },
   { to: 95, suffix: "+", label: "Lighthouse" },
-  { to: 5,  suffix: "★", label: "Rating" },
+  { text: "GTA", label: "Based" },
 ];
 
 const ROTATING_WORDS = ["websites", "stores", "brands", "experiences"];
@@ -269,13 +269,19 @@ export default function Hero() {
               {STATS.map((s, i) => (
                 <div key={s.label} className="flex items-center">
                   <div className={i === 0 ? "pr-6" : "px-6"}>
-                    <CountUp
-                      to={s.to}
-                      suffix={s.suffix}
-                      duration={1400 + i * 150}
-                      className="font-display font-black text-3xl block"
-                      style={{ color: "var(--accent)" }}
-                    />
+                    {s.text ? (
+                      <span className="font-display font-black text-3xl block" style={{ color: "var(--accent)" }}>
+                        {s.text}
+                      </span>
+                    ) : (
+                      <CountUp
+                        to={s.to}
+                        suffix={s.suffix}
+                        duration={1400 + i * 150}
+                        className="font-display font-black text-3xl block"
+                        style={{ color: "var(--accent)" }}
+                      />
+                    )}
                     <div className="font-body text-xs tracking-wide mt-1" style={{ color: "var(--text-muted)" }}>{s.label}</div>
                   </div>
                   {i < STATS.length - 1 && (
