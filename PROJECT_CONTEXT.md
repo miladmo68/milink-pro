@@ -197,6 +197,7 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - The homepage navbar uses canonical `/#services`, `/#work`, `/#pricing`, `/#testimonials`, `/#faq`, and `/#contact` anchors. Client-side scrolling compensates for the sticky header; the target IDs are unique and retain CSS scroll margins so direct hash links and no-JavaScript navigation keep headings visible.
 - The root layout intentionally does not mount the legacy animated `CustomCursor`; all routes use the normal system pointer, avoiding the delayed dot/ring cursor effect.
 - The root schema graph in `src/app/layout.jsx` is the structured-data source of truth: `https://milink.ca/#organization`, `#website`, `#webpage`, `#localbusiness`, and `#service-*` IDs. It uses only the public phone, verified Instagram account, logo, and stated Toronto/GTA/Ontario/Canada service area. The `ProfessionalService` node intentionally has no street address, price range, opening hours, ratings, reviews, or unsupported claims.
+- The Services grid remains the single-page service explanation surface. `src/data/content.js` is its single copy source of truth: each service's concise front description, back-of-card explanation, and bullets also feed the matching `Service` schema node. The existing hover/touch flip card dimensions and motion are preserved; keyboard users can focus a card and toggle its details with Enter or Space.
 
 ### Legacy/debt inventory
 

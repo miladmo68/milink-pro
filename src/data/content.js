@@ -13,81 +13,81 @@ export const services = [
     icon: "CodeBracketIcon",
     badge: "Popular",
     title: "Web Design & Development",
-    desc: "Custom, responsive websites that are fast, secure, and designed to convert.",
+    desc: "Custom, responsive business websites built for performance, usability, and conversion.",
     bullets: [
       "Mobile-first design",
       "95+ Lighthouse performance",
       "Easy-to-manage CMS options",
     ],
     longDesc:
-      "We design and develop modern websites that go beyond just looking good. Our builds are responsive, SEO-friendly, and optimized for speed. You’ll get a website that is simple to manage and designed to turn visitors into customers.",
+      "We design and develop responsive business websites with clear structure, mobile-first layouts, SEO-friendly foundations, and performance-focused builds. The result is a site that is easy to use, simple to manage, and built around your business goals.",
   },
   {
     id: "ecom",
     icon: "ShoppingCartIcon",
     badge: "In Demand",
     title: "E-Commerce Solutions (Shopify & WordPress)",
-    desc: "Scalable online stores with Shopify or WordPress WooCommerce.",
+    desc: "Shopify and WooCommerce stores with responsive product pages and checkout setup.",
     bullets: [
       "Shopify storefronts",
       "WooCommerce setups",
       "Optimized product pages & checkout",
     ],
     longDesc:
-      "Whether you want a powerful Shopify store or a flexible WordPress WooCommerce shop, we deliver secure, scalable, and conversion-optimized e-commerce solutions. From product pages and checkout flows to email capture and payment integration, everything is built for higher sales and long-term growth.",
+      "We build Shopify and WooCommerce stores with responsive storefronts, product pages, checkout setup, email capture, payment integration, and optional custom functionality. The store structure is planned around a clear shopping experience and room to grow.",
   },
   {
     id: "seo",
     icon: "MagnifyingGlassIcon",
     badge: "High ROI",
     title: "SEO & Performance Optimization",
-    desc: "Improve Google rankings, site speed, and organic reach.",
+    desc: "Technical SEO, metadata, and performance improvements for stronger search foundations.",
     bullets: [
       "Technical SEO audit",
       "Structured data & metadata",
       "Content & keyword strategy",
     ],
     longDesc:
-      "We go beyond basic SEO: fixing technical issues, adding schema and metadata, and creating a simple but effective content plan. Combined with performance optimization, your site will load faster, rank higher, and attract quality traffic.",
+      "We improve the technical foundations that help search engines and visitors understand and use your website: site structure, metadata, schema, content planning, and performance. This practical work supports discoverability and a faster site experience.",
   },
   {
     id: "maint",
     icon: "WrenchScrewdriverIcon",
     title: "Website Maintenance & Support",
-    desc: "Keep your site secure, up-to-date, and running smoothly.",
+    desc: "Ongoing updates, backups, security monitoring, and support after launch.",
     bullets: [
       "Updates & backups",
       "Security monitoring",
       "Content updates & quick fixes",
     ],
     longDesc:
-      "Launching your site is just the beginning. We provide ongoing maintenance and support, including security monitoring, backups, and updates. Need changes to your content or design tweaks? We’ve got you covered long-term.",
+      "After launch, we handle website updates, backups, security monitoring, content changes, performance improvements, and quick fixes. Ongoing support keeps your site current and gives your team a clear place to request changes.",
   },
   {
     id: "brand",
     icon: "PaintBrushIcon",
     title: "Branding & Identity",
-    desc: "Build a strong, consistent brand presence.",
+    desc: "Logo, typography, colour systems, and a consistent brand foundation.",
     bullets: [
       "Custom logo design",
       "Typography & color systems",
       "Mini brand book",
     ],
     longDesc:
-      "We help your brand stand out with a clean and memorable identity. You’ll get a professional logo suite, a tailored typography and color system, and a concise brand guide for consistent use across all channels.",
+      "We create the visual building blocks for a consistent brand: a logo suite, typography and colour choices, and a concise brand guide. These assets help your website and other touchpoints look aligned.",
   },
   {
     id: "ux",
     icon: "DevicePhoneMobileIcon",
     title: "UI/UX Design",
-    desc: "Intuitive and engaging interfaces for all devices.",
+    desc: "User flows, wireframes, and interface design for clearer digital experiences.",
     bullets: [
       "User flows & wireframes",
       "Reusable design systems",
       "Usability improvements",
     ],
     longDesc:
-      "From wireflows and design systems to usability testing and refinement, we design experiences that reduce friction and guide users towards meaningful actions — boosting engagement and conversions.",
+      "We plan user flows, wireframes, design systems, and interface refinements that make important actions easier to understand. The focus is clearer navigation, fewer friction points, and a more usable experience across devices.",
   },
 ];
 

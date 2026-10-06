@@ -90,12 +90,23 @@ function InOutItem({ children, index = 0, delayStep = 0.08 }) {
 function FlippyInteractive({ front, back, className = "" }) {
   const [flipped, setFlipped] = useState(false);
 
+  const handleKeyDown = (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setFlipped((value) => !value);
+  };
+
   return (
     <div
       className={`relative ${className}`}
       style={{ perspective: "1200px", WebkitPerspective: "1200px" }}
+      tabIndex={0}
+      role="button"
+      aria-expanded={flipped}
+      aria-label="Service card. Press Enter or Space to show or hide details."
       onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
+      onKeyDown={handleKeyDown}
       onTouchStart={(e) => {
         e.stopPropagation();
         setFlipped((v) => !v);
