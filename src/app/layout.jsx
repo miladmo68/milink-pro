@@ -183,10 +183,13 @@ export default function RootLayout({ children }) {
 (function() {
   var key = 'milink-theme-mode';
   var stored = typeof localStorage !== 'undefined' && localStorage.getItem(key);
-  var pref = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  var theme = stored || pref;
+  // Keep first paint deterministic: the site starts dark unless a visitor has
+  // explicitly selected and saved the light theme.
+  var theme = stored || 'dark';
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.classList.toggle('dark', theme === 'dark');
+  document.documentElement.classList.toggle('mode-dark', theme === 'dark');
+  document.documentElement.classList.toggle('mode-light', theme === 'light');
 })();
 `,
           }}

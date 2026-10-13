@@ -1,6 +1,6 @@
 # MiLink — Single Source of Truth
 
-> **Audit status:** 2026-10-06. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
+> **Audit status:** 2026-10-13. This document describes the codebase as audited. Applied Supabase migrations must still be verified in each real environment.
 
 ## 1. Strict Development Guardrail: MARKETING FROZEN (Zero-Touch Policy)
 
@@ -94,12 +94,12 @@ Browser access is centralized at `src/lib/supabase/client.js` through `getSupaba
 ### Styling and theme system
 
 - Tailwind `darkMode` is class based.
-- `src/hooks/useTheme.js` toggles root `dark`, `mode-dark`, and `mode-light` classes plus the DaisyUI `data-theme` attribute.
+- `src/hooks/useTheme.js` toggles root `dark`, `mode-dark`, and `mode-light` classes plus the DaisyUI `data-theme` attribute. The early root-layout script uses the same saved preference but otherwise starts the marketing site in dark mode; it deliberately does not consult the device preference on first paint, preventing a mobile theme flash during hydration.
 - `src/config/theme.js` defines custom `milinklight` and `milinkdark` palettes.
 - The active shared Dashboard shell is `src/components/portal/PortalExperience.jsx`, styled principally by `PortalExperienceV4.module.css` token variables: background, surface, text, muted, line, and accent.
 - The shell also imports targeted overview, modal, notification, sidebar-seam, and stage-control refinement modules.
 - `src/app/globals.css` contains base/marketing styles and some dashboard `mi-*` selectors. It is a shared risk area: dashboard-only visual fixes should prefer the actual dashboard component/CSS module.
-- **Homepage counters:** `src/components/CountUp.jsx` server-renders its configured final value before any client effect. IntersectionObserver animation is a progressive enhancement only, respects `prefers-reduced-motion`, and leaves the static value intact if JavaScript fails.
+- **Homepage first-paint stability:** Hero counters always render their final semantic values and are never reset to zero after hydration. Above-the-fold Hero content starts visible rather than fading in from a blank state. The Hero video has no poster image; the established dark/grid field stays visible until the first video frame is ready, then the video fades in. Testimonials resolve their mobile one-card geometry in a layout effect before paint, avoiding a visible three-card-to-one-card mobile reflow.
 
 ### State and data fetching
 
@@ -195,8 +195,9 @@ Do not put values/secrets in source control or this document. `.env.example` doc
 - `src/sections/FAQ.jsx` is the active homepage FAQ. It is a controlled, keyboard-accessible accordion with semantic question buttons, `aria-expanded`/`aria-controls`, restrained motion, and a mobile-safe single-column layout. Its visible content comes from `faqs` in `src/data/content.js`; its section-depth and restrained orbital background layers follow the same dark/light marketing-field system as the adjacent sections.
 - `src/data/content.js` also exports `faqJsonLd`, generated from that same visible `faqs` array. `src/app/page.jsx` serializes it only on `/`, preventing duplicate/conflicting FAQ markup on standalone marketing routes.
 - The homepage navbar uses canonical `/#services`, `/#work`, `/#pricing`, `/#testimonials`, `/#faq`, and `/#contact` anchors. Client-side scrolling compensates for the sticky header; the target IDs are unique and retain CSS scroll margins so direct hash links and no-JavaScript navigation keep headings visible.
-- The root layout intentionally does not mount the legacy animated `CustomCursor`; all routes use the normal system pointer, avoiding the delayed dot/ring cursor effect.
+- The root layout intentionally does not mount the legacy animated `CustomCursor`. A fine-pointer CSS guard also hides any stale legacy cursor layer and restores native browser cursors (`pointer` for interactive controls and text selection for fields), preventing a delayed blue dot/ring from resurfacing through an older client bundle.
 - The root schema graph in `src/app/layout.jsx` is the structured-data source of truth: `https://milink.ca/#organization`, `#website`, `#webpage`, `#localbusiness`, and `#service-*` IDs. It uses only the public phone, verified Instagram account, logo, and stated Toronto/GTA/Ontario/Canada service area. The `ProfessionalService` node intentionally has no street address, price range, opening hours, ratings, reviews, or unsupported claims.
+- **Brand icon delivery:** `src/app/icon.jsx` and `src/app/apple-icon.jsx` are the canonical file-based metadata routes for browser tabs, Apple touch icons, crawlers, and Google Search. They render the current transparent `public/logo-test.png` mark on the approved dark brand surface. The legacy raster variants are retained under `public/legacy-icons/` for historical reference only. The Organization schema continues to point to `/icon.png`, so search engines and browser metadata receive the same current mark after the next deployment and recrawl.
 - The Services grid remains the single-page service explanation surface. `src/data/content.js` is its single copy source of truth: each service's concise front description, back-of-card explanation, and bullets also feed the matching `Service` schema node. The existing hover/touch flip card dimensions and motion are preserved; keyboard users can focus a card and toggle its details with Enter or Space.
 
 ### Legacy/debt inventory

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 import { testimonials as DATA } from "../data/content.js";
 import {
   Reveal,
@@ -25,7 +25,7 @@ export default function Testimonials3DPro() {
 
   // ===== Layout: 1 (mobile) or 3 (md+)
   const [perView, setPerView] = useState(3);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const onResize = () => setPerView(window.innerWidth >= 768 ? 3 : 1);
     onResize();
     window.addEventListener("resize", onResize);

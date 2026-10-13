@@ -1213,3 +1213,30 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
 .mi-header-account-trigger{position:relative}.mi-header-account-trigger>.userChip{border:0;cursor:pointer}.mi-header-account-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:50;width:256px;padding:10px;border:1px solid var(--line,#334155);border-radius:14px;background:var(--surface-solid,#0f172a);box-shadow:0 22px 50px rgb(2 6 23/.28);color:var(--text,#f8fafc)}.mi-header-account-summary{display:grid;gap:3px;padding:7px 8px 9px}.mi-header-account-summary b{overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}.mi-header-account-summary small{overflow:hidden;color:var(--muted,#94a3b8);font-size:11px;text-overflow:ellipsis;white-space:nowrap}.mi-header-account-summary em{justify-self:start;margin-top:4px;padding:3px 7px;border:1px solid rgb(103 232 249/.24);border-radius:999px;background:rgb(103 232 249/.09);color:#a5f3fc;font-size:9px;font-style:normal;font-weight:700}.mi-header-account-divider{height:1px;margin:5px 2px;background:var(--line,#334155)}.mi-header-account-menu button,.mi-header-account-menu a{display:flex;align-items:center;gap:9px;width:100%;padding:9px 8px;border:0;border-radius:8px;background:transparent;color:var(--text,#f8fafc);font:600 12px Inter,Geist,ui-sans-serif,sans-serif;text-align:left;text-decoration:none;cursor:pointer}.mi-header-account-menu button:hover,.mi-header-account-menu a:hover{background:rgb(148 163 184/.1)}.mi-header-account-menu .is-signout{color:#fda4af}.mi-header-account-menu .is-signout:hover{background:rgb(244 63 94/.1);color:#fecdd3}.mi-portal-light .mi-header-account-menu{border-color:#e2e8f0;background:#fff;color:#0f172a;box-shadow:0 20px 42px rgb(15 23 42/.15)}.mi-portal-light .mi-header-account-menu button,.mi-portal-light .mi-header-account-menu a{color:#1e293b}.mi-portal-light .mi-header-account-summary small{color:#64748b}.mi-portal-light .mi-header-account-divider{background:#e2e8f0}.mi-portal-light .mi-header-account-summary em{border-color:#bae6fd;background:#e0f2fe;color:#075985}@media(max-width:640px){.mi-header-account-menu{position:fixed;top:64px;right:12px;width:min(256px,calc(100vw - 24px))}}
 
 .mi-portal-light .mi-command-center .mi-command-tools>button,.mi-portal-light .mi-command-center .mi-command-card,.mi-portal-light .mi-command-center .mi-pipeline{border-color:#e2e8f0;background:#fff;box-shadow:0 1px 2px rgb(15 23 42/.05);backdrop-filter:none}.mi-portal-light .mi-command-center .mi-command-tools>button:hover,.mi-portal-light .mi-command-center .mi-command-card:hover,.mi-portal-light .mi-command-center .mi-pipeline:hover{border-color:#cbd5e1;background:#fff;box-shadow:0 10px 22px rgb(15 23 42/.08)}.mi-portal-light .mi-command-center .mi-command-head>div>span,.mi-portal-light .mi-command-center .mi-command-card header span{color:#0369a1;font-size:11px;font-weight:700;letter-spacing:.1em}.mi-portal-light .mi-command-center .mi-command-tools svg,.mi-portal-light .mi-command-center .mi-command-card header svg{color:#0284c7}.mi-portal-light .mi-command-center .mi-command-row button{border-color:#bae6fd;background:#f0f9ff;color:#0369a1}.mi-portal-light .mi-command-center .mi-command-row button:hover{border-color:#7dd3fc;background:#e0f2fe;color:#075985}.mi-portal-light .mi-command-center .mi-pipeline span{background:#e0f2fe;color:#0369a1}.mi-portal-light .mi-command-center .mi-pipeline>div.is-active span{background:#0284c7;color:#fff;box-shadow:0 0 0 4px rgb(2 132 199/.12),0 0 18px rgb(2 132 199/.24)}.mi-portal-light .mi-command-center .mi-pipeline small{color:#475569!important}.mi-portal-light .mi-command-center .mi-command-card header{border-bottom-color:#e2e8f0}
+/* Safety guard for the retired custom cursor. Keep the native system cursor
+   visible even if an older client bundle mounts the legacy component. */
+@media (pointer: fine) {
+  html body .custom-cursor {
+    display: none !important;
+  }
+
+  html body,
+  html body * {
+    cursor: auto !important;
+  }
+
+  html body a,
+  html body button,
+  html body [role="button"],
+  html body label[for],
+  html body select,
+  html body summary {
+    cursor: pointer !important;
+  }
+
+  html body input,
+  html body textarea,
+  html body [contenteditable="true"] {
+    cursor: text !important;
+  }
+}

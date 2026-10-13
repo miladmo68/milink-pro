@@ -28,7 +28,14 @@ const MARQUEE_ITEMS = [
 export default function Hero() {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (videoRef.current?.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      setVideoReady(true);
+    }
+  }, []);
 
   // Rotating word
   const [wordIdx, setWordIdx] = useState(0);
@@ -39,9 +46,11 @@ export default function Hero() {
   }, [reduced]);
 
   const fadeUp = (delay = 0, distance = 30) => ({
-    initial: reduced ? {} : { opacity: 0, y: distance },
+    // Above-the-fold content must be readable on the first mobile paint.
+    // Motion elsewhere remains available without starting the Hero blank.
+    initial: false,
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: EASE, delay: reduced ? 0 : delay },
+    transition: { duration: 0.35, ease: EASE, delay: reduced ? 0 : delay },
   });
 
   return (
@@ -58,12 +67,13 @@ export default function Hero() {
         {!fallback ? (
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover [object-position:60%_50%] sm:[object-position:center]"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 [object-position:60%_50%] sm:[object-position:center] ${videoReady ? "opacity-100" : "opacity-0"}`}
             src="/assets/video/hero.mp4"
             autoPlay
             muted
             loop
             playsInline
+            onLoadedData={() => setVideoReady(true)}
             onError={() => setFallback(true)}
             aria-hidden="true"
           />
