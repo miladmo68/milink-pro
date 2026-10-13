@@ -43,7 +43,7 @@ export const metadata = {
     template: "%s | MILINK",
   },
   description:
-    "Web Design and Development, E-Commerce Solutions (Shopify, WordPress), SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Toronto.",
+    "Toronto web design agency creating high-performing websites, e-commerce stores, SEO, UI/UX, branding, and ongoing support.",
   keywords: [
     "web design Toronto",
     "e-commerce development",
