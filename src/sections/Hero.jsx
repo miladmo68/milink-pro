@@ -46,11 +46,11 @@ export default function Hero() {
   }, [reduced]);
 
   const fadeUp = (delay = 0, distance = 30) => ({
-    // Above-the-fold content must be readable on the first mobile paint.
-    // Motion elsewhere remains available without starting the Hero blank.
-    initial: false,
+    // The root theme is resolved before paint, so the original entrance
+    // motion can run without a light-to-dark flash on mobile.
+    initial: reduced ? {} : { opacity: 0, y: distance },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.35, ease: EASE, delay: reduced ? 0 : delay },
+    transition: { duration: 0.6, ease: EASE, delay: reduced ? 0 : delay },
   });
 
   return (
