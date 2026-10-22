@@ -35,6 +35,7 @@ export default function Pricing() {
           {pricing.map((p, i) => {
             const isPopular = !!p.popular;
             const isPro = (p.name || "").toLowerCase() === "professional";
+            const quoteHref = `/?package=${encodeURIComponent(p.name)}#contact`;
             const frameBase = "group relative overflow-hidden rounded-2xl transition-transform duration-300";
             const framePadding = isPro ? "p-[2px] md:p-[3px]" : "p-[1px]";
             const borderBase = "before:absolute before:inset-0 before:-z-10 before:rounded-2xl";
@@ -121,12 +122,9 @@ export default function Pricing() {
                         <span className="inline-flex items-center gap-2 rounded-full border border-base-content/12 bg-base-200/50 dark:bg-base-200/40 px-3 py-1 text-xs text-base-content/70">💬 {p.priceLabel}</span>
                       </div>
 
-                      <div className="mt-6 flex flex-col sm:flex-row sm:justify-center gap-3">
-                        <a href="#contact" className="btn btn-primary border-none">
+                      <div className="mt-6 flex justify-center">
+                        <a href={quoteHref} className="btn btn-primary border-none">
                           Get a Quote
-                        </a>
-                        <a href="#contact" className="btn btn-ghost border border-base-content/26 hover:border-primary/38 hover:bg-transparent dark:border-base-content/28 dark:hover:border-primary/42 transition-colors duration-300">
-                          Talk to expert
                         </a>
                       </div>
                     </div>

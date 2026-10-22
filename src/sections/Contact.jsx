@@ -12,6 +12,7 @@ import ScrollParallax from "../components/ScrollParallax.jsx";
 
 /* ─── Shared easing ─────────────────────────────────────── */
 const EASE = [0.4, 0, 0.2, 1];
+const PACKAGE_OPTIONS = ["Essential", "Professional", "E-commerce & Custom"];
 
 /* ─── Card: lift + blue-glow on hover ───────────────────── */
 const cardVariants = {
@@ -44,6 +45,7 @@ export default function Contact() {
   /* ── Form state ─────────────────────────────────────────── */
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState("");
   const [message, setMessage] = useState("");
 
   /* ── Captcha + Honeypot ─────────────────────────────────── */
@@ -71,6 +73,10 @@ export default function Contact() {
     setCaptchaError(false);
   };
   useEffect(() => { regen(); }, []);
+  useEffect(() => {
+    const requestedPackage = new URLSearchParams(window.location.search).get("package");
+    if (PACKAGE_OPTIONS.includes(requestedPackage)) setSelectedPackage(requestedPackage);
+  }, []);
 
   const captchaOK = parseInt(answer, 10) === a + b;
 
@@ -86,7 +92,7 @@ export default function Contact() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message, service: selectedPackage || undefined }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "Send failed");
@@ -261,6 +267,21 @@ export default function Contact() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+              <div className="space-y-2">
+                <label htmlFor="contact-package" className="block text-sm font-medium text-base-content/78">
+                  Package you&apos;re interested in <span className="text-base-content/50">(optional)</span>
+                </label>
+                <FocusSelect
+                  id="contact-package"
+                  value={selectedPackage}
+                  onChange={(e) => setSelectedPackage(e.target.value)}
+                >
+                  <option value="">Choose a package</option>
+                  {PACKAGE_OPTIONS.map((packageName) => (
+                    <option key={packageName} value={packageName}>{packageName}</option>
+                  ))}
+                </FocusSelect>
+              </div>
               <FocusTextarea
                 rows={5}
                 placeholder="Your Message"
@@ -394,6 +415,38 @@ function FocusTextarea({ ...props }) {
         } ${focused ? "bg-base-200/40" : ""}`}
         {...props}
       />
+    </motion.div>
+  );
+}
+
+/** Select with the same focus treatment as the contact inputs. */
+function FocusSelect({ children, ...props }) {
+  const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const active = focused || hovered;
+
+  return (
+    <motion.div
+      animate={{
+        boxShadow: focused
+          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
+          : "0 0 0 0px rgb(var(--brand) / 0)",
+      }}
+      transition={{ duration: 0.22 }}
+      className="rounded-lg"
+    >
+      <select
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={`select select-bordered h-12 w-full rounded-lg transition-all duration-300 ${
+          active ? "border-[rgb(var(--brand))]" : ""
+        } ${focused ? "bg-base-200/40" : ""}`}
+        {...props}
+      >
+        {children}
+      </select>
     </motion.div>
   );
 }
