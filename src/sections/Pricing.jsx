@@ -31,7 +31,7 @@ export default function Pricing() {
           <div className="mx-auto mt-6 h-[3px] w-24 rounded-full bg-gradient-to-r from-[rgb(var(--brand)/0.9)] via-[rgb(var(--brand)/0.6)] to-[rgb(var(--brand)/0.9)]" />
         </div>
 
-        <div className="mt-14 grid gap-6 sm:gap-8 md:grid-cols-3 justify-center">
+        <div className="mt-14 grid items-stretch gap-6 sm:gap-8 md:grid-cols-3">
           {pricing.map((p, i) => {
             const isPopular = !!p.popular;
             const isPro = (p.name || "").toLowerCase() === "professional";
@@ -41,19 +41,21 @@ export default function Pricing() {
             const borderGradient = isPro
               ? "before:opacity-100 before:bg-[conic-gradient(from_-60deg_at_0%_0%,rgba(59,130,246,0.95)_0deg,rgba(59,130,246,0.60)_210deg,transparent_330deg)]"
               : "before:opacity-100 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.78),rgba(59,130,246,0.32),transparent_220deg)]";
-            const lift = isPopular ? "md:scale-[1.02] hover:md:scale-[1.04]" : "hover:-translate-y-1";
+            const lift = "hover:-translate-y-1";
+            // Keep the featured plan visually elevated on desktop without changing its shared card dimensions.
+            const featuredOffset = isPro ? "md:-translate-y-4 md:hover:-translate-y-5" : "";
             const proGlow = isPro
-              ? " z-[1] md:scale-[1.08] hover:md:scale-[1.1] ring-6 ring-[rgb(var(--brand)/0.9)] [box-shadow:0_0_100px_-10px_rgba(59,130,246,0.75)] after:absolute after:inset-[-14%] after:-z-20 after:rounded-[32px] after:blur-3xl after:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(59,130,246,0.3),transparent_70%)]"
+              ? "z-[1] ring-2 ring-[rgb(var(--brand)/0.68)] [box-shadow:0_0_72px_-16px_rgba(59,130,246,0.68)] after:absolute after:inset-[-14%] after:-z-20 after:rounded-[32px] after:blur-3xl after:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(59,130,246,0.24),transparent_70%)]"
               : "";
-            const cardOuter = [frameBase, framePadding, borderBase, borderGradient, lift, proGlow, "max-w-sm mx-auto"].join(" ");
+            const cardOuter = [frameBase, framePadding, borderBase, borderGradient, lift, featuredOffset, proGlow, "h-full w-full max-w-sm mx-auto"].join(" ");
             const innerLift = isPro
               ? "shadow-[0_22px_54px_-18px_rgba(0,0,0,0.6),0_0_0_1px_oklch(0.4_0.02_265_/_0.48)]"
               : "ring-1 ring-inset ring-base-300/50 shadow-[0_36px_88px_-12px_rgba(0,0,0,0.68),0_0_0_1px_oklch(0.46_0.02_265_/_0.55)]";
 
             return (
-              <Reveal key={i} from="up" distance={24} delay={i * 0.08}>
+              <Reveal key={i} from="up" distance={24} delay={i * 0.08} className="h-full">
                 <article className={cardOuter}>
-                  <div className={`relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[500px] md:min-h-[580px]`}>
+                  <div className={`relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[620px] md:min-h-[650px]`}>
                     <div aria-hidden className="absolute inset-0 -z-10">
                       <div className="absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_30%,#000,transparent_75%)] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(59,130,246,0.14),transparent_65%)]" />
                     </div>
@@ -73,7 +75,7 @@ export default function Pricing() {
 
                     <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
                       <div className="text-center">
-                        <div className="text-[11px] uppercase tracking-[0.22em] text-base-content/65">Plan</div>
+                        <div className="text-[11px] uppercase tracking-[0.22em] text-base-content/65">{p.idealFor || "Plan"}</div>
                         <h3 className={`mt-1 text-2xl md:text-3xl font-bold leading-tight bg-clip-text text-transparent ${
                           isPro
                             ? "bg-gradient-to-r from-[rgb(var(--brand)/0.85)] via-[rgb(var(--brand))] to-[rgb(var(--brand)/0.80)]"
@@ -81,6 +83,22 @@ export default function Pricing() {
                               ? "bg-gradient-to-r from-[rgb(var(--brand))] via-[rgb(var(--brand)/0.85)] to-[rgb(var(--brand))]"
                               : "bg-gradient-to-r from-base-content to-base-content/70"
                         }`}>{p.name}</h3>
+                        <div className="mt-4 min-h-[76px]">
+                          {p.startingPrice ? (
+                            <div aria-label={`Starting from ${p.startingPrice} ${p.priceCurrency}`}>
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/62">Starting from</p>
+                              <p className="mt-1 text-3xl font-extrabold tracking-tight text-base-content">
+                                {p.startingPrice}<span className="ml-1 text-sm font-semibold text-base-content/66">{p.priceCurrency}</span>
+                              </p>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/62">Flexible pricing</p>
+                              <p className="mt-1 text-2xl font-extrabold tracking-tight text-base-content">{p.quoteTitle}</p>
+                              <p className="mt-1 text-xs leading-5 text-base-content/62">{p.quoteDetail}</p>
+                            </div>
+                          )}
+                        </div>
                         <p className="mt-3 text-[15px] md:text-base leading-relaxed text-base-content/88 font-medium">{p.tagline}</p>
                       </div>
 

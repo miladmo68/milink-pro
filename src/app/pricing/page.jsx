@@ -1,9 +1,13 @@
 import PricingPageContent from "./PricingPageContent.jsx";
+import { pricing } from "../../data/content.js";
+
+const essentialPackage = pricing.find((plan) => plan.name === "Essential");
+const essentialStartingPrice = `${essentialPackage.startingPrice} ${essentialPackage.priceCurrency}`;
 
 export const metadata = {
-  title: "Pricing & Packages — Website & E-Commerce Plans",
+  title: `Website Pricing — One-Page Websites From ${essentialStartingPrice}`,
   description:
-    "Essential, Professional, and Enterprise website packages. Custom quotes for web design, e-commerce, SEO, and ongoing support in Toronto.",
+    `Toronto and GTA one-page business websites starting from ${essentialStartingPrice}. Explore Essential, Professional, and e-commerce website packages.`,
   alternates: {
     canonical: "https://milink.ca/pricing",
   },

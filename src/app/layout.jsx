@@ -1,6 +1,6 @@
 import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
-import { services } from "../data/content.js";
+import { pricing, services } from "../data/content.js";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -21,6 +21,9 @@ const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
 const ORGANIZATION_ID = `${BASE_URL}/#organization`;
 const LOCAL_BUSINESS_ID = `${BASE_URL}/#localbusiness`;
 const WEBSITE_ID = `${BASE_URL}/#website`;
+const essentialPackage = pricing.find((plan) => plan.name === "Essential");
+const ESSENTIAL_STARTING_PRICE = Number(essentialPackage.startingPrice.replace(/[^\d.]/g, ""));
+const ESSENTIAL_PRICE_LABEL = `${essentialPackage.startingPrice} ${essentialPackage.priceCurrency}`;
 const SERVICE_AREAS = [
   { "@type": "City", name: "Toronto" },
   { "@type": "AdministrativeArea", name: "Greater Toronto Area" },
@@ -43,7 +46,7 @@ export const metadata = {
     template: "%s | MILINK",
   },
   description:
-    "Toronto web design agency creating high-performing websites, e-commerce stores, SEO, UI/UX, branding, and ongoing support.",
+    `Toronto web design agency building one-page business websites from ${ESSENTIAL_PRICE_LABEL}, plus e-commerce, SEO, UI/UX, branding, and ongoing support.`,
   keywords: [
     "web design Toronto",
     "e-commerce development",
@@ -53,6 +56,8 @@ export const metadata = {
     "Shopify",
     "WordPress",
     "website maintenance",
+    "one-page website Toronto",
+    "website from $399 CAD",
   ],
   authors: [{ name: "Milink Digital Agency", url: BASE_URL }],
   creator: "Milink Digital Agency",
@@ -65,7 +70,7 @@ export const metadata = {
     siteName: "MILINK",
     title: "MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding",
     description:
-      "Premium websites & E-Commerce Solutions, SEO, UI/UX & Branding. Toronto.",
+      `One-page business websites from ${ESSENTIAL_PRICE_LABEL}, plus e-commerce, SEO, UI/UX and branding in Toronto.`,
     images: [
       {
         url: DEFAULT_IMAGE,
@@ -81,7 +86,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding",
     description:
-      "Premium websites & E-Commerce Solutions, SEO, UI/UX & Branding.",
+      `One-page business websites from ${ESSENTIAL_PRICE_LABEL}, plus e-commerce, SEO, UI/UX and branding.`,
     images: [DEFAULT_IMAGE],
   },
   robots: {
@@ -123,6 +128,21 @@ const jsonLd = {
       },
       areaServed: SERVICE_AREAS,
       sameAs: ["https://www.instagram.com/milink.ca"],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Website packages",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            name: "Essential one-page website",
+            price: ESSENTIAL_STARTING_PRICE,
+            priceCurrency: essentialPackage.priceCurrency,
+            url: `${BASE_URL}/#pricing`,
+            description:
+              "Starting price for a polished, responsive one-page business website with a contact form and essential on-page SEO.",
+          },
+        ],
+      },
     },
     {
       "@type": "WebSite",

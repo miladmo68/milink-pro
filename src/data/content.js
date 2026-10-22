@@ -190,46 +190,66 @@ export const work = [
 export const pricing = [
   {
     name: "Essential",
-    priceLabel: "Contact us for a quote",
+    idealFor: "Best for getting online fast",
+    startingPrice: "$399",
+    priceCurrency: "CAD",
+    priceLabel: "Clear scope before we begin",
     tagline:
-      "A polished one-page website for businesses ready to build a professional online presence.",
+      "A polished one-page website for businesses that need a clear, professional online presence.",
     items: [
       "Custom one-page website tailored to your business",
       "Mobile-friendly design for every screen",
       "Clear sections for your services, story, and contact details",
-      "A simple way for visitors to get in touch",
+      "Contact form so visitors can reach you",
       "Essential on-page SEO setup",
+      "One round of refinements before launch",
+      "Launch-ready setup and testing",
+      "You provide the final text, logo, and images",
     ],
   },
   {
     name: "Professional",
+    idealFor: "For growing businesses",
     popular: true,
     badge: "Most Popular",
-    priceLabel: "Contact us for a quote",
+    startingPrice: "$699",
+    priceCurrency: "CAD",
+    priceLabel: "Clear scope before we begin",
     tagline:
-      "A complete business website that gives your services room to shine and makes it easy for customers to reach you.",
+      "A complete business website with space to explain your services and turn visitors into inquiries.",
     items: [
       "Up to five custom pages",
-      "Dedicated space to showcase your services and work",
-      "Clear navigation and calls to action",
-      "Mobile-friendly design throughout",
-      "On-page SEO foundations for your key pages",
+      "Custom layout built around your brand and services",
+      "Dedicated pages for your services, work, and contact details",
+      "Clear navigation and conversion-focused calls to action",
+      "Space for testimonials, portfolio, or service highlights",
+      "Mobile-friendly design across every page",
+      "Essential on-page SEO across your core pages",
+      "One round of refinements before launch",
     ],
   },
   {
     name: "E-commerce & Custom",
-    priceLabel: "Contact us for a quote",
+    idealFor: "For stores and tailored builds",
+    quoteTitle: "Custom quote",
+    quoteDetail: "Based on your products, features, and goals",
+    priceLabel: "Let’s scope it together",
     tagline:
       "A tailored website or online store built around the way your business works.",
     items: [
       "Shopify or WooCommerce online stores",
-      "Product pages and a clear shopping experience",
+      "Product and collection pages built for easy shopping",
       "Checkout and payment setup",
+      "Mobile-friendly shopping experience",
       "Custom pages and features for your goals",
       "Optional booking, integrations, or multilingual support",
+      "A project scope tailored to your business",
     ],
   },
 ];
+
+const essentialPackage = pricing.find((plan) => plan.name === "Essential");
+const essentialStartingPriceLabel = `${essentialPackage.startingPrice} ${essentialPackage.priceCurrency}`;
 
 export const testimonials = [
   {
@@ -277,7 +297,7 @@ export const testimonials = [
 export const faqs = [
   {
     q: "How much does a website cost?",
-    a: "Every project is different. Pricing depends on the size of the website, design requirements, functionality, content, integrations, and whether you need e-commerce. Milink offers options for one-page websites, multi-page business websites, and e-commerce or custom projects. Tell us what you need and we'll recommend the right scope and provide a clear quote.",
+    a: `Milink's Essential one-page business website starts from ${essentialStartingPriceLabel}. It is designed for businesses that need a polished, mobile-friendly online presence with a contact form and essential on-page SEO. Multi-page, e-commerce, and custom projects are scoped separately so the final scope matches what your business needs.`,
   },
   {
     q: "How long does it take to design and build a website?",
