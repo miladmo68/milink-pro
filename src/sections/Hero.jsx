@@ -251,8 +251,8 @@ export default function Hero() {
             {/* Supporting copy remains stable while the headline cycles. */}
             <motion.p
               {...fadeUp(0.65)}
-              className="font-body font-light text-[16px] max-w-[620px] mx-auto mb-12 text-center"
-              style={{ color: "var(--text-secondary)", lineHeight: 1.75 }}
+              className="font-body font-light max-w-[680px] mx-auto mb-12 text-center"
+              style={{ color: "var(--text-secondary)", fontSize: "clamp(17px, 1.55vw, 21px)", lineHeight: 1.65 }}
             >
               We design and build high-performance websites that turn visitors into customers — fast, beautiful and made to grow with your business.
             </motion.p>

@@ -1406,8 +1406,8 @@ html[data-theme="dark"] .marketing-site {
    the middle, then the brand blue on the right—bright without turning white. */
 .hero-cycling-word {
   display: inline-block;
-  width: max-content;
-  padding-right: .08em;
+  width: 100%;
+  text-align: center;
   background: linear-gradient(100deg, #dcefff 0%, rgb(var(--brand-accent)) 42%, rgb(var(--brand)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
