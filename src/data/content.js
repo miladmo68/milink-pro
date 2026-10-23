@@ -193,7 +193,6 @@ export const work = [
 export const pricing = [
   {
     name: "Essential",
-    idealFor: "Best for getting online fast",
     startingPrice: "$399",
     priceCurrency: "CAD",
     priceLabel: "Clear scope before we begin",
@@ -212,7 +211,6 @@ export const pricing = [
   },
   {
     name: "Professional",
-    idealFor: "For growing businesses",
     popular: true,
     badge: "Most Popular",
     startingPrice: "$699",
@@ -233,7 +231,6 @@ export const pricing = [
   },
   {
     name: "E-commerce & Custom",
-    idealFor: "For stores and tailored builds",
     quoteTitle: "Custom quote",
     quoteDetail: "Based on your products, features, and goals",
     priceLabel: "Let’s scope it together",
