@@ -31,6 +31,29 @@ export default function Hero() {
   const [videoReady, setVideoReady] = useState(false);
   const reduced = useReducedMotion();
 
+  // Mirrors the reference site's hero-only magnetic CTA behavior. It is kept
+  // off for touch, coarse-pointer, and reduced-motion users.
+  const moveHeroCta = (event) => {
+    if (
+      reduced ||
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) return;
+
+    const target = event.currentTarget;
+    const bounds = target.getBoundingClientRect();
+    const x = event.clientX - (bounds.left + bounds.width / 2);
+    const y = event.clientY - (bounds.top + bounds.height / 2);
+
+    target.style.setProperty("--hero-cta-x", `${(x * 0.22).toFixed(1)}px`);
+    target.style.setProperty("--hero-cta-y", `${(y * 0.32).toFixed(1)}px`);
+  };
+
+  const resetHeroCta = (event) => {
+    event.currentTarget.style.setProperty("--hero-cta-x", "0px");
+    event.currentTarget.style.setProperty("--hero-cta-y", "0px");
+  };
+
   useEffect(() => {
     if (videoRef.current?.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       setVideoReady(true);
@@ -238,27 +261,31 @@ export default function Hero() {
               {...fadeUp(0.8)}
               className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 mb-16 md:mb-20"
             >
-              <motion.a
-                href="#contact"
-                onClick={(e) => { e.preventDefault(); document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" }); }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="marketing-cta marketing-cta--primary w-full sm:w-auto"
-              >
-                Get a Quote
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M7 17L17 7M17 7H7M17 7v10"/>
-                </svg>
-              </motion.a>
-              <motion.a
-                href="#work"
-                onClick={(e) => { e.preventDefault(); document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" }); }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="marketing-cta marketing-cta--secondary w-full sm:w-auto"
-              >
-                See Our Work
-              </motion.a>
+              <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
+                <motion.a
+                  href="#contact"
+                  onClick={(e) => { e.preventDefault(); document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" }); }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="marketing-cta marketing-cta--primary w-full sm:w-auto"
+                >
+                  Get a Quote
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M7 17L17 7M17 7v10"/>
+                  </svg>
+                </motion.a>
+              </div>
+              <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
+                <motion.a
+                  href="#work"
+                  onClick={(e) => { e.preventDefault(); document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" }); }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="marketing-cta marketing-cta--secondary w-full sm:w-auto"
+                >
+                  See Our Work
+                </motion.a>
+              </div>
             </motion.div>
 
             {/* Stats */}

@@ -1139,6 +1139,16 @@ html[data-theme="dark"] .marketing-site {
 }
 .marketing-cta--block { width: 100%; }
 
+/* The two Hero CTAs alone receive the reference's pointer-follow movement.
+   The wrapper leaves the CTA's own hover lift and tap feedback untouched. */
+.hero-cta-magnetic {
+  --hero-cta-x: 0px;
+  --hero-cta-y: 0px;
+  transform: translate3d(var(--hero-cta-x), var(--hero-cta-y), 0);
+  transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .marketing-cta:hover { transform: translateY(-3px); }
   .marketing-cta:hover svg { transform: translateX(4px); }
@@ -1176,6 +1186,7 @@ html[data-theme="dark"] .marketing-site {
   .marketing-cta,
   .marketing-cta svg { transition: none; }
   .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
+  .hero-cta-magnetic { transition: none; }
   .marketing-cta:hover,
   .marketing-cta:active { transform: none; }
 }
