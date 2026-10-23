@@ -1053,6 +1053,116 @@ html[data-theme="dark"] .section-depth-footer {
 }
 .card-bar:hover::before { transform: scaleX(1); }
 
+/* Keep the existing typography and light theme intact. The brighter blue below
+   is intentionally limited to public marketing while the dark theme is active. */
+html[data-theme="dark"] .marketing-site {
+  --brand: 47 123 255;
+  --brand-soft: 92 151 255;
+  --brand-accent: 110 181 255;
+  --brand-deep: 20 55 148;
+}
+.marketing-site .contact-submit-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: .25rem;
+}
+
+/* ============================================================
+   MARKETING CTA SYSTEM
+   ------------------------------------------------------------
+   Scoped opt-in classes for public-site calls to action. This keeps
+   the portal/admin controls on their own dashboard button language.
+   ============================================================ */
+.marketing-cta {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  min-height: 3.375rem;
+  align-items: center;
+  justify-content: center;
+  gap: .625rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0 1.875rem;
+  font-family: inherit;
+  font-size: .9375rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s cubic-bezier(.2,.8,.2,1), background .28s ease, border-color .28s ease, color .28s ease;
+}
+.marketing-cta > * { position: relative; z-index: 1; }
+.marketing-cta svg {
+  flex: none;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.marketing-cta:focus-visible {
+  outline: 2px solid rgb(var(--brand-accent));
+  outline-offset: 3px;
+}
+.marketing-cta:active { transform: translateY(-1px) scale(.985); }
+
+.marketing-cta--primary {
+  color: #fff;
+  border-color: rgb(255 255 255 / .16);
+  background: linear-gradient(180deg, rgb(var(--brand-soft)), rgb(var(--brand)) 56%, rgb(var(--brand-deep)));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), inset 0 -1px 0 rgb(1 25 78 / .35), 0 14px 38px -12px rgb(var(--brand) / .82);
+}
+.marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  width: 36%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .5), transparent);
+  transform: translateX(-140%) skewX(-22deg);
+  animation: marketing-cta-sweep 4s ease-in-out infinite;
+}
+.marketing-cta--secondary {
+  color: var(--text-primary);
+  border-color: var(--btn-secondary-border);
+  background: var(--btn-secondary-bg);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 10px 26px -20px rgb(0 0 0 / .72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.marketing-cta--compact {
+  min-height: 2.875rem;
+  padding: 0 1.375rem;
+  font-size: .875rem;
+}
+.marketing-cta--block { width: 100%; }
+
+@media (hover: hover) and (pointer: fine) {
+  .marketing-cta:hover { transform: translateY(-3px); }
+  .marketing-cta:hover svg { transform: translateX(4px); }
+  .marketing-cta--primary:hover {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .34), inset 0 -1px 0 rgb(1 25 78 / .28), 0 22px 48px -12px rgb(var(--brand) / .9);
+  }
+  .marketing-cta--secondary:hover {
+    border-color: rgb(var(--brand-accent) / .58);
+    background: color-mix(in oklab, var(--btn-secondary-bg) 74%, rgb(var(--brand)));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .13), 0 20px 42px -24px rgb(var(--brand) / .78);
+  }
+}
+
+@keyframes marketing-cta-sweep {
+  from { transform: translateX(-140%) skewX(-22deg); }
+  to { transform: translateX(380%) skewX(-22deg); }
+}
+
+@media (max-width: 640px) {
+  .marketing-cta { min-height: 3.125rem; padding: 0 1.4rem; }
+  .marketing-cta--compact { min-height: 2.75rem; padding: 0 1.15rem; }
+  .marketing-site .contact-submit-row .marketing-cta { width: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bg-orb,
   .bg-orb--accent,
@@ -1063,6 +1173,11 @@ html[data-theme="dark"] .section-depth-footer {
   .card-lift:hover { transform: none; box-shadow: none; }
   .card-sweep:hover::after { left: -150%; }
   .card-bar:hover::before { transform: scaleX(0); }
+  .marketing-cta,
+  .marketing-cta svg { transition: none; }
+  .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
+  .marketing-cta:hover,
+  .marketing-cta:active { transform: none; }
 }
 
 /* Input border polish in dark mode */

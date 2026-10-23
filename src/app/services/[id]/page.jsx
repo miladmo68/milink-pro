@@ -43,7 +43,7 @@ export default function ServiceDetailPage({ params }) {
         </ul>
         <Link
           href="/contact"
-          className="btn btn-primary rounded-full px-8"
+          className="marketing-cta marketing-cta--primary"
         >
           Get a quote
         </Link>

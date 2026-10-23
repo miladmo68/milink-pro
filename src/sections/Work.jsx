@@ -58,7 +58,7 @@ function Modal({ isOpen, onClose, item }) {
             href={href}
             target="_blank"
             rel="noreferrer noopener"
-            className="btn btn-primary px-6"
+            className="marketing-cta marketing-cta--primary marketing-cta--compact"
             aria-label="Open live project"
           >
             Live Project →
@@ -302,7 +302,7 @@ export default function Work() {
                     href={INSTAGRAM_URL}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="btn btn-outline flex items-center gap-2 transition-all duration-300 hover:scale-[1.02]"
+                    className="marketing-cta marketing-cta--secondary marketing-cta--compact"
                   >
                     <Instagram size={18} /> Instagram
                   </a>
@@ -312,7 +312,7 @@ export default function Work() {
                     href={PORTFOLIO_URL}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="btn btn-primary flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_4px_20px_rgb(var(--brand)/0.35)]"
+                    className="marketing-cta marketing-cta--primary marketing-cta--compact"
                   >
                     <Globe size={18} /> Full Portfolio
                   </a>

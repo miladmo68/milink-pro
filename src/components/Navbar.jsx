@@ -149,15 +149,9 @@ export default function Navbar() {
               <span className="h-5 w-px" style={{ background: "var(--surface-border)", opacity: 0.5 }} />
               <motion.a
                 href="/portal"
-                whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full font-display font-bold text-sm no-underline"
-                style={{
-                  background: "var(--accent)",
-                  color: "#fff",
-                  boxShadow: "0 4px 14px rgb(var(--brand) / 0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
-                }}
+                className="marketing-cta marketing-cta--primary marketing-cta--compact no-underline"
               >
                 Client Portal
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -356,8 +350,7 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.34, ease: EASE }}
                 onClick={() => setOpen(false)}
-                className="mt-4 flex items-center justify-center gap-2 px-6 py-4 rounded-full font-display font-bold text-base no-underline"
-                style={{ background: "var(--accent)", color: "#fff" }}
+                className="marketing-cta marketing-cta--primary marketing-cta--block mt-4 no-underline"
               >
                Client Portal ↗
               </motion.a>

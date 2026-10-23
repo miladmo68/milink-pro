@@ -343,8 +343,10 @@ export default function Contact() {
                 </motion.div>
               )}
 
-              {/* ⑥ Shimmer submit button */}
-              <ShimmerButton loading={loading} />
+              {/* ⑥ Submit CTA — right-aligned on larger screens, full-width on mobile. */}
+              <div className="contact-submit-row">
+                <ShimmerButton loading={loading} />
+              </div>
             </form>
           </motion.div>
         </Reveal>
@@ -464,7 +466,7 @@ function ShimmerButton({ loading }) {
         rest: { y: 0 },
         hover: { y: -2, transition: { duration: 0.2, ease: EASE } },
       }}
-      className="btn btn-primary w-full rounded-lg text-lg relative overflow-hidden"
+      className="marketing-cta marketing-cta--primary marketing-cta--manual-shimmer text-lg relative"
     >
       {/* Shimmer sweep — slides left→right on hover */}
       <motion.span

@@ -36,7 +36,7 @@ export default function HomePage() {
   if (authRedirecting) return null;
 
   return (
-    <>
+    <div className="marketing-site">
       <Navbar />
 
       <main>
@@ -98,6 +98,6 @@ export default function HomePage() {
           <Lightbox src={lightbox} onClose={() => setLightbox(null)} />
         )}
       </Suspense>
-    </>
+    </div>
   );
 }

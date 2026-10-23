@@ -123,7 +123,7 @@ export default function Pricing() {
                       </div>
 
                       <div className="mt-6 flex justify-center">
-                        <a href={quoteHref} className="btn btn-primary border-none">
+                        <a href={quoteHref} className="marketing-cta marketing-cta--primary marketing-cta--block">
                           Get a Quote
                         </a>
                       </div>

@@ -241,15 +241,9 @@ export default function Hero() {
               <motion.a
                 href="#contact"
                 onClick={(e) => { e.preventDefault(); document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" }); }}
-                whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-display font-bold text-sm no-underline w-full sm:w-auto"
-                style={{
-                  background: "var(--accent)",
-                  color: "#fff",
-                  boxShadow: "0 10px 28px rgb(var(--brand) / 0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
-                }}
+                className="marketing-cta marketing-cta--primary w-full sm:w-auto"
               >
                 Get a Quote
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -259,16 +253,9 @@ export default function Hero() {
               <motion.a
                 href="#work"
                 onClick={(e) => { e.preventDefault(); document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" }); }}
-                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-display font-bold text-sm no-underline w-full sm:w-auto"
-                style={{
-                  background: "var(--btn-secondary-bg)",
-                  color: "var(--text-primary)",
-                  border: "1px solid var(--btn-secondary-border)",
-                  backdropFilter: "blur(6px)",
-                }}
+                className="marketing-cta marketing-cta--secondary w-full sm:w-auto"
               >
                 See Our Work
               </motion.a>
