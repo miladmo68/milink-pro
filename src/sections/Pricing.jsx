@@ -76,7 +76,7 @@ export default function Pricing() {
 
                     <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
                       <div className="text-center">
-                        <h3 className={`text-2xl md:text-3xl font-bold leading-tight bg-clip-text text-transparent ${
+                        <h3 className={`text-[30px] md:text-[38px] font-semibold leading-[1] tracking-[-0.035em] bg-clip-text text-transparent ${
                           isPro
                             ? "bg-gradient-to-r from-[rgb(var(--brand)/0.85)] via-[rgb(var(--brand))] to-[rgb(var(--brand)/0.80)]"
                             : isPopular

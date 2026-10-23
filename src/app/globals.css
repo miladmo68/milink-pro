@@ -1069,8 +1069,10 @@ html[data-theme="dark"] .marketing-site .marketing-navy-surface {
   background: #0B1429 !important;
   background-color: #0B1429 !important;
 }
-html[data-theme="dark"] .marketing-site .marketing-navy-footer {
-  background: #0B1429 !important;
+/* Marketing navigation and CTAs are always visibly interactive. Scoped so the
+   dashboard/portal retain their independent control language. */
+.marketing-site :is(a[href], button:not(:disabled), [role="button"]) {
+  cursor: pointer;
 }
 
 /* Services cards: reference-inspired interaction, while retaining MiLink's
