@@ -1149,6 +1149,27 @@ html[data-theme="dark"] .marketing-site {
   will-change: transform;
 }
 
+/* A local cursor-follow glow for the Hero background. It deliberately sits
+   behind Hero content and is unavailable to touch/reduced-motion users. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-pointer-glow::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--hero-glow-opacity, 0);
+    background: radial-gradient(
+      35rem circle at var(--hero-glow-x, 50%) var(--hero-glow-y, 42%),
+      rgb(var(--brand-accent) / .2) 0%,
+      rgb(var(--brand) / .1) 30%,
+      transparent 64%
+    );
+    mix-blend-mode: screen;
+    transition: opacity .4s ease;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .marketing-cta:hover { transform: translateY(-3px); }
   .marketing-cta:hover svg { transform: translateX(4px); }
@@ -1187,6 +1208,7 @@ html[data-theme="dark"] .marketing-site {
   .marketing-cta svg { transition: none; }
   .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
   .hero-cta-magnetic { transition: none; }
+  .hero-pointer-glow::after { display: none; }
   .marketing-cta:hover,
   .marketing-cta:active { transform: none; }
 }

@@ -54,6 +54,26 @@ export default function Hero() {
     event.currentTarget.style.setProperty("--hero-cta-y", "0px");
   };
 
+  // This is a Hero background treatment, not a replacement for the native
+  // cursor. It is intentionally desktop/fine-pointer only.
+  const moveHeroGlow = (event) => {
+    if (
+      reduced ||
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) return;
+
+    const target = event.currentTarget;
+    const bounds = target.getBoundingClientRect();
+    target.style.setProperty("--hero-glow-x", `${(event.clientX - bounds.left).toFixed(1)}px`);
+    target.style.setProperty("--hero-glow-y", `${(event.clientY - bounds.top).toFixed(1)}px`);
+    target.style.setProperty("--hero-glow-opacity", "1");
+  };
+
+  const resetHeroGlow = (event) => {
+    event.currentTarget.style.setProperty("--hero-glow-opacity", "0");
+  };
+
   useEffect(() => {
     if (videoRef.current?.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       setVideoReady(true);
@@ -79,7 +99,9 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative z-0 bg-transparent min-h-screen flex flex-col justify-end lg:justify-center overflow-hidden"
+      className="hero-pointer-glow relative z-0 bg-transparent min-h-screen flex flex-col justify-end lg:justify-center overflow-hidden"
+      onPointerMove={moveHeroGlow}
+      onPointerLeave={resetHeroGlow}
     >
       {/* ===== Background ===== */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -270,8 +292,8 @@ export default function Hero() {
                   className="marketing-cta marketing-cta--primary w-full sm:w-auto"
                 >
                   Get a Quote
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <path d="M7 17L17 7M17 7v10"/>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6"/>
                   </svg>
                 </motion.a>
               </div>

@@ -154,9 +154,6 @@ export default function Navbar() {
                 className="marketing-cta marketing-cta--primary marketing-cta--compact no-underline"
               >
                 Client Portal
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M7 17L17 7M17 7H7M17 7v10"/>
-                </svg>
               </motion.a>
             </div>
           </div>
@@ -352,7 +349,7 @@ export default function Navbar() {
                 onClick={() => setOpen(false)}
                 className="marketing-cta marketing-cta--primary marketing-cta--block mt-4 no-underline"
               >
-               Client Portal ↗
+               Client Portal
               </motion.a>
             </nav>
           </motion.div>
