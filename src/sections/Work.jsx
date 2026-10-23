@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Instagram, Globe, Link as LinkIcon, X } from "lucide-react";
+import { ExternalLink, Globe, Instagram, Maximize2, Link as LinkIcon } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import ScrollParallax from "../components/ScrollParallax.jsx";
 import { motion } from "framer-motion";
@@ -16,54 +16,37 @@ function Modal({ isOpen, onClose, item }) {
     if (!isOpen) return;
     const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen || !item) return null;
 
-  const { title, img, liveUrl } = item;
-  const href = liveUrl || "#";
+  const { title, img } = item;
 
   return (
     <div
       className="fixed inset-0 z-[999] flex items-center justify-center"
       aria-modal="true"
       role="dialog"
+      aria-labelledby="work-preview-title"
     >
       <button
         className="absolute inset-0 bg-[color:var(--scrim)] backdrop-blur-sm"
         onClick={onClose}
         aria-label="Close modal"
       />
-      <div className="relative z-10 w-[min(1000px,92vw)] max-h-[92vh] rounded-2xl overflow-hidden bg-base-100 shadow-2xl ring-1 ring-[color:var(--surface-border)]">
-        <div className="flex items-center justify-between px-4 md:px-6 py-3 border-b border-base-300">
-          <h3 className="text-lg font-bold">{title}</h3>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-md transition hover:bg-[var(--surface-hover)]"
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
-        </div>
-        <div className="relative bg-[var(--bg-main)]">
-          <img
-            src={img}
-            alt={title}
-            className="w-full h-auto max-h-[62vh] object-contain"
-          />
-        </div>
-        <div className="px-4 md:px-6 py-5 grid place-items-center">
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="marketing-cta marketing-cta--primary marketing-cta--compact"
-            aria-label="Open live project"
-          >
-            Live Project →
-          </a>
-        </div>
+      <div className="relative z-10 max-h-[86dvh] max-w-[92vw] overflow-hidden rounded-2xl bg-[var(--bg-main)] shadow-2xl ring-1 ring-[color:var(--surface-border)]">
+        <h3 id="work-preview-title" className="sr-only">{title} preview</h3>
+        <img
+          src={img}
+          alt={title}
+          className="block max-h-[86dvh] max-w-[92vw] object-contain"
+        />
       </div>
     </div>
   );
@@ -197,7 +180,7 @@ export default function Work() {
         </div>
 
         {/* Mobile/Tablet */}
-        <div className="mt-12 grid gap-4 grid-cols-1 lg:hidden">
+        <div className="mt-12 grid grid-cols-1 gap-10 lg:hidden">
           {work.map((w, i) => (
             <Reveal
               key={w.id}
@@ -206,45 +189,43 @@ export default function Work() {
               distance={24}
               delay={i * 0.08}
             >
-              <article
-                className="relative rounded-2xl overflow-hidden shadow-xl ring-1 ring-primary/10 bg-[color:var(--frost-82)] card-lift card-sweep hover:bg-[var(--surface-hover)]"
-                role="button"
-                aria-label={`Open ${w.title}`}
-                onClick={() =>
-                  onOpen({
-                    title: w.title,
-                    text: w.summary,
-                    img: w.cover,
-                    liveUrl: w.liveUrl,
-                  })
-                }
-              >
-                <img
-                  src={w.cover}
-                  alt={w.title}
-                  className="w-full h-[240px] sm:h-[260px] object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[oklch(0.118_0.011_266_/_0.82)] pointer-events-none" />
-                <h3 className="absolute left-4 bottom-4 z-10 text-base font-bold text-white drop-shadow">
-                  {w.title}
-                </h3>
-                {w.liveUrl && (
-                  <a
-                    href={w.liveUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    onClick={(e) => e.stopPropagation()}
-                    className="
-                      absolute right-4 bottom-4 z-10
-                      size-[44px] rounded-full border grid place-items-center
-                      border-[color:var(--surface-border)] bg-[color:var(--frost-72)] backdrop-blur-[1px]
-                    "
-                    aria-label={`${w.title} live link`}
-                  >
-                    <LinkIcon size={20} className="text-white" />
-                  </a>
-                )}
+              <article className="work-mobile-card">
+                <button
+                  type="button"
+                  className="work-mobile-preview"
+                  aria-label={`Preview ${w.title} full screen`}
+                  onClick={() =>
+                    onOpen({
+                      title: w.title,
+                      text: w.summary,
+                      img: w.cover,
+                      liveUrl: w.liveUrl,
+                    })
+                  }
+                >
+                  <img src={w.cover} alt={w.title} loading="lazy" />
+                  <span className="work-mobile-preview-label">
+                    Preview full screen <Maximize2 size={14} aria-hidden="true" />
+                  </span>
+                </button>
+                <div className="work-mobile-caption">
+                  <div>
+                    <h3>{w.title}</h3>
+                    <p>{w.summary}</p>
+                  </div>
+                  {w.liveUrl && (
+                    <a
+                      href={w.liveUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="work-mobile-live-link"
+                      aria-label={`Visit ${w.title} live site`}
+                    >
+                      <span>Visit live site</span>
+                      <ExternalLink size={16} aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
               </article>
             </Reveal>
           ))}

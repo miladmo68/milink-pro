@@ -1140,6 +1140,128 @@ html[data-theme="dark"] .marketing-site {
 }
 .marketing-cta--block { width: 100%; }
 
+/* ============================================================
+   MOBILE WORK PRESENTATION
+   ------------------------------------------------------------
+   The portfolio remains a vertical, one-project-at-a-time flow on
+   touch screens. The image has its own explicit preview affordance;
+   the caption and live-site action stay outside it, so each action
+   has a clear, non-conflicting target.
+   ============================================================ */
+.work-mobile-card {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-primary);
+}
+.work-mobile-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 1.375rem;
+  background: var(--bg-main);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 20px 46px -30px rgb(0 0 0 / .66);
+  cursor: zoom-in;
+  text-align: left;
+}
+.work-mobile-preview::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 48%, rgb(2 6 23 / .62) 100%);
+}
+.work-mobile-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .5s ease;
+}
+.work-mobile-preview-label {
+  position: absolute;
+  z-index: 1;
+  right: .875rem;
+  bottom: .875rem;
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: .375rem;
+  padding: 0 .75rem;
+  border: 1px solid rgb(255 255 255 / .24);
+  border-radius: 999px;
+  background: rgb(3 10 22 / .58);
+  box-shadow: 0 8px 22px rgb(2 6 23 / .24);
+  color: #fff;
+  font-size: .6875rem;
+  font-weight: 750;
+  letter-spacing: .01em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.work-mobile-caption {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem;
+  padding: 1rem .125rem 0;
+}
+.work-mobile-caption h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  line-height: 1.15;
+}
+.work-mobile-caption p {
+  display: -webkit-box;
+  margin: .375rem 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: .8125rem;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.work-mobile-live-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: .4375rem;
+  padding: 0 .8125rem;
+  border: 1px solid rgb(var(--brand-accent) / .34);
+  border-radius: 999px;
+  background: rgb(var(--brand) / .1);
+  color: rgb(var(--brand-accent));
+  font-size: .6875rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+.work-mobile-live-link svg { flex: none; }
+.work-mobile-preview:focus-visible,
+.work-mobile-live-link:focus-visible {
+  outline: 2px solid rgb(var(--brand-accent));
+  outline-offset: -3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .work-mobile-preview:hover img { filter: saturate(1.06) brightness(1.06); transform: scale(1.035); }
+  .work-mobile-live-link:hover { border-color: rgb(var(--brand-accent) / .72); background: rgb(var(--brand) / .18); transform: translateY(-2px); }
+}
+@media (max-width: 420px) {
+  .work-mobile-caption { gap: .75rem; padding: 1rem; }
+  .work-mobile-live-link { width: 2.75rem; justify-content: center; padding: 0; }
+  .work-mobile-live-link span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
 /* Public-site WhatsApp launcher — intentionally scoped away from Admin/Portal. */
 .marketing-whatsapp-float {
   position: fixed;
@@ -1359,7 +1481,9 @@ html[data-theme="dark"] .marketing-site {
   .marketing-cta,
   .marketing-cta svg,
   .marketing-whatsapp-float,
-  .marketing-whatsapp-float svg { transition: none; }
+  .marketing-whatsapp-float svg,
+  .work-mobile-preview img,
+  .work-mobile-live-link { transition: none; }
   .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
   .marketing-whatsapp-float::after { display: none; }
   .hero-cta-magnetic { transition: none; }
