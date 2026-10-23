@@ -25,6 +25,8 @@ The current homepage FAQ, its `FAQPage` JSON-LD, its homepage anchor, and the He
 
 **Follow-up explicit marketing exception (2026-10-23):** In dark mode only, the homepage's See More Work CTA card, all three Pricing package cards, both Contact cards, and the global Footer use the same explicit `#0B1429` surface as Services. This is scoped via `marketing-navy-surface` and `marketing-navy-footer`; it does not alter their copy, dimensions, controls, hover behavior, section backgrounds, light theme, or any dashboard surface. The Contact Info and Send a Message cards keep their existing card-surface border and inset highlight so they remain clearly separated from the Contact section field. The Contact heading stack has `px-5` below the `sm` breakpoint to keep its supporting line safely inset on narrow mobile screens.
 
+**Contact channel refinement (2026-10-23):** The four Contact Info channels (Address, Instagram, Phone, and WhatsApp) are full-width individual links styled after the supplied reference: a 76px minimum-height card with a 20px radius, subtle border and translucent fill, 48px icon cell, uppercase field label, and short hover x-offset / brighter border. Address opens a GTA map search, while the existing Instagram, telephone, and WhatsApp destinations—including WhatsApp's mobile deep-link fallback—are preserved. This is limited to the Contact Info channel list.
+
 ### Permitted dashboard scope
 
 - `src/app/portal/**`, `src/app/admin/**`, `/auth/callback`, `/forgot-password`, `/reset-password`.

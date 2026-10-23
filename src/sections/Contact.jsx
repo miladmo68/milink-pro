@@ -111,29 +111,24 @@ export default function Contact() {
       key: "address",
       icon: <MapPinIcon className="h-5 w-5 text-primary" />,
       label: "Address",
-      content: <p className="text-sm text-base-content/78">GTA, Ontario, Canada</p>,
+      value: "GTA, Ontario, Canada",
+      href: "https://www.google.com/maps/search/?api=1&query=GTA%2C%20Ontario%2C%20Canada",
+      external: true,
     },
     {
       key: "instagram",
       icon: <Instagram className="h-5 w-5 text-primary" aria-hidden="true" />,
       label: "Instagram",
-      content: (
-        <a href="https://instagram.com/milink.ca" target="_blank" rel="noopener noreferrer"
-          className="link link-hover text-sm text-base-content/78" aria-label="Instagram milink.ca">
-          @milink.ca
-        </a>
-      ),
+      value: "@milink.ca",
+      href: "https://instagram.com/milink.ca",
+      external: true,
     },
     {
       key: "phone",
       icon: <PhoneIcon className="h-5 w-5 text-primary" />,
       label: "Phone",
-      content: (
-        <a href="tel:+14376003139" className="link link-hover text-sm text-base-content/78"
-          aria-label="Call +1 (437) 600-3139">
-          +1 (437) 600-3139
-        </a>
-      ),
+      value: "+1 (437) 600-3139",
+      href: "tel:+14376003139",
     },
     {
       key: "whatsapp",
@@ -144,18 +139,15 @@ export default function Contact() {
         </svg>
       ),
       label: "WhatsApp",
-      content: (
-        <a href={WA_LINK} target="_blank" rel="noopener noreferrer"
-          className="link link-hover text-sm text-base-content/78" aria-label="Chat on WhatsApp"
-          onClick={(e) => {
-            if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-              e.preventDefault();
-              window.location.href = WA_MOBILE_FALLBACK;
-            }
-          }}>
-          Chat on WhatsApp
-        </a>
-      ),
+      value: "Chat on WhatsApp",
+      href: WA_LINK,
+      external: true,
+      onClick: (event) => {
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          event.preventDefault();
+          window.location.href = WA_MOBILE_FALLBACK;
+        }
+      },
     },
   ];
 
@@ -210,28 +202,32 @@ export default function Contact() {
             </div>
 
             {/* ④ Contact rows — staggered fadeInLeft + row hover nudge */}
-            <ul className="space-y-6">
-              {contactItems.map(({ key, icon, label, content }, i) => (
+            <ul className="grid gap-3.5">
+              {contactItems.map(({ key, icon, label, value, href, external, onClick }, i) => (
                 <Reveal key={key} from="up" distance={18} delay={0.12 + i * 0.08}>
-                  <motion.li
+                  <motion.a
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    aria-label={`${label}: ${value}`}
+                    onClick={onClick}
                     variants={rowVariants}
                     initial="rest"
                     whileHover="hover"
-                    className="flex items-center gap-4"
+                    className="flex min-h-[76px] cursor-pointer items-center gap-[18px] rounded-[20px] border border-base-content/10 bg-base-100/5 px-[22px] py-[18px] no-underline transition-colors duration-300 hover:border-primary/70 hover:bg-base-100/10"
                   >
-                    {/* Icon bubble */}
                     <motion.div
                       variants={iconVariants}
-                      className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[15px] bg-primary/10"
                       style={{ transition: "background 0.3s" }}
                     >
                       {icon}
                     </motion.div>
                     <div>
-                      <p className="font-semibold text-sm">{label}</p>
-                      {content}
+                      <p className="text-xs font-medium uppercase tracking-[0.12em] text-base-content/58">{label}</p>
+                      <p className="mt-0.5 text-[17px] font-semibold text-base-content">{value}</p>
                     </div>
-                  </motion.li>
+                  </motion.a>
                 </Reveal>
               ))}
             </ul>
