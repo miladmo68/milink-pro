@@ -185,13 +185,7 @@ export default function Hero() {
                 WebkitBackdropFilter: "blur(10px)",
               }}
             >
-              <span className="relative flex w-1.5 h-1.5">
-                <span
-                  className="absolute inline-flex h-full w-full rounded-full opacity-70 animate-ping"
-                  style={{ background: "#22c55e" }}
-                />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "#22c55e" }} />
-              </span>
+              <span className="hero-availability-dot" aria-hidden="true" />
               <span
                 className="font-display font-bold uppercase tracking-[0.18em] text-[10px]"
                 style={{ color: "var(--text-secondary)" }}

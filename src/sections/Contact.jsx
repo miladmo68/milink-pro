@@ -343,7 +343,7 @@ export default function Contact() {
                 </motion.div>
               )}
 
-              {/* ⑥ Submit CTA — right-aligned on larger screens, full-width on mobile. */}
+              {/* ⑥ Submit CTA — full-width form action, matching the approved reference. */}
               <div className="contact-submit-row">
                 <ShimmerButton loading={loading} />
               </div>
@@ -453,7 +453,7 @@ function FocusSelect({ children, ...props }) {
   );
 }
 
-/** Button that lifts on hover + has a shimmer sweep */
+/** Contact submit CTA uses the shared primary motion/shimmer treatment. */
 function ShimmerButton({ loading }) {
   return (
     <motion.button
@@ -466,23 +466,9 @@ function ShimmerButton({ loading }) {
         rest: { y: 0 },
         hover: { y: -2, transition: { duration: 0.2, ease: EASE } },
       }}
-      className="marketing-cta marketing-cta--primary marketing-cta--manual-shimmer text-lg relative"
+      className="marketing-cta marketing-cta--primary text-lg relative"
     >
-      {/* Shimmer sweep — slides left→right on hover */}
-      <motion.span
-        aria-hidden="true"
-        variants={{
-          rest: { x: "-110%" },
-          hover: { x: "210%", transition: { duration: 0.52, ease: "easeInOut" } },
-        }}
-        className="absolute inset-y-0 left-0 w-[55%] pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-          transform: "skewX(-15deg)",
-        }}
-      />
-      <span className="relative z-10">
+      <span>
         {loading ? (
           <span className="flex items-center gap-2 justify-center">
             <motion.span
@@ -493,7 +479,12 @@ function ShimmerButton({ loading }) {
             Sending…
           </span>
         ) : (
-          "Send Message"
+          <>
+            Send Message
+            <svg className="inline-block ml-2 align-[-2px]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </>
         )}
       </span>
     </motion.button>
