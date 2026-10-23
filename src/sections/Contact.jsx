@@ -177,7 +177,7 @@ export default function Contact() {
       </ScrollParallax>
 
       {/* ① Header — fade-up to match the intershine .section-head pattern */}
-      <div className="text-center mb-14 space-y-3">
+      <div className="mb-14 space-y-3 px-5 text-center sm:px-0">
         <Reveal from="up" distance={14}>
           <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Contact</div>
         </Reveal>
@@ -200,7 +200,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface card-sweep card-bar"
+            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full card-surface card-sweep card-bar"
           >
             <div>
               <h2 className="text-3xl font-bold">Contact Info</h2>
@@ -244,7 +244,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface card-sweep card-bar"
+            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 h-full card-surface card-sweep card-bar"
           >
             <form onSubmit={handleSubmit} className="space-y-5">
               <h2 className="text-3xl font-bold">Send a Message</h2>
