@@ -1062,6 +1062,17 @@ html[data-theme="dark"] .marketing-site {
   --brand-deep: 20 55 148;
 }
 
+/* The selected marketing cards intentionally share the exact Services surface.
+   This is scoped to the requested cards only; their borders, shadows, content,
+   and interaction styles remain owned by their existing components. */
+html[data-theme="dark"] .marketing-site .marketing-navy-surface {
+  background: #0B1429 !important;
+  background-color: #0B1429 !important;
+}
+html[data-theme="dark"] .marketing-site .marketing-navy-footer {
+  background: #0B1429 !important;
+}
+
 /* Services cards: reference-inspired interaction, while retaining MiLink's
    existing card gradient. Clicking flips for details; hover only adds lift,
    local light, and icon movement so it remains useful on touch devices. */

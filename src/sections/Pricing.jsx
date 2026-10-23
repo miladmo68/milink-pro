@@ -56,7 +56,7 @@ export default function Pricing() {
             return (
               <Reveal key={i} from="up" distance={24} delay={i * 0.08} className="h-full">
                 <article className={cardOuter}>
-                  <div className={`relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[620px] md:min-h-[650px]`}>
+                  <div className={`marketing-navy-surface relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[620px] md:min-h-[650px]`}>
                     <div aria-hidden className="absolute inset-0 -z-10">
                       <div className="absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_30%,#000,transparent_75%)] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(59,130,246,0.14),transparent_65%)]" />
                     </div>

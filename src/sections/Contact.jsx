@@ -200,7 +200,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface card-sweep card-bar"
+            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full dark:!border-0 card-surface card-sweep card-bar"
           >
             <div>
               <h2 className="text-3xl font-bold">Contact Info</h2>
@@ -244,7 +244,7 @@ export default function Contact() {
             variants={cardVariants}
             initial="rest"
             whileHover="hover"
-            className="bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface card-sweep card-bar"
+            className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 h-full dark:!border-0 card-surface card-sweep card-bar"
           >
             <form onSubmit={handleSubmit} className="space-y-5">
               <h2 className="text-3xl font-bold">Send a Message</h2>

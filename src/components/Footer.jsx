@@ -107,7 +107,7 @@ export default function Footer() {
     <>
       <motion.footer
       ref={ref}
-      className={`relative overflow-hidden py-16 border-t border-base-300/80 dark:border-[oklch(0.32_0.02_265_/_0.35)] bg-base-200 dark:!bg-transparent ${
+      className={`marketing-navy-footer relative overflow-hidden py-16 border-t border-base-300/80 dark:border-[oklch(0.32_0.02_265_/_0.35)] bg-base-200 dark:!bg-transparent ${
         reduced ? "" : "will-change-transform"
       }`}
       initial="hidden"

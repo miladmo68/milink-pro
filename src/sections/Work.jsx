@@ -268,7 +268,7 @@ export default function Work() {
         {/* CTA footer */}
         <Reveal from="up" distance={18} delay={0.04} >
           <div className="mt-10">
-            <div className="card bg-base-100 border border-base-300 ring-1 ring-primary/15 shadow-soft transition-all duration-500 hover:shadow-lg hover:ring-primary/25 dark:!border-0 dark:!bg-transparent card-surface">
+            <div className="marketing-navy-surface card bg-base-100 border border-base-300 ring-1 ring-primary/15 shadow-soft transition-all duration-500 hover:shadow-lg hover:ring-primary/25 dark:!border-0 dark:!bg-transparent card-surface">
               <div className="card-body items-center text-center">
                 <h3 className="text-xl md:text-2xl font-extrabold">
                   See More Work
