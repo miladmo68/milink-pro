@@ -1061,6 +1061,180 @@ html[data-theme="dark"] .marketing-site {
   --brand-accent: 110 181 255;
   --brand-deep: 20 55 148;
 }
+
+/* Services cards: reference-inspired interaction, while retaining MiLink's
+   existing card gradient. Clicking flips for details; hover only adds lift,
+   local light, and icon movement so it remains useful on touch devices. */
+.marketing-site .services-card {
+  --service-brand: #0060ff;
+  --service-hi: color-mix(in oklab, var(--service-brand) 60%, white);
+  --service-ice: color-mix(in oklab, var(--service-brand) 24%, white);
+  cursor: pointer;
+  outline: none;
+}
+.marketing-site .service-card__front {
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / .08);
+  box-shadow: inset 0 1px rgb(255 255 255 / .04);
+  transition: transform .55s cubic-bezier(.2,.8,.2,1), border-color .4s, box-shadow .5s;
+}
+.marketing-site .service-card__front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--service-x, 50%) var(--service-y, 0%), color-mix(in oklab, var(--service-brand) 34%, transparent), transparent 70%);
+  transition: opacity .5s ease;
+}
+.marketing-site .services-card:hover .service-card__front,
+.marketing-site .services-card:focus-visible .service-card__front {
+  transform: translateY(-8px);
+  border-color: color-mix(in oklab, var(--service-brand) 55%, transparent);
+  box-shadow: inset 0 1px rgb(255 255 255 / .04), 0 50px 90px -35px rgb(0 0 0 / .95), 0 0 60px -30px var(--service-brand) !important;
+}
+.marketing-site .services-card:hover .service-card__front::before,
+.marketing-site .services-card:focus-visible .service-card__front::before {
+  /* Reference-style local light: it follows the pointer without replacing the
+     base card fill or changing the card to a different solid colour. */
+  opacity: 1;
+}
+.marketing-site .service-card__icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--service-brand) 45%, transparent);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--service-brand) 20%, transparent);
+  color: var(--service-ice);
+  transition: transform .5s cubic-bezier(.2,.8,.2,1), background .4s ease;
+}
+.marketing-site .service-card__icon svg { width: 27px; height: 27px; }
+.marketing-site .services-card:hover .service-card__icon,
+.marketing-site .services-card:focus-visible .service-card__icon {
+  transform: rotate(-8deg) scale(1.08);
+  background: color-mix(in oklab, var(--service-brand) 40%, transparent);
+}
+.marketing-site .service-card__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 44px;
+}
+.marketing-site .service-card__tag {
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--service-ice);
+  border: 1px solid color-mix(in oklab, var(--service-brand) 55%, transparent);
+  background: transparent;
+  transition: background .35s ease, color .35s ease, transform .35s ease;
+}
+.marketing-site .services-card:hover .service-card__tag { transform: translateY(-2px); }
+.marketing-site .service-card__title {
+  max-width: 34ch;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+  font-family: var(--font-bricolage), var(--font-syne), system-ui, sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+.marketing-site .service-card__description {
+  max-width: 34ch;
+  margin: 0 0 24px;
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+.marketing-site .service-card__points {
+  display: grid;
+  gap: 11px;
+  margin-bottom: 0;
+  padding: 22px 0 0;
+  border-top: 1px solid rgb(255 255 255 / .08);
+  color: #9CA7BF;
+  font-size: 14.5px;
+  line-height: 1.35;
+  list-style: none;
+}
+.marketing-site .service-card__points li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.marketing-site .service-card__points li::before {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--service-hi);
+  content: "";
+}
+.marketing-site .service-card__more {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: .45rem;
+  margin-top: 1.35rem;
+  color: var(--text-secondary);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .045em;
+  text-align: center;
+  transition: color .35s ease, transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.marketing-site .service-card__more span {
+  color: var(--service-hi);
+  font-size: .95rem;
+  line-height: 1;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+.marketing-site .services-card:hover .service-card__more,
+.marketing-site .services-card:focus-visible .service-card__more {
+  color: var(--service-ice);
+  transform: translateY(-2px);
+}
+.marketing-site .services-card:hover .service-card__more span,
+.marketing-site .services-card:focus-visible .service-card__more span { transform: translate(2px, -2px); }
+.marketing-site .services-card:focus-visible { border-radius: 28px; box-shadow: 0 0 0 3px rgb(var(--brand-accent) / .45); }
+@media (max-width: 639px) {
+  .marketing-site .service-card__front { padding: 1.5rem; }
+  .marketing-site .service-card__top { margin-bottom: 34px; }
+}
+html[data-theme="light"] .marketing-site .service-card__front { border-color: var(--surface-border); }
+html[data-theme="light"] .marketing-site .service-card__icon {
+  color: rgb(var(--brand-accent));
+  border-color: rgb(var(--brand) / .34);
+  background: rgb(var(--brand) / .10);
+}
+html[data-theme="light"] .marketing-site .service-card__tag {
+  color: var(--text-primary);
+  border-color: rgb(var(--brand) / .4);
+}
+html[data-theme="light"] .marketing-site .service-card__points {
+  border-color: var(--surface-border);
+  color: var(--text-secondary);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-site .service-card__front,
+  .marketing-site .service-card__icon,
+  .marketing-site .service-card__tag,
+  .marketing-site .service-card__points,
+  .marketing-site .service-card__more,
+  .marketing-site .service-card__more span { transition: none; }
+  .marketing-site .services-card:hover .service-card__front { transform: none; }
+  .marketing-site .services-card:hover .service-card__icon,
+  .marketing-site .services-card:hover .service-card__tag { transform: none; }
+}
 .marketing-site .contact-submit-row {
   display: flex;
   width: 100%;

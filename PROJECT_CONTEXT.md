@@ -6,7 +6,7 @@
 
 ### CRITICAL RULE — MARKETING IS FINALIZED AND FROZEN
 
-All Marketing / Landing-page components, styles, copy, animations, SEO metadata, and layouts are **100% finalized and frozen**. This includes `/`, hero sections, services, work, pricing, testimonials, contact, navigation, footer, and marketing route pages.
+All Marketing / Landing-page components, styles, copy, animations, SEO metadata, and layouts are **frozen by default**. This includes `/`, hero sections, services, work, pricing, testimonials, contact, navigation, footer, and marketing route pages.
 
 Under **no circumstances** may future automated or manual work alter, refactor, restyle, reorganize, or otherwise touch marketing files unless the user explicitly and unambiguously authorizes marketing work. Dashboard styling, theming, logic, and bug fixes must be isolated to `/admin`, `/portal`, authentication pages, dashboard-specific API routes, and dashboard-specific wrappers/components.
 
@@ -20,6 +20,8 @@ Under **no circumstances** may future automated or manual work alter, refactor, 
 - Root marketing metadata/structured data, except for an explicitly authorized auth/security continuity fix.
 
 The current homepage FAQ, its `FAQPage` JSON-LD, its homepage anchor, and the Hero counter progressive-enhancement behavior were added under explicit marketing authorization on 2026-10-06. They are now part of the frozen marketing baseline.
+
+**Latest explicit marketing exception (2026-10-23):** `src/sections/Services.jsx`, `src/data/content.js`, and scoped `globals.css` selectors may be refined to match the supplied reference's service-card interaction. The front face follows the reference structure: icon and category tag, title, short description, then the three scoped bullet points separated by a fine rule; maintenance, branding, and UI/UX include the reference category tags. In dark mode, every Services front and detail/flip face uses the single explicit opaque surface colour `#0B1429`; it intentionally does not inherit the generic `card-surface` gradient, so no row or flip state can receive a different charcoal/grey surface. The Services section field itself remains unchanged. Service-card reveal preserves full opacity at both animation states and only translates vertically, preventing card colours from blending with the section field at different scroll positions. `Bricolage Grotesque` is loaded only as `--font-bricolage` and used only for these card titles, so their reference metrics do not change global site typography. A centered “More details ↗” cue makes the click/tap/Enter/Space flip discoverable; it flips to the existing longer-detail back, while mouse leave returns the card to its front. Hover preserves the base card fill while adding the reference local pointer-following light, lift, border/shadow, and icon rotation/scale. This exception does not authorize changes to Hero, Work, Pricing, Testimonials, Contact, navigation, public routes, or dashboard surfaces.
 
 ### Permitted dashboard scope
 

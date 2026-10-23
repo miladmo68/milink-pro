@@ -21,12 +21,13 @@ import ScrollParallax from "../components/ScrollParallax.jsx";
 
 /* ===== Brand palette — values driven by CSS vars in globals.css ===== */
 const BRAND = {
-  baseFrom: "var(--surface-card)",
-  baseVia: "var(--bg-alt)",
-  baseTo: "var(--surface-hover)",
   accent: "rgb(var(--brand-soft))",
-  accentSoft: "rgb(var(--brand-accent))",
 };
+
+// Services has one dark card surface by design. Keeping it as a direct value
+// (rather than inheriting a general-purpose card token) prevents different
+// rows or the flipped face from picking up a separate charcoal gradient.
+const DARK_CARD_SURFACE = "#0B1429";
 
 /* ===== Light palette ===== */
 const BRAND_LIGHT = {
@@ -51,7 +52,10 @@ const iconMap = {
 
 /* ===== Motion variants — fade-up to mirror fairconstruction's universal data-aos="fade-up" ===== */
 const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
+  // Keep the card surface fully opaque at every reveal state. A fading parent
+  // blends its card fill with the blue section behind it, making rows appear
+  // to have different colours while they enter the viewport.
+  hidden: { opacity: 1, y: 24 },
   show: {
     opacity: 1,
     y: 0,
@@ -98,24 +102,26 @@ function FlippyInteractive({ front, back, className = "" }) {
 
   return (
     <div
-      className={`relative ${className}`}
-      style={{ perspective: "1200px", WebkitPerspective: "1200px" }}
+      className={`services-card relative ${className}`}
+      style={{ perspective: "1200px", WebkitPerspective: "1200px", borderRadius: "28px" }}
       tabIndex={0}
       role="button"
       aria-expanded={flipped}
       aria-label="Service card. Press Enter or Space to show or hide details."
-      onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
-      onKeyDown={handleKeyDown}
-      onTouchStart={(e) => {
-        e.stopPropagation();
-        setFlipped((v) => !v);
+      onClick={() => setFlipped((value) => !value)}
+      onPointerMove={(event) => {
+        if (event.pointerType !== "mouse") return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty("--service-x", `${event.clientX - bounds.left}px`);
+        event.currentTarget.style.setProperty("--service-y", `${event.clientY - bounds.top}px`);
       }}
+      onKeyDown={handleKeyDown}
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={{ duration: 0.6, ease: REVEAL_EASE }}
-        className="relative w-full h-full rounded-2xl"
+        className="relative w-full h-full rounded-[28px]"
         style={{
           transformStyle: "preserve-3d",
           WebkitTransformStyle: "preserve-3d",
@@ -123,7 +129,7 @@ function FlippyInteractive({ front, back, className = "" }) {
         }}
       >
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden"
+          className="absolute inset-0 rounded-[28px] overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
@@ -135,7 +141,7 @@ function FlippyInteractive({ front, back, className = "" }) {
         </div>
 
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden"
+          className="absolute inset-0 rounded-[28px] overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
@@ -150,14 +156,12 @@ function FlippyInteractive({ front, back, className = "" }) {
   );
 }
 
-const badgeMotion = {
-  animate: { y: [0, -2, 0], scale: [1, 1.06, 1] },
-  transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
-};
-
 /* ===== ServiceCard ===== */
 function ServiceCard({ data, isLight }) {
   const Icon = iconMap[data.icon] || CodeBracketIcon;
+  const cardBackground = isLight
+    ? `linear-gradient(170deg, ${BRAND_LIGHT.baseTo} 0%, ${BRAND_LIGHT.baseFrom} 100%)`
+    : DARK_CARD_SURFACE;
 
   const bodyRef = useRef(null);
   const [needsScroll, setNeedsScroll] = useState(false);
@@ -185,59 +189,49 @@ function ServiceCard({ data, isLight }) {
 
   const Front = (
     <article
-      className={`relative h-full p-7 rounded-2xl ${frontTextClass}`}
+      className={`service-card__front relative h-full rounded-[28px] p-[34px_32px_32px] ${frontTextClass}`}
       aria-label={`${data.title} front`}
       style={{
-        background: isLight
-          ? `linear-gradient(135deg, ${BRAND_LIGHT.baseFrom} 0%, ${BRAND_LIGHT.baseVia} 55%, ${BRAND_LIGHT.baseTo} 100%)`
-          : `linear-gradient(135deg, ${BRAND.baseFrom} 0%, ${BRAND.baseVia} 55%, ${BRAND.baseTo} 100%)`,
+        background: cardBackground,
         boxShadow: isLight
           ? `0 0 0 1px ${BRAND_LIGHT.ring}, ${BRAND_LIGHT.shadow}`
-          : `0 0 0 1px rgb(var(--brand-soft) / 0.14), 0 2px 6px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.55)`,
+          : undefined,
       }}
     >
-      {data.badge && (
-        <motion.span
-          {...badgeMotion}
-          className="badge absolute right-3 top-3 text-slate-900"
-          style={{ backgroundColor: BRAND.accent, borderColor: "transparent" }}
-        >
-          {data.badge}
-        </motion.span>
-      )}
-
-      <div className="flex h-full flex-col items-center justify-center text-center gap-4 relative z-[1]">
-        <Icon className="h-10 w-10" style={{ color: BRAND.accentSoft }} />
-        <h3 className="text-xl font-semibold">{data.title}</h3>
-        <p className="max-w-[28ch]" style={frontDescStyle}>
+      <div className="relative z-[1] flex h-full flex-col items-start text-left">
+        <div className="service-card__top">
+          <div className="service-card__icon" style={isLight ? { color: "rgb(var(--brand-accent))" } : undefined}>
+            <Icon aria-hidden="true" />
+          </div>
+          {data.badge && <span className="service-card__tag">{data.badge}</span>}
+        </div>
+        <h3 className="service-card__title">{data.title}</h3>
+        <p className="service-card__description" style={frontDescStyle}>
           {data.desc}
         </p>
 
-        <span
-          className="mt-3 text-sm font-medium tracking-wide select-none"
-          style={{ color: BRAND.accent }}
-        >
-          More details
+        {data.bullets?.length > 0 && (
+          <ul className="service-card__points mt-auto w-full">
+            {data.bullets.map((bullet) => (
+              <li key={bullet}>{bullet}</li>
+            ))}
+          </ul>
+        )}
+
+        <span className="service-card__more" aria-hidden="true">
+          More details <span>↗</span>
         </span>
       </div>
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[-60px] bottom-[-60px] w-[260px] h-[260px] rounded-full blur-2xl"
-        style={{
-          opacity: isLight ? 0.14 : 0.12,
-          background: `radial-gradient(50% 50% at 50% 50%, ${BRAND.accentSoft} 0%, rgba(96,165,250,0) 60%)`,
-        }}
-      />
     </article>
   );
 
   /* ========= BACK: already theme-friendly ========= */
   const Back = (
     <article
-      className="relative h-full rounded-2xl bg-base-100/95 text-base-content backdrop-blur border border-base-300 dark:!border-0 card-surface dark:!bg-transparent"
+      className="service-card__back relative h-full rounded-[28px] bg-base-100/95 text-base-content backdrop-blur border border-base-300 dark:!border-0 dark:!bg-transparent"
       aria-label={`${data.title} back`}
       style={{
+        background: cardBackground,
         boxShadow: `0 0 0 1px rgb(var(--brand-soft) / 0.20) inset, 0 12px 40px rgba(0,0,0,0.50)`,
       }}
     >
@@ -279,7 +273,7 @@ function ServiceCard({ data, isLight }) {
 
   return (
     <FlippyInteractive
-      className="h-[320px] sm:h-[340px] md:h-[360px]"
+      className="h-[500px] sm:h-[480px] md:h-[480px]"
       front={Front}
       back={Back}
     />
@@ -330,7 +324,7 @@ export default function Services() {
         <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
       </ScrollParallax>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] -z-10 bg-gradient-to-b from-black/[0.11] to-transparent dark:from-black/[0.50]" aria-hidden />
-      <div className="container mx-auto px-4">
+      <div className="mx-auto w-full max-w-[1240px] px-5 sm:px-10">
         <div className="max-w-2xl mx-auto text-center">
           <Reveal from="up" distance={12}>
             <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">What We Build</div>

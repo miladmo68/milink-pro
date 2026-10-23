@@ -53,6 +53,7 @@ export const services = [
   {
     id: "maint",
     icon: "WrenchScrewdriverIcon",
+    badge: "Care",
     title: "Website Maintenance & Support",
     desc: "Ongoing updates, backups, security monitoring, and support after launch.",
     bullets: [
@@ -66,6 +67,7 @@ export const services = [
   {
     id: "brand",
     icon: "PaintBrushIcon",
+    badge: "Identity",
     title: "Branding & Identity",
     desc: "Logo, typography, colour systems, and a consistent brand foundation.",
     bullets: [
@@ -79,6 +81,7 @@ export const services = [
   {
     id: "ux",
     icon: "DevicePhoneMobileIcon",
+    badge: "Experience",
     title: "UI/UX Design",
     desc: "User flows, wireframes, and interface design for clearer digital experiences.",
     bullets: [
