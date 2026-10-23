@@ -11,7 +11,7 @@ const STATS = [
   { text: "GTA", label: "Based" },
 ];
 
-const ROTATING_WORDS = ["websites", "stores", "brands", "experiences"];
+const HEADLINE_WORDS = ["converts.", "sells.", "ranks.", "lasts."];
 
 const MARQUEE_ITEMS = [
   "Web Design",
@@ -80,11 +80,12 @@ export default function Hero() {
     }
   }, []);
 
-  // Rotating word
+  // The Hero headline follows the reference's calm, full-word cycle. The
+  // supporting sentence is deliberately static so the hierarchy stays clear.
   const [wordIdx, setWordIdx] = useState(0);
   useEffect(() => {
     if (reduced) return;
-    const t = setInterval(() => setWordIdx((i) => (i + 1) % ROTATING_WORDS.length), 2400);
+    const t = setInterval(() => setWordIdx((i) => (i + 1) % HEADLINE_WORDS.length), 3000);
     return () => clearInterval(t);
   }, [reduced]);
 
@@ -171,9 +172,9 @@ export default function Hero() {
 
       {/* ===== Content ===== */}
       <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 pt-24 pb-24 md:pb-32 lg:py-28 w-full">
-        <div className="grid lg:grid-cols-12 gap-10 xl:gap-16 items-center">
+        <div className="grid grid-cols-1 items-center">
           {/* Left column */}
-          <div className="lg:col-span-8">
+          <div className="mx-auto max-w-5xl text-center">
             {/* Eyebrow — premium status capsule */}
             <motion.div
               {...fadeUp(0.2, 16)}
@@ -203,17 +204,19 @@ export default function Hero() {
 
             {/* Title */}
             <h1
-              className="font-display font-black mb-8 text-center sm:text-left"
-              style={{ letterSpacing: "-0.03em", fontSize: "clamp(38px, 8.6vw, 96px)", lineHeight: 0.92 }}
+              aria-label="Build what converts, sells, ranks, and lasts."
+              className="font-display font-black mb-8 text-center"
+              style={{ letterSpacing: "-0.03em", fontSize: "clamp(46px, 9.5vw, 112px)", lineHeight: 0.92 }}
             >
-              <div className="overflow-hidden flex gap-[0.22em] justify-center sm:justify-start">
+              <div className="overflow-hidden flex gap-[0.22em] justify-center">
                 {["Build", "what"].map((w, i) => (
                   <motion.span
                     key={w}
                     initial={reduced ? {} : { opacity: 0, y: 60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.3 + i * 0.09 }}
-                    className="inline-block"
+                  aria-hidden="true"
+                  className="inline-block"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {w}
@@ -225,57 +228,39 @@ export default function Hero() {
                   initial={reduced ? {} : { opacity: 0, y: 60 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.48 }}
-                  className="relative inline-block"
-                  style={{ color: "var(--accent)" }}
+                  className="relative inline-flex overflow-hidden align-bottom"
+                  aria-hidden="true"
                 >
-                  converts.
-                  <motion.span
-                    aria-hidden
-                    initial={reduced ? { scaleX: 1 } : { scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.9, ease: EASE, delay: reduced ? 0 : 1.0 }}
-                    className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full origin-left"
-                    style={{
-                      background: "linear-gradient(90deg, rgb(var(--brand)) 0%, rgb(var(--brand-accent)) 100%)",
-                      boxShadow: "0 0 18px rgb(var(--brand) / 0.55)",
-                    }}
-                  />
+                  <span className="invisible">converts.</span>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={HEADLINE_WORDS[wordIdx]}
+                      initial={reduced ? {} : { opacity: 0, y: "108%" }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reduced ? {} : { opacity: 0, y: "-108%" }}
+                      transition={{ duration: 0.7, ease: [0.7, 0, 0.2, 1] }}
+                      className="hero-cycling-word absolute inset-x-0 top-0"
+                    >
+                      {HEADLINE_WORDS[wordIdx]}
+                    </motion.span>
+                  </AnimatePresence>
                 </motion.span>
               </div>
             </h1>
 
-            {/* Subtitle with rotating word */}
+            {/* Supporting copy remains stable while the headline cycles. */}
             <motion.p
               {...fadeUp(0.65)}
-              className="font-body font-light text-[16px] max-w-[520px] mb-12"
+              className="font-body font-light text-[16px] max-w-[620px] mx-auto mb-12 text-center"
               style={{ color: "var(--text-secondary)", lineHeight: 1.75 }}
             >
-              We design and build high-performance{" "}
-              <span className="relative inline-flex items-baseline align-baseline">
-                <span aria-hidden="true" className="invisible whitespace-nowrap font-medium">
-                  experiences
-                </span>
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={ROTATING_WORDS[wordIdx]}
-                    initial={reduced ? {} : { opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={reduced ? {} : { opacity: 0, y: -8 }}
-                    transition={{ duration: 0.35, ease: EASE }}
-                    className="absolute left-0 right-0 font-display font-bold whitespace-nowrap"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    {ROTATING_WORDS[wordIdx]}
-                  </motion.span>
-                </AnimatePresence>
-              </span>{" "}
-              that turn visitors into customers.
+              We design and build high-performance websites that turn visitors into customers — fast, beautiful and made to grow with your business.
             </motion.p>
 
             {/* CTAs */}
             <motion.div
               {...fadeUp(0.8)}
-              className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 mb-16 md:mb-20"
+              className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-center gap-3 mb-16 md:mb-20"
             >
               <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
                 <motion.a
@@ -305,7 +290,7 @@ export default function Hero() {
             </motion.div>
 
             {/* Stats */}
-            <motion.div {...fadeUp(1.0)} className="flex items-center flex-wrap gap-y-4 justify-center sm:justify-start">
+            <motion.div {...fadeUp(1.0)} className="flex items-center flex-wrap gap-y-4 justify-center">
               {STATS.map((s, i) => (
                 <div key={s.label} className="flex items-center">
                   <div className={i === 0 ? "pr-6" : "px-6"}>
@@ -334,7 +319,7 @@ export default function Hero() {
 
           {/* Right column — vertical editorial accent (desktop only) */}
           <div
-            className="hidden lg:flex lg:col-span-4 relative items-center justify-end"
+            className="hidden"
             aria-hidden="true"
             style={{ minHeight: "440px" }}
           >

@@ -1402,6 +1402,18 @@ html[data-theme="dark"] .marketing-site {
   will-change: transform;
 }
 
+/* Hero keyword cycle: reference-aligned ice on the left, clear sky blue in
+   the middle, then the brand blue on the right—bright without turning white. */
+.hero-cycling-word {
+  display: inline-block;
+  width: max-content;
+  padding-right: .08em;
+  background: linear-gradient(100deg, #dcefff 0%, rgb(var(--brand-accent)) 42%, rgb(var(--brand)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 /* The Hero availability marker follows the reference's expanding green ring. */
 .hero-availability-dot {
   display: inline-flex;
@@ -1487,6 +1499,7 @@ html[data-theme="dark"] .marketing-site {
   .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
   .marketing-whatsapp-float::after { display: none; }
   .hero-cta-magnetic { transition: none; }
+  .hero-cycling-word { background: none; color: rgb(var(--brand-accent)); }
   .hero-pointer-glow::after { display: none; }
   .hero-availability-dot { animation: none; }
   .testimonial-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
