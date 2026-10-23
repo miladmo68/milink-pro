@@ -1140,6 +1140,43 @@ html[data-theme="dark"] .marketing-site {
 }
 .marketing-cta--block { width: 100%; }
 
+/* Public-site WhatsApp launcher — intentionally scoped away from Admin/Portal. */
+.marketing-whatsapp-float {
+  position: fixed;
+  right: 1.375rem;
+  bottom: calc(1.375rem + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: grid;
+  width: 3.75rem;
+  height: 3.75rem;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2fe585, #12b85e);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 18px 40px -10px rgb(18 184 94 / .7);
+  color: #04140b;
+  transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s cubic-bezier(.2,.8,.2,1), filter .3s ease;
+}
+.marketing-whatsapp-float::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(120deg, transparent 25%, rgb(255 255 255 / .32) 50%, transparent 72%);
+  transform: translateX(-130%);
+  transition: transform .55s cubic-bezier(.2,.8,.2,1);
+}
+.marketing-whatsapp-float svg { position: relative; z-index: 1; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.marketing-whatsapp-float:focus-visible { outline: 2px solid #2fe585; outline-offset: 4px; }
+@media (hover: hover) and (pointer: fine) {
+  .marketing-whatsapp-float:hover {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .36), 0 24px 48px -10px rgb(18 184 94 / .82);
+    filter: saturate(1.06);
+    transform: translateY(-4px) scale(1.06);
+  }
+  .marketing-whatsapp-float:hover::after { transform: translateX(130%); }
+  .marketing-whatsapp-float:hover svg { transform: rotate(-5deg) scale(1.05); }
+}
+
 /* ============================================================
    TESTIMONIAL MARQUEE
    One continuous, intentionally paced row. The duplicate group only
@@ -1301,6 +1338,12 @@ html[data-theme="dark"] .marketing-site {
 @media (max-width: 640px) {
   .marketing-cta { min-height: 3.125rem; padding: 0 1.4rem; }
   .marketing-cta--compact { min-height: 2.75rem; padding: 0 1.15rem; }
+  .marketing-whatsapp-float {
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    width: 3.5rem;
+    height: 3.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1314,8 +1357,11 @@ html[data-theme="dark"] .marketing-site {
   .card-sweep:hover::after { left: -150%; }
   .card-bar:hover::before { transform: scaleX(0); }
   .marketing-cta,
-  .marketing-cta svg { transition: none; }
+  .marketing-cta svg,
+  .marketing-whatsapp-float,
+  .marketing-whatsapp-float svg { transition: none; }
   .marketing-cta--primary:not(.marketing-cta--manual-shimmer)::after { animation: none; }
+  .marketing-whatsapp-float::after { display: none; }
   .hero-cta-magnetic { transition: none; }
   .hero-pointer-glow::after { display: none; }
   .hero-availability-dot { animation: none; }

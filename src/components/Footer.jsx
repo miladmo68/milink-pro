@@ -96,8 +96,16 @@ export default function Footer() {
     </div>
   );
 
+  const openWhatsApp = (event) => {
+    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      event.preventDefault();
+      window.location.href = WA_MOBILE_FALLBACK;
+    }
+  };
+
   return (
-    <motion.footer
+    <>
+      <motion.footer
       ref={ref}
       className={`relative overflow-hidden py-16 border-t border-base-300/80 dark:border-[oklch(0.32_0.02_265_/_0.35)] bg-base-200 dark:!bg-transparent ${
         reduced ? "" : "will-change-transform"
@@ -145,6 +153,21 @@ export default function Footer() {
           © {YEAR} Milink. All rights reserved.
         </motion.div>
       </div>
-    </motion.footer>
+      </motion.footer>
+
+      <a
+        href={WA_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with Milink on WhatsApp"
+        className="marketing-whatsapp-float"
+        onClick={openWhatsApp}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M4 20l1.3-4.2A8 8 0 1 1 12 20a8 8 0 0 1-3.8-1L4 20z" />
+          <path d="M9.2 9.2c0 3 2.6 5.6 5.6 5.6l1-1.3-1.9-1-.8.6a3.5 3.5 0 0 1-1.6-1.6l.6-.8-1-1.9z" />
+        </svg>
+      </a>
+    </>
   );
 }
