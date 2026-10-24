@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import Hero from "../sections/Hero.jsx";
 import Services from "../sections/Services.jsx";
+import Process from "../sections/Process.jsx";
 import Work from "../sections/Work.jsx";
 import Pricing from "../sections/Pricing.jsx";
 import Testimonials from "../sections/Testimonials.jsx";
@@ -65,6 +66,11 @@ export default function HomePage() {
         <section aria-label="Selected Work">
           <h2 className="sr-only">Selected Work & Case Studies</h2>
           <Work onOpen={(payload) => setModal(payload)} />
+        </section>
+
+        <section aria-label="How We Work">
+          <h2 className="sr-only">How We Work</h2>
+          <Process />
         </section>
 
         <section aria-label="Pricing & Packages">

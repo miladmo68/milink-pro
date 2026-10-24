@@ -528,6 +528,7 @@ html[data-theme="dark"] {
 /* Force stacking context on sections so -z-10 depth divs paint inside the section, not behind it */
 html[data-theme="dark"] #services,
 html[data-theme="dark"] #work,
+html[data-theme="dark"] #process,
 html[data-theme="dark"] #pricing,
 html[data-theme="dark"] #testimonials,
 html[data-theme="dark"] #faq,
