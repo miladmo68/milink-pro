@@ -121,7 +121,12 @@ export default function Pricing() {
                       </ul>
 
                       <div className="mt-auto flex justify-center pt-14">
-                        <a href={quoteHref} className="marketing-cta marketing-cta--primary marketing-cta--block">
+                        <a
+                          href={quoteHref}
+                          className={`marketing-cta ${
+                            isPro ? "marketing-cta--primary" : "marketing-cta--secondary"
+                          } marketing-cta--block`}
+                        >
                           Get a Quote
                         </a>
                       </div>
