@@ -56,7 +56,7 @@ export default function Pricing() {
             return (
               <Reveal key={i} from="up" distance={24} delay={i * 0.08} className="h-full">
                 <article className={cardOuter}>
-                  <div className={`marketing-navy-surface relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[620px] md:min-h-[650px]`}>
+                  <div className={`marketing-navy-surface relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[540px] md:min-h-[560px]`}>
                     <div aria-hidden className="absolute inset-0 -z-10">
                       <div className="absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_30%,#000,transparent_75%)] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(59,130,246,0.14),transparent_65%)]" />
                     </div>
@@ -74,16 +74,16 @@ export default function Pricing() {
                       </div>
                     )}
 
-                    <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
+                    <div className="relative z-10 flex h-full flex-col p-5 sm:p-6">
                       <div className="text-center">
-                        <h3 className={`text-[30px] md:text-[38px] font-semibold leading-[1] tracking-[-0.035em] bg-clip-text text-transparent ${
+                        <h3 className={`flex min-h-[60px] items-center justify-center text-balance text-[30px] font-semibold leading-[1] tracking-[-0.035em] text-transparent md:min-h-[76px] md:text-[38px] bg-clip-text ${
                           isPro
                             ? "bg-gradient-to-r from-[rgb(var(--brand)/0.85)] via-[rgb(var(--brand))] to-[rgb(var(--brand)/0.80)]"
                             : isPopular
                               ? "bg-gradient-to-r from-[rgb(var(--brand))] via-[rgb(var(--brand)/0.85)] to-[rgb(var(--brand))]"
                               : "bg-gradient-to-r from-base-content to-base-content/70"
                         }`}>{p.name}</h3>
-                        <div className="mt-4 min-h-[76px]">
+                        <div className="mt-3 min-h-[66px]">
                           {p.startingPrice ? (
                             <div aria-label={`Starting from ${p.startingPrice} ${p.priceCurrency}`}>
                               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/62">Starting from</p>
@@ -99,29 +99,28 @@ export default function Pricing() {
                             </div>
                           )}
                         </div>
-                        <p className="mt-3 text-[15px] md:text-base leading-relaxed text-base-content/88 font-medium">{p.tagline}</p>
+                        <p className="mt-2.5 flex min-h-[72px] items-start justify-center text-pretty text-sm leading-6 text-base-content/88 font-medium md:text-[15px]">{p.tagline}</p>
+                        <p className="mt-2 min-h-4 text-[11px] leading-4 text-base-content/55">
+                          {p.scopeNote || "\u00A0"}
+                        </p>
                       </div>
 
-                      <div className="my-5 h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent" />
+                      <div className="my-4 h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent" />
 
-                      <ul className="space-y-3 flex-1">
+                      <ul className="flex-1 space-y-2.5">
                         {p.items.map((item) => (
                           <li key={item} className="flex items-start gap-3">
-                            <span className={`mt-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1 ${
+                            <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ring-1 ${
                               isPro ? "bg-[rgb(var(--brand)/0.10)] ring-[rgb(var(--brand)/0.40)]" : "bg-[rgb(var(--brand)/0.12)] ring-[rgb(var(--brand)/0.30)]"
                             }`}>
-                              <Check className={`h-3.5 w-3.5 ${isPro ? "text-[rgb(var(--brand)/0.95)]" : "text-[rgb(var(--brand)/0.90)]"}`} aria-hidden="true" />
+                              <Check className={`h-3 w-3 ${isPro ? "text-[rgb(var(--brand)/0.95)]" : "text-[rgb(var(--brand)/0.90)]"}`} aria-hidden="true" />
                             </span>
-                            <span className="text-sm md:text-[15px] leading-6 text-base-content/92">{item}</span>
+                            <span className="text-[13px] leading-[1.45] text-base-content/92 md:text-sm">{item}</span>
                           </li>
                         ))}
                       </ul>
 
-                      <div className="mt-6">
-                        <span className="inline-flex items-center gap-2 rounded-full border border-base-content/12 bg-base-200/50 dark:bg-base-200/40 px-3 py-1 text-xs text-base-content/70">💬 {p.priceLabel}</span>
-                      </div>
-
-                      <div className="mt-6 flex justify-center">
+                      <div className="mt-auto flex justify-center pt-14">
                         <a href={quoteHref} className="marketing-cta marketing-cta--primary marketing-cta--block">
                           Get a Quote
                         </a>
