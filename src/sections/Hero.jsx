@@ -25,6 +25,49 @@ const MARQUEE_ITEMS = [
   "Maintenance",
 ];
 
+function HeroStats({ className = "", compact = false }) {
+  const valueSize = compact ? "text-[22px] sm:text-[25px]" : "text-[26px] sm:text-[30px]";
+  const labelSize = compact ? "text-[8px] sm:text-[9px]" : "text-[9px] sm:text-[10px]";
+  return (
+    <div className={`flex items-start justify-center ${compact ? "gap-4 sm:gap-5" : "gap-5 sm:gap-7"} ${className}`}>
+      {STATS.map((s) => (
+        <div key={s.label} className={`${compact ? "min-w-[48px]" : "min-w-[58px]"} text-left`}>
+          {s.text ? (
+            <span className={`block font-display ${valueSize} font-semibold leading-none tracking-[-0.04em]`} style={{ color: "var(--text-primary)" }}>
+              {s.text}
+            </span>
+          ) : (
+            <CountUp
+              to={s.to}
+              suffix={s.suffix}
+              duration={1400}
+              className={`block font-display ${valueSize} font-semibold leading-none tracking-[-0.04em]`}
+              style={{ color: "var(--text-primary)" }}
+            />
+          )}
+          <span className={`mt-1 block font-body ${labelSize} font-semibold uppercase tracking-[0.14em]`} style={{ color: "var(--text-secondary)" }}>
+            {s.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HeroDevicePreview({ src, domain }) {
+  return (
+    <div className="overflow-hidden rounded-[15px] border border-white/15 bg-[#0a0f1e] shadow-[0_38px_88px_-30px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.06)]">
+      <div className="flex items-center gap-1.5 border-b border-white/10 bg-white/[0.05] px-3 py-2.5" aria-hidden="true">
+        <span className="h-2 w-2 rounded-full bg-white/35" />
+        <span className="h-2 w-2 rounded-full bg-white/20" />
+        <span className="h-2 w-2 rounded-full bg-white/15" />
+        <span className="ml-2 truncate rounded-md bg-white/[0.07] px-2 py-1 text-[8px] tracking-wide text-white/45">{domain}</span>
+      </div>
+      <img src={src} alt="" className="block w-full" />
+    </div>
+  );
+}
+
 export default function Hero() {
   const videoRef = useRef(null);
   const [fallback, setFallback] = useState(false);
@@ -72,6 +115,31 @@ export default function Hero() {
 
   const resetHeroGlow = (event) => {
     event.currentTarget.style.setProperty("--hero-glow-opacity", "0");
+  };
+
+  // The project stage gets the reference's very restrained depth response on
+  // a mouse, while remaining perfectly static on touch and reduced motion.
+  const moveHeroStage = (event) => {
+    if (
+      reduced ||
+      event.pointerType !== "mouse" ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
+    ) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty(
+      "--hero-stage-x",
+      `${(((event.clientX - bounds.left) / bounds.width - 0.5) * 2).toFixed(3)}`,
+    );
+    event.currentTarget.style.setProperty(
+      "--hero-stage-y",
+      `${(((event.clientY - bounds.top) / bounds.height - 0.5) * 2).toFixed(3)}`,
+    );
+  };
+
+  const resetHeroStage = (event) => {
+    event.currentTarget.style.setProperty("--hero-stage-x", "0");
+    event.currentTarget.style.setProperty("--hero-stage-y", "0");
   };
 
   useEffect(() => {
@@ -172,9 +240,9 @@ export default function Hero() {
 
       {/* ===== Content ===== */}
       <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 pt-24 pb-24 md:pb-32 lg:py-28 w-full">
-        <div className="grid grid-cols-1 items-center">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.88fr)] lg:gap-10 xl:gap-14">
           {/* Left column */}
-          <div className="mx-auto max-w-5xl text-center">
+          <div className="relative z-30 isolate mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
             {/* Eyebrow — premium status capsule */}
             <motion.div
               {...fadeUp(0.2, 16)}
@@ -205,10 +273,10 @@ export default function Hero() {
             {/* Title */}
             <h1
               aria-label="Build what converts, sells, ranks, and lasts."
-              className="font-display font-black mb-8 text-center"
-              style={{ letterSpacing: "-0.03em", fontSize: "clamp(46px, 9.5vw, 112px)", lineHeight: 0.92 }}
+              className="mb-8 text-center font-display font-black lg:text-left"
+              style={{ letterSpacing: "-0.03em", fontSize: "clamp(46px, 6.2vw, 92px)", lineHeight: 0.92 }}
             >
-              <div className="overflow-hidden flex gap-[0.22em] justify-center">
+              <div className="flex justify-center gap-[0.22em] lg:justify-start">
                 {["Build", "what"].map((w, i) => (
                   <motion.span
                     key={w}
@@ -251,7 +319,7 @@ export default function Hero() {
             {/* Supporting copy remains stable while the headline cycles. */}
             <motion.p
               {...fadeUp(0.65)}
-              className="font-body font-light max-w-[680px] mx-auto mb-12 text-center"
+              className="mx-auto mb-12 max-w-[680px] text-center font-body font-light lg:mx-0 lg:text-left"
               style={{ color: "var(--text-secondary)", fontSize: "clamp(17px, 1.55vw, 21px)", lineHeight: 1.65 }}
             >
               We design and build high-performance websites that turn visitors into customers — fast, beautiful and made to grow with your business.
@@ -260,7 +328,7 @@ export default function Hero() {
             {/* CTAs */}
             <motion.div
               {...fadeUp(0.8)}
-              className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-center gap-3 mb-16 md:mb-20"
+              className="mb-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
             >
               <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
                 <motion.a
@@ -289,82 +357,108 @@ export default function Hero() {
               </div>
             </motion.div>
 
-            {/* Stats */}
-            <motion.div {...fadeUp(1.0)} className="flex items-center flex-wrap gap-y-4 justify-center">
-              {STATS.map((s, i) => (
-                <div key={s.label} className="flex items-center">
-                  <div className={i === 0 ? "pr-6" : "px-6"}>
-                    {s.text ? (
-                      <span className="font-display font-black text-3xl block" style={{ color: "var(--accent)" }}>
-                        {s.text}
-                      </span>
-                    ) : (
-                      <CountUp
-                        to={s.to}
-                        suffix={s.suffix}
-                        duration={1400 + i * 150}
-                        className="font-display font-black text-3xl block"
-                        style={{ color: "var(--accent)" }}
-                      />
-                    )}
-                    <div className="font-body text-xs tracking-wide mt-1" style={{ color: "var(--text-muted)" }}>{s.label}</div>
-                  </div>
-                  {i < STATS.length - 1 && (
-                    <div className="w-px h-8" style={{ background: "var(--surface-border)" }} />
-                  )}
-                </div>
-              ))}
+            {/* Small screens keep the proof points beneath the CTA stack. */}
+            <motion.div {...fadeUp(1.0)} className="lg:hidden">
+              <HeroStats />
             </motion.div>
           </div>
 
-          {/* Right column — vertical editorial accent (desktop only) */}
-          <div
-            className="hidden"
-            aria-hidden="true"
-            style={{ minHeight: "440px" }}
-          >
-            {/* progress rail */}
-            <div className="relative h-full flex items-center pr-2">
-              <div className="relative w-px h-[360px]" style={{ background: "rgba(255,255,255,0.08)" }}>
-                <motion.div
-                  initial={reduced ? { height: "60%" } : { height: 0 }}
-                  animate={{ height: "60%" }}
-                  transition={{ duration: 1.4, ease: EASE, delay: reduced ? 0 : 0.7 }}
-                  className="absolute top-0 left-0 w-px"
-                  style={{
-                    background: "linear-gradient(180deg, rgb(var(--brand)) 0%, rgb(var(--brand-accent)) 100%)",
-                    boxShadow: "0 0 12px rgb(var(--brand) / 0.6)",
-                  }}
-                />
-                <motion.span
-                  initial={reduced ? { y: "60%", opacity: 1 } : { y: 0, opacity: 0 }}
-                  animate={{ y: "60%", opacity: 1 }}
-                  transition={{ duration: 1.4, ease: EASE, delay: reduced ? 0 : 0.7 }}
-                  className="absolute -left-[3px] block w-[7px] h-[7px] rounded-full"
-                  style={{
-                    background: "var(--accent)",
-                    boxShadow: "0 0 14px rgb(var(--brand) / 0.85)",
-                  }}
-                />
+          {/* Desktop proof stage: three genuine projects, arranged like the supplied reference. */}
+          <div className="relative z-0 mx-auto hidden w-full max-w-[680px] lg:block lg:translate-y-16 xl:translate-y-20">
+          <motion.div {...fadeUp(0.55, 24)} className="relative">
+            <div
+              className="relative h-[470px] w-full xl:h-[520px]"
+              style={{ perspective: "1800px", perspectiveOrigin: "50% 25%" }}
+              onPointerMove={moveHeroStage}
+              onPointerLeave={resetHeroStage}
+            >
+              <div
+                className="relative h-full w-full [transform-style:preserve-3d] transition-transform duration-300 ease-out motion-reduce:transform-none"
+                style={{ transform: "rotateY(calc(var(--hero-stage-x, 0) * 9deg)) rotateX(calc(var(--hero-stage-y, 0) * -5deg))" }}
+              >
+                <div className="absolute inset-0 [transform-style:preserve-3d]" style={{ transform: "rotateX(8deg)" }}>
+                  <div
+                    className="absolute -left-[1%] top-[18.33%] z-10 w-[38%] [transform-style:preserve-3d]"
+                    style={{ transform: "rotateY(22deg) translateZ(-70px)" }}
+                  >
+                    <motion.div
+                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
+                      animate={reduced ? undefined : { opacity: 1, x: [0, 3, 0, -2, 0], y: [0, -14, 0], scale: 1 }}
+                      transition={{ opacity: { duration: 0.8, delay: 0.75 }, scale: { duration: 0.8, delay: 0.75 }, x: { duration: 11, repeat: Infinity, ease: "easeInOut", delay: -3 }, y: { duration: 11, repeat: Infinity, ease: "easeInOut", delay: -3 } }}
+                    >
+                      <HeroDevicePreview src="/assets/img/kindsteps.png" domain="kindsteps.ca" />
+                    </motion.div>
+                  </div>
+
+                  <div
+                    className="absolute left-1/2 top-0 z-20 w-[57%] [transform-style:preserve-3d]"
+                    style={{ transform: "translateX(-50%) translateZ(80px)" }}
+                  >
+                    <motion.div
+                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
+                      animate={reduced ? undefined : { opacity: 1, x: [0, -2, 0, 2, 0], y: [0, -14, 0], scale: 1 }}
+                      transition={{ opacity: { duration: 0.8, delay: 0.45 }, scale: { duration: 0.8, delay: 0.45 }, x: { duration: 9, repeat: Infinity, ease: "easeInOut" }, y: { duration: 9, repeat: Infinity, ease: "easeInOut" } }}
+                    >
+                      <HeroDevicePreview src="/assets/img/fairconstruction.png" domain="fairconstruction-ca.vercel.app" />
+                    </motion.div>
+                  </div>
+
+                  <div
+                    className="absolute -right-[1%] top-[18.33%] z-10 w-[38%] [transform-style:preserve-3d]"
+                    style={{ transform: "rotateY(-22deg) translateZ(-70px)" }}
+                  >
+                    <motion.div
+                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
+                      animate={reduced ? undefined : { opacity: 1, x: [0, -3, 0, 2, 0], y: [0, -14, 0], scale: 1 }}
+                      transition={{ opacity: { duration: 0.8, delay: 0.9 }, scale: { duration: 0.8, delay: 0.9 }, x: { duration: 10, repeat: Infinity, ease: "easeInOut", delay: -6 }, y: { duration: 10, repeat: Infinity, ease: "easeInOut", delay: -6 } }}
+                    >
+                      <HeroDevicePreview src="/assets/img/pegstudio.png" domain="peg-studio-ten.vercel.app" />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+
+              <motion.div
+                className="pointer-events-none absolute left-[4%] top-[5%] z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
+                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -2 }}
+              >
+                <span className="relative grid h-6 w-6 place-items-center rounded-full bg-[conic-gradient(#5AE6AA_0_95%,rgba(255,255,255,.12)_0)] text-[8px] font-bold text-white before:absolute before:inset-[3px] before:rounded-full before:bg-[#0a0f1e] before:content-['']"><b className="relative">95</b></span>
+                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">Lighthouse</b><small className="text-[7px] font-normal text-white/60">Performance score</small></span>
+              </motion.div>
+              <motion.div
+                className="pointer-events-none absolute right-[3%] top-0 z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
+                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -5 }}
+              >
+                <span className="grid h-6 w-6 place-items-center rounded-[8px] bg-primary/25 text-white" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+                </span>
+                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">Mobile-first</b><small className="text-[7px] font-normal text-white/60">Every screen, every time</small></span>
+              </motion.div>
+              <motion.div
+                className="pointer-events-none absolute bottom-[35.8%] left-[7%] z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
+                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -7 }}
+              >
+                <span className="grid h-6 w-6 place-items-center rounded-[8px] bg-primary/25 text-white" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="11" cy="11" r="6.5"/><path d="M20.5 20.5l-4.8-4.8"/></svg>
+                </span>
+                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">SEO-ready</b><small className="text-[7px] font-normal text-white/60">Built to be found</small></span>
+              </motion.div>
+
+              <div className="absolute left-1/2 top-[50%] z-30 -translate-x-1/2">
+                <motion.div {...fadeUp(0.95, 16)}>
+                  <motion.div
+                    animate={reduced ? undefined : { y: [0, -5, 0], rotate: [0, 0.25, 0] }}
+                    transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut", delay: -4 }}
+                  >
+                    <HeroStats compact />
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
-
-            {/* vertical text */}
-            <div className="flex items-center justify-center" style={{ width: "44px" }}>
-              <motion.div
-                initial={reduced ? {} : { opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: EASE, delay: reduced ? 0 : 0.55 }}
-                className="font-display font-bold uppercase text-[11px] tracking-[0.42em]"
-                style={{
-                  writingMode: "vertical-rl",
-                  transform: "rotate(180deg)",
-                  color: "var(--text-secondary)",
-                }}
-              >
-                MILINK · Studio · Toronto · 2024 · ★
-              </motion.div>
-            </div>
+          </motion.div>
           </div>
         </div>
       </div>
