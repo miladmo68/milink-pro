@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import CountUp from "../components/CountUp.jsx";
+import HeroBackdrop from "../components/HeroBackdrop.jsx";
 
-const EASE = [0.25, 0.1, 0.25, 1];
+const SCENE_MS = 4200;
 
 const STATS = [
   { to: 50, suffix: "+", label: "Projects" },
@@ -11,41 +13,104 @@ const STATS = [
   { text: "GTA", label: "Based" },
 ];
 
-const HEADLINE_WORDS = ["converts.", "sells.", "ranks.", "lasts."];
-
-const MARQUEE_ITEMS = [
-  "Web Design",
-  "E-Commerce",
-  "SEO",
-  "UI / UX",
-  "Branding",
-  "Performance",
-  "Shopify",
-  "WordPress",
-  "Maintenance",
+// Each headline word drives the stage: a real MiLink project is "built" in the
+// browser frame while a widget acts out the promise of that word. The tint
+// colours the backdrop light and the stage rim for that scene.
+const SCENES = [
+  { word: "converts.", tag: "Lead capture", title: "Kind Steps", src: "/assets/img/kindsteps.png", width: 2881, height: 1626, widget: "inquiry", tint: [0.22, 0.62, 1] },
+  { word: "sells.", tag: "E-commerce", title: "Zarsa Gold", src: "/assets/img/zarsagold.png", width: 2881, height: 1626, widget: "order", tint: [1, 0.74, 0.36] },
+  { word: "ranks.", tag: "Search", title: "Fair Construction", src: "/assets/img/fairconstruction.png", width: 3596, height: 1914, widget: "serp", tint: [0.3, 0.92, 0.66] },
+  { word: "lasts.", tag: "Performance", title: "PEG Studio", src: "/assets/img/pegstudio.png", width: 3586, height: 1910, widget: "lighthouse", tint: [0.62, 0.48, 1] },
 ];
 
-function HeroStats({ className = "", compact = false }) {
-  const valueSize = compact ? "text-[22px] sm:text-[25px]" : "text-[26px] sm:text-[30px]";
-  const labelSize = compact ? "text-[8px] sm:text-[9px]" : "text-[9px] sm:text-[10px]";
+// Real clients from the Work section, shown as the Hero's social-proof row.
+const CLIENTS = [
+  "Kind Steps",
+  "Fair Construction",
+  "Zarsa Gold",
+  "PEG Studio",
+  "Intershine",
+  "Sky Contracting",
+  "Tarahan Choob",
+];
+
+const SCRAMBLE_GLYPHS = "abcdefghijklmnopqrstuvwxyz#%&*+=/<>";
+
+const EASE = [0.2, 0.8, 0.2, 1];
+
+function useCountTo(to, { duration = 1100, delay = 250 } = {}) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let frame;
+    let start;
+    const timer = window.setTimeout(() => {
+      const tick = (now) => {
+        start ??= now;
+        const progress = Math.min(1, (now - start) / duration);
+        setValue(to * (1 - Math.pow(1 - progress, 3)));
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, delay);
+    return () => { window.clearTimeout(timer); cancelAnimationFrame(frame); };
+  }, [to, duration, delay]);
+  return value;
+}
+
+// The cycling word decodes into place, resolving left to right.
+function ScrambleWord({ word, reduced }) {
+  const [text, setText] = useState(word);
+  const previous = useRef(word);
+
+  useEffect(() => {
+    if (reduced || previous.current === word) {
+      previous.current = word;
+      setText(word);
+      return undefined;
+    }
+    previous.current = word;
+    const start = performance.now();
+    const duration = 700;
+    let frame;
+    const tick = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const resolved = progress * word.length;
+      let next = "";
+      for (let i = 0; i < word.length; i++) {
+        next += i < resolved || word[i] === "." ? word[i] : SCRAMBLE_GLYPHS[Math.floor(Math.random() * SCRAMBLE_GLYPHS.length)];
+      }
+      setText(next);
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [word, reduced]);
+
   return (
-    <div className={`flex items-start justify-center ${compact ? "gap-4 sm:gap-5" : "gap-5 sm:gap-7"} ${className}`}>
+    <span className="hero-cycling-word absolute inset-x-0 top-0">
+      {text}
+    </span>
+  );
+}
+
+function HeroStats() {
+  return (
+    <div className="flex items-start justify-center gap-6 sm:gap-8 lg:justify-start">
       {STATS.map((s) => (
-        <div key={s.label} className={`${compact ? "min-w-[48px]" : "min-w-[58px]"} text-left`}>
+        <div key={s.label} className="min-w-[58px] text-left">
           {s.text ? (
-            <span className={`block font-display ${valueSize} font-semibold leading-none tracking-[-0.04em]`} style={{ color: "var(--text-primary)" }}>
+            <span className="block font-display text-[26px] font-semibold leading-none tracking-[-0.04em] sm:text-[30px]" style={{ color: "var(--text-primary)" }}>
               {s.text}
             </span>
           ) : (
             <CountUp
               to={s.to}
               suffix={s.suffix}
-              duration={1400}
-              className={`block font-display ${valueSize} font-semibold leading-none tracking-[-0.04em]`}
+              className="block font-display text-[26px] font-semibold leading-none tracking-[-0.04em] sm:text-[30px]"
               style={{ color: "var(--text-primary)" }}
             />
           )}
-          <span className={`mt-1 block font-body ${labelSize} font-semibold uppercase tracking-[0.14em]`} style={{ color: "var(--text-secondary)" }}>
+          <span className="mt-1 block font-body text-[9px] font-semibold uppercase tracking-[0.14em] sm:text-[10px]" style={{ color: "var(--text-secondary)" }}>
             {s.label}
           </span>
         </div>
@@ -54,25 +119,332 @@ function HeroStats({ className = "", compact = false }) {
   );
 }
 
-function HeroDevicePreview({ src, domain }) {
+/* ===== Stage widgets (illustrative) ===== */
+
+function InquiryWidget() {
+  const growth = useCountTo(38, { delay: 500 });
+  const bars = [30, 42, 36, 55, 61, 74, 94];
   return (
-    <div className="overflow-hidden rounded-[15px] border border-white/15 bg-[#0a0f1e] shadow-[0_38px_88px_-30px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.06)]">
-      <div className="flex items-center gap-1.5 border-b border-white/10 bg-white/[0.05] px-3 py-2.5" aria-hidden="true">
-        <span className="h-2 w-2 rounded-full bg-white/35" />
-        <span className="h-2 w-2 rounded-full bg-white/20" />
-        <span className="h-2 w-2 rounded-full bg-white/15" />
-        <span className="ml-2 truncate rounded-md bg-white/[0.07] px-2 py-1 text-[8px] tracking-wide text-white/45">{domain}</span>
+    <>
+      <div className="hero-widget-head">
+        <span className="hero-widget-live" />
+        New inquiry
+        <time>just now</time>
       </div>
-      <img src={src} alt="" className="block w-full" />
+      <div className="hero-widget-person">
+        <span className="hero-widget-avatar">SM</span>
+        <span>
+          <b>Sarah M.</b>
+          <small>Requested a free consultation</small>
+        </span>
+      </div>
+      <div className="hero-widget-rule" />
+      <div className="hero-widget-meta">
+        <span>Leads this month</span>
+        <b className="text-[#5ae6aa]">+{Math.round(growth)}%</b>
+      </div>
+      <div className="hero-widget-bars">
+        {bars.map((h, i) => (
+          <motion.i
+            key={i}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 0.55, delay: 0.35 + i * 0.07, ease: EASE }}
+            style={{ height: `${h}%` }}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function OrderWidget() {
+  const total = useCountTo(129, { delay: 350, duration: 1000 });
+  return (
+    <>
+      <div className="hero-widget-head">
+        <span className="hero-widget-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 7h12l-1 13H7L6 7Z" /><path d="M9 7a3 3 0 0 1 6 0" /></svg>
+        </span>
+        New order
+        <time>#1042</time>
+      </div>
+      <div className="hero-widget-amount">${total.toFixed(2)}</div>
+      <svg className="hero-widget-spark" viewBox="0 0 200 54" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="hero-spark-fill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgb(56 189 248)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="rgb(56 189 248)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <motion.path
+          d="M0 46 L22 40 L44 43 L66 30 L88 34 L110 22 L132 26 L154 14 L176 16 L200 4 L200 54 L0 54 Z"
+          fill="url(#hero-spark-fill)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1 }}
+        />
+        <motion.path
+          d="M0 46 L22 40 L44 43 L66 30 L88 34 L110 22 L132 26 L154 14 L176 16 L200 4"
+          fill="none"
+          stroke="rgb(56 189 248)"
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.2, delay: 0.3, ease: EASE }}
+        />
+      </svg>
+      <div className="hero-widget-foot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+        Payment confirmed
+      </div>
+    </>
+  );
+}
+
+const SERP_QUERY = "contractor near me";
+
+function SerpWidget() {
+  const [typed, setTyped] = useState(0);
+  const [climbed, setClimbed] = useState(false);
+  useEffect(() => {
+    const typer = window.setInterval(() => setTyped((n) => Math.min(SERP_QUERY.length, n + 1)), 38);
+    const climb = window.setTimeout(() => setClimbed(true), 1500);
+    return () => { window.clearInterval(typer); window.clearTimeout(climb); };
+  }, []);
+  const rows = climbed ? ["you", "a", "b"] : ["a", "b", "you"];
+  return (
+    <>
+      <div className="hero-widget-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="6.5" /><path d="m20.5 20.5-4.8-4.8" /></svg>
+        <span>{SERP_QUERY.slice(0, typed)}<i className="hero-widget-caret" /></span>
+      </div>
+      <ul className="hero-widget-serp">
+        {rows.map((row, i) => (
+          <motion.li key={row} layout transition={{ type: "spring", stiffness: 260, damping: 26 }} className={row === "you" ? "is-you" : ""}>
+            <em>{i + 1}</em>
+            {row === "you" ? (
+              <span>
+                <b>Your website</b>
+                <small>Fast, local, SEO-ready</small>
+              </span>
+            ) : (
+              <span className="hero-widget-skeleton"><i /><i /></span>
+            )}
+            {row === "you" && climbed && (
+              <motion.strong initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.25 }}>
+                #1
+              </motion.strong>
+            )}
+          </motion.li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+const LIGHTHOUSE = [
+  { label: "Perf", value: 98 },
+  { label: "A11y", value: 100 },
+  { label: "Best", value: 100 },
+  { label: "SEO", value: 100 },
+];
+
+function LighthouseRing({ label, value, index }) {
+  const shown = useCountTo(value, { delay: 250 + index * 120, duration: 1000 });
+  const circumference = 2 * Math.PI * 17;
+  return (
+    <div className="hero-widget-ring">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="17" className="hero-widget-ring-track" />
+        <circle
+          cx="20"
+          cy="20"
+          r="17"
+          className="hero-widget-ring-fill"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - shown / 100)}
+        />
+      </svg>
+      <b>{Math.round(shown)}</b>
+      <small>{label}</small>
+    </div>
+  );
+}
+
+function LighthouseWidget() {
+  return (
+    <>
+      <div className="hero-widget-head">
+        <span className="hero-widget-live" />
+        Lighthouse audit
+        <time>mobile</time>
+      </div>
+      <div className="hero-widget-rings">
+        {LIGHTHOUSE.map((item, i) => <LighthouseRing key={item.label} {...item} index={i} />)}
+      </div>
+      <div className="hero-widget-foot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg>
+        Built to stay fast
+      </div>
+    </>
+  );
+}
+
+const WIDGETS = { inquiry: InquiryWidget, order: OrderWidget, serp: SerpWidget, lighthouse: LighthouseWidget };
+
+/* ===== Stage ===== */
+
+function HeroStage({ scene, setScene, paused, reduced }) {
+  const active = SCENES[scene];
+  const Widget = WIDGETS[active.widget];
+
+  // A restrained depth response for a mouse; static on touch and reduced motion.
+  const tilt = (event) => {
+    if (reduced || event.pointerType !== "mouse") return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--hero-stage-x", (((event.clientX - bounds.left) / bounds.width - 0.5) * 2).toFixed(3));
+    event.currentTarget.style.setProperty("--hero-stage-y", (((event.clientY - bounds.top) / bounds.height - 0.5) * 2).toFixed(3));
+  };
+  const untilt = (event) => {
+    event.currentTarget.style.setProperty("--hero-stage-x", "0");
+    event.currentTarget.style.setProperty("--hero-stage-y", "0");
+  };
+
+  return (
+    <div className="hero-land relative mx-auto w-full max-w-[640px]" style={{ "--d": "0.55s" }} role="group" aria-label="Selected MiLink projects">
+      <div className="hero-stage" onPointerMove={tilt} onPointerLeave={untilt}>
+        <div className="hero-stage-rig">
+          <div className="hero-stage-glow" aria-hidden="true" />
+
+          <div className="hero-browser">
+            <div className="hero-browser-bar" aria-hidden="true">
+              <span className="hero-browser-dots"><i /><i /><i /></span>
+              <span className="hero-browser-url">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={active.title}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {active.title} <em>· built by MiLink</em>
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </div>
+
+            <div className="hero-browser-view">
+              {SCENES.map((s, i) => (
+                <Image
+                  key={s.src}
+                  src={s.src}
+                  alt={i === scene ? `${s.title} website designed by MiLink` : ""}
+                  width={s.width}
+                  height={s.height}
+                  sizes="(min-width: 1280px) 600px, (min-width: 1024px) 46vw, 92vw"
+                  priority={i === 0}
+                  className={`hero-browser-shot ${i === scene ? "is-active" : ""}`}
+                />
+              ))}
+
+              {/* Wireframe → design: each scene is "built" as the wireframe wipes away. */}
+              {!reduced && (
+                <motion.div
+                  key={`wire-${scene}`}
+                  className="hero-wireframe"
+                  aria-hidden="true"
+                  initial={{ clipPath: "inset(0 0% 0 0)" }}
+                  animate={{ clipPath: "inset(0 0% 0 100%)" }}
+                  transition={{ duration: 1, delay: 0.25, ease: [0.65, 0, 0.35, 1] }}
+                >
+                  <div className="hero-wireframe-nav"><i /><i /><i /><i /></div>
+                  <div className="hero-wireframe-hero"><i /><i /><i /><b /></div>
+                  <div className="hero-wireframe-cards"><i /><i /><i /></div>
+                </motion.div>
+              )}
+              {!reduced && (
+                <motion.div
+                  key={`scan-${scene}`}
+                  className="hero-scanline"
+                  aria-hidden="true"
+                  initial={{ left: "0%", opacity: 1 }}
+                  animate={{ left: "100%", opacity: [1, 1, 0] }}
+                  transition={{ duration: 1, delay: 0.25, ease: [0.65, 0, 0.35, 1] }}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="hero-widget-slot" aria-hidden="true">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={active.widget}
+                className="hero-widget"
+                initial={reduced ? false : { opacity: 0, y: 18, scale: 0.94, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={reduced ? undefined : { opacity: 0, y: -12, scale: 0.97, filter: "blur(4px)", transition: { duration: 0.22 } }}
+                transition={{ duration: 0.45, ease: EASE }}
+              >
+                <Widget />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero-scenes">
+        {SCENES.map((s, i) => (
+          <button
+            key={s.word}
+            type="button"
+            onClick={() => setScene(i)}
+            aria-pressed={i === scene}
+            aria-label={`Show ${s.title}: ${s.tag}`}
+            className={`hero-scene ${i === scene ? "is-active" : ""} ${paused ? "is-paused" : ""}`}
+            style={{ "--scene-ms": `${SCENE_MS}ms` }}
+          >
+            <span className="hero-scene-bar"><i key={`${scene}-${i}`} /></span>
+            <span className="hero-scene-label">{s.tag}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
 export default function Hero() {
-  const videoRef = useRef(null);
-  const [fallback, setFallback] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
+  const sectionRef = useRef(null);
   const reduced = useReducedMotion();
+  const [scene, setScene] = useState(0);
+  const [inView, setInView] = useState(true);
+  const [tabVisible, setTabVisible] = useState(true);
+  const paused = Boolean(reduced) || !inView || !tabVisible;
+  const tint = SCENES[scene].tint;
+
+  // Scroll exit: copy and stage ease back while the Hero leaves the viewport.
+  useEffect(() => {
+    if (reduced) return undefined;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const section = sectionRef.current;
+      if (!section) return;
+      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(1, section.offsetHeight)));
+      section.style.setProperty("--hero-exit", progress.toFixed(3));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [reduced]);
 
   // Mirrors the reference site's hero-only magnetic CTA behavior. It is kept
   // off for touch, coarse-pointer, and reduced-motion users.
@@ -97,157 +469,52 @@ export default function Hero() {
     event.currentTarget.style.setProperty("--hero-cta-y", "0px");
   };
 
-  // This is a Hero background treatment, not a replacement for the native
-  // cursor. It is intentionally desktop/fine-pointer only.
-  const moveHeroGlow = (event) => {
-    if (
-      reduced ||
-      event.pointerType !== "mouse" ||
-      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
-    ) return;
-
-    const target = event.currentTarget;
-    const bounds = target.getBoundingClientRect();
-    target.style.setProperty("--hero-glow-x", `${(event.clientX - bounds.left).toFixed(1)}px`);
-    target.style.setProperty("--hero-glow-y", `${(event.clientY - bounds.top).toFixed(1)}px`);
-    target.style.setProperty("--hero-glow-opacity", "1");
-  };
-
-  const resetHeroGlow = (event) => {
-    event.currentTarget.style.setProperty("--hero-glow-opacity", "0");
-  };
-
-  // The project stage gets the reference's very restrained depth response on
-  // a mouse, while remaining perfectly static on touch and reduced motion.
-  const moveHeroStage = (event) => {
-    if (
-      reduced ||
-      event.pointerType !== "mouse" ||
-      !window.matchMedia("(hover: hover) and (pointer: fine)").matches
-    ) return;
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty(
-      "--hero-stage-x",
-      `${(((event.clientX - bounds.left) / bounds.width - 0.5) * 2).toFixed(3)}`,
-    );
-    event.currentTarget.style.setProperty(
-      "--hero-stage-y",
-      `${(((event.clientY - bounds.top) / bounds.height - 0.5) * 2).toFixed(3)}`,
-    );
-  };
-
-  const resetHeroStage = (event) => {
-    event.currentTarget.style.setProperty("--hero-stage-x", "0");
-    event.currentTarget.style.setProperty("--hero-stage-y", "0");
-  };
-
+  // The scene only advances while the Hero is on screen and the tab is visible.
   useEffect(() => {
-    if (videoRef.current?.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      setVideoReady(true);
-    }
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.15 });
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    const onVisibility = () => setTabVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
-  // The Hero headline follows the reference's calm, full-word cycle. The
-  // supporting sentence is deliberately static so the hierarchy stays clear.
-  const [wordIdx, setWordIdx] = useState(0);
   useEffect(() => {
-    if (reduced) return;
-    const t = setInterval(() => setWordIdx((i) => (i + 1) % HEADLINE_WORDS.length), 3000);
-    return () => clearInterval(t);
-  }, [reduced]);
+    if (paused) return undefined;
+    const timer = window.setTimeout(() => setScene((i) => (i + 1) % SCENES.length), SCENE_MS);
+    return () => window.clearTimeout(timer);
+  }, [scene, paused]);
 
-  const fadeUp = (delay = 0, distance = 30) => ({
-    // The root theme is resolved before paint, so the original entrance
-    // motion can run without a light-to-dark flash on mobile.
-    initial: reduced ? {} : { opacity: 0, y: distance },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: EASE, delay: reduced ? 0 : delay },
-  });
+  const scrollToId = (event, id) => {
+    event.preventDefault();
+    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section
       id="home"
-      className="hero-pointer-glow relative z-0 bg-transparent min-h-screen flex flex-col justify-end lg:justify-center overflow-hidden"
-      onPointerMove={moveHeroGlow}
-      onPointerLeave={resetHeroGlow}
+      ref={sectionRef}
+      className="relative z-0 flex min-h-[100svh] flex-col justify-center overflow-hidden bg-transparent"
+      style={{ "--hero-tint": tint.map((c) => Math.round(c * 255)).join(" ") }}
     >
-      {/* ===== Background ===== */}
+      {/* ===== Background: depth field + Blueprint Horizon shader ===== */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div
-          className="section-depth-hero pointer-events-none absolute inset-0 hidden dark:block"
-          aria-hidden
-        />
-        {!fallback ? (
-          <video
-            ref={videoRef}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 [object-position:60%_50%] sm:[object-position:center] ${videoReady ? "opacity-100" : "opacity-0"}`}
-            src="/assets/video/hero.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            onLoadedData={() => setVideoReady(true)}
-            onError={() => setFallback(true)}
-            aria-hidden="true"
-          />
-        ) : (
-          <img
-            src="/assets/images/hero-bg.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        )}
-        <div className="hero-plain hero-mask-90" aria-hidden="true" />
-        <div className="hero-bleed hero-mask-90" aria-hidden="true" />
-        <div className="hero-grid grid-fade hero-mask-90" aria-hidden="true" />
-        <div className="hero-grid hero-grid-center hero-mask-90" aria-hidden="true" />
-        <div className="hero-highlight hero-mask-90" aria-hidden="true" />
-        <div className="hero-shadow hero-mask-90" aria-hidden="true" />
+        <div className="section-depth-hero pointer-events-none absolute inset-0 hidden dark:block" aria-hidden />
+        <HeroBackdrop className="absolute inset-0" tint={tint} pulseKey={scene} pulseDelay={1250} />
         <div className="hero-topfade" aria-hidden="true" />
-        <div className="hero-vignette" aria-hidden="true" />
-
-        {/* Desktop: brand glow behind headline */}
-        <div
-          className="hidden lg:block absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(40% 50% at 24% 55%, rgb(var(--brand) / 0.22) 0%, rgba(0,0,0,0) 65%)",
-            mixBlendMode: "screen",
-          }}
-        />
-        {/* Desktop: secondary accent on the right side */}
-        <div
-          className="hidden lg:block absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(35% 45% at 82% 35%, rgb(var(--brand) / 0.14) 0%, rgba(0,0,0,0) 70%)",
-            mixBlendMode: "screen",
-          }}
-        />
-        {/* Desktop: side gradient lets the laptop video breathe more on the right */}
-        <div
-          className="hidden lg:block absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(7,12,22,0.55) 0%, rgba(7,12,22,0.30) 45%, rgba(7,12,22,0.0) 80%)",
-          }}
-        />
       </div>
 
       {/* ===== Content ===== */}
-      <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 pt-24 pb-24 md:pb-32 lg:py-28 w-full">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.88fr)] lg:gap-10 xl:gap-14">
+      <div className="relative z-10 mx-auto w-full max-w-8xl px-4 pb-28 pt-28 sm:px-6 lg:pb-[max(4.5rem,9vh)] lg:pt-[max(6.5rem,12vh)]">
+        <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(460px,0.95fr)] lg:gap-10 xl:gap-16">
           {/* Left column */}
-          <div className="relative z-30 isolate mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
-            {/* Eyebrow — premium status capsule */}
-            <motion.div
-              {...fadeUp(0.2, 16)}
-              className="inline-flex items-center gap-2.5 mb-10 px-3.5 py-1.5 rounded-full"
+          <div className="hero-exit-copy relative z-30 mx-auto max-w-2xl text-center lg:mx-0 lg:max-w-none lg:text-left">
+            <div
+              className="hero-rise mb-10 inline-flex items-center lg:mb-[3.2vh] gap-2.5 rounded-full px-3.5 py-1.5"
               style={{
+                "--d": "0.05s",
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid rgba(255,255,255,0.10)",
                 backdropFilter: "blur(10px)",
@@ -255,99 +522,61 @@ export default function Hero() {
               }}
             >
               <span className="hero-availability-dot" aria-hidden="true" />
-              <span
-                className="font-display font-bold uppercase tracking-[0.18em] text-[10px]"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <span className="font-display text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--text-secondary)" }}>
                 Available for new projects
               </span>
-              <span className="w-px h-2.5" style={{ background: "var(--surface-border)", opacity: 0.6 }} />
-              <span
-                className="font-display font-bold uppercase tracking-[0.18em] text-[10px]"
-                style={{ color: "var(--accent)" }}
-              >
+              <span className="hidden h-2.5 w-px sm:inline" style={{ background: "var(--surface-border)", opacity: 0.6 }} />
+              <span className="hidden font-display text-[10px] font-bold uppercase tracking-[0.18em] sm:inline" style={{ color: "var(--accent)" }}>
                 Toronto · Est. 2024
               </span>
-            </motion.div>
+            </div>
 
-            {/* Title */}
+            {/* Title: CSS line reveal starts at first paint, before hydration. */}
             <h1
               aria-label="Build what converts, sells, ranks, and lasts."
-              className="mb-8 text-center font-display font-black lg:text-left"
-              style={{ letterSpacing: "-0.03em", fontSize: "clamp(46px, 6.2vw, 92px)", lineHeight: 0.92 }}
+              className="mb-8 text-center font-display font-black lg:mb-[3.2vh] lg:text-left"
+              style={{ letterSpacing: "-0.03em", fontSize: "clamp(46px, min(6.2vw, 9.4vh), 92px)", lineHeight: 0.98 }}
             >
-              <div className="flex justify-center gap-[0.22em] lg:justify-start">
-                {["Build", "what"].map((w, i) => (
-                  <motion.span
-                    key={w}
-                    initial={reduced ? {} : { opacity: 0, y: 60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.3 + i * 0.09 }}
-                  aria-hidden="true"
-                  className="inline-block"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {w}
-                  </motion.span>
-                ))}
-              </div>
-              <div className="overflow-hidden">
-                <motion.span
-                  initial={reduced ? {} : { opacity: 0, y: 60 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.65, ease: EASE, delay: reduced ? 0 : 0.48 }}
-                  className="relative inline-flex overflow-hidden align-bottom"
-                  aria-hidden="true"
-                >
+              <span className="hero-line" aria-hidden="true">
+                <span style={{ "--d": "0.12s", color: "var(--text-primary)" }}>Build what</span>
+              </span>
+              <span className="hero-line" aria-hidden="true">
+                <span style={{ "--d": "0.24s" }} className="hero-word-slot">
                   <span className="invisible">converts.</span>
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.span
-                      key={HEADLINE_WORDS[wordIdx]}
-                      initial={reduced ? {} : { opacity: 0, y: "108%" }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduced ? {} : { opacity: 0, y: "-108%" }}
-                      transition={{ duration: 0.7, ease: [0.7, 0, 0.2, 1] }}
-                      className="hero-cycling-word absolute inset-x-0 top-0"
-                    >
-                      {HEADLINE_WORDS[wordIdx]}
-                    </motion.span>
-                  </AnimatePresence>
-                </motion.span>
-              </div>
+                  <ScrambleWord word={SCENES[scene].word} reduced={reduced} />
+                </span>
+              </span>
             </h1>
 
-            {/* Supporting copy remains stable while the headline cycles. */}
-            <motion.p
-              {...fadeUp(0.65)}
-              className="mx-auto mb-12 max-w-[680px] text-center font-body font-light lg:mx-0 lg:text-left"
-              style={{ color: "var(--text-secondary)", fontSize: "clamp(17px, 1.55vw, 21px)", lineHeight: 1.65 }}
+            <p
+              className="hero-rise mx-auto mb-12 max-w-[640px] lg:mb-[4.2vh] text-center font-body font-light lg:mx-0 lg:text-left"
+              style={{ "--d": "0.4s", color: "var(--text-secondary)", fontSize: "clamp(16px, min(1.55vw, 2.5vh), 21px)", lineHeight: 1.65 }}
             >
               We design and build high-performance websites that turn visitors into customers — fast, beautiful and made to grow with your business.
-            </motion.p>
+            </p>
 
-            {/* CTAs */}
-            <motion.div
-              {...fadeUp(0.8)}
-              className="mb-12 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+            <div
+              className="hero-rise mb-12 flex flex-col gap-3 lg:mb-[4.2vh] sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start"
+              style={{ "--d": "0.52s" }}
             >
               <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
                 <motion.a
                   href="#contact"
-                  onClick={(e) => { e.preventDefault(); document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" }); }}
+                  onClick={(e) => scrollToId(e, "#contact")}
                   whileTap={{ scale: 0.97 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className="marketing-cta marketing-cta--primary w-full sm:w-auto"
                 >
                   Get a Quote
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6"/>
+                    <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </motion.a>
               </div>
               <div className="hero-cta-magnetic w-full sm:w-auto" onPointerMove={moveHeroCta} onPointerLeave={resetHeroCta}>
                 <motion.a
                   href="#work"
-                  onClick={(e) => { e.preventDefault(); document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" }); }}
+                  onClick={(e) => scrollToId(e, "#work")}
                   whileTap={{ scale: 0.97 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className="marketing-cta marketing-cta--secondary w-full sm:w-auto"
@@ -355,157 +584,41 @@ export default function Hero() {
                   See Our Work
                 </motion.a>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Small screens keep the proof points beneath the CTA stack. */}
-            <motion.div {...fadeUp(1.0)} className="lg:hidden">
+            <div className="hero-rise" style={{ "--d": "0.64s" }}>
               <HeroStats />
-            </motion.div>
+            </div>
           </div>
 
-          {/* Desktop proof stage: three genuine projects, arranged like the supplied reference. */}
-          <div className="relative z-0 mx-auto hidden w-full max-w-[680px] lg:block lg:translate-y-16 xl:translate-y-20">
-          <motion.div {...fadeUp(0.55, 24)} className="relative">
-            <div
-              className="relative h-[470px] w-full xl:h-[520px]"
-              style={{ perspective: "1800px", perspectiveOrigin: "50% 25%" }}
-              onPointerMove={moveHeroStage}
-              onPointerLeave={resetHeroStage}
-            >
-              <div
-                className="relative h-full w-full [transform-style:preserve-3d] transition-transform duration-300 ease-out motion-reduce:transform-none"
-                style={{ transform: "rotateY(calc(var(--hero-stage-x, 0) * 9deg)) rotateX(calc(var(--hero-stage-y, 0) * -5deg))" }}
-              >
-                <div className="absolute inset-0 [transform-style:preserve-3d]" style={{ transform: "rotateX(8deg)" }}>
-                  <div
-                    className="absolute -left-[1%] top-[18.33%] z-10 w-[38%] [transform-style:preserve-3d]"
-                    style={{ transform: "rotateY(22deg) translateZ(-70px)" }}
-                  >
-                    <motion.div
-                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
-                      animate={reduced ? undefined : { opacity: 1, x: [0, 3, 0, -2, 0], y: [0, -14, 0], scale: 1 }}
-                      transition={{ opacity: { duration: 0.8, delay: 0.75 }, scale: { duration: 0.8, delay: 0.75 }, x: { duration: 11, repeat: Infinity, ease: "easeInOut", delay: -3 }, y: { duration: 11, repeat: Infinity, ease: "easeInOut", delay: -3 } }}
-                    >
-                      <HeroDevicePreview src="/assets/img/kindsteps.png" domain="kindsteps.ca" />
-                    </motion.div>
-                  </div>
-
-                  <div
-                    className="absolute left-1/2 top-0 z-20 w-[57%] [transform-style:preserve-3d]"
-                    style={{ transform: "translateX(-50%) translateZ(80px)" }}
-                  >
-                    <motion.div
-                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
-                      animate={reduced ? undefined : { opacity: 1, x: [0, -2, 0, 2, 0], y: [0, -14, 0], scale: 1 }}
-                      transition={{ opacity: { duration: 0.8, delay: 0.45 }, scale: { duration: 0.8, delay: 0.45 }, x: { duration: 9, repeat: Infinity, ease: "easeInOut" }, y: { duration: 9, repeat: Infinity, ease: "easeInOut" } }}
-                    >
-                      <HeroDevicePreview src="/assets/img/fairconstruction.png" domain="fairconstruction-ca.vercel.app" />
-                    </motion.div>
-                  </div>
-
-                  <div
-                    className="absolute -right-[1%] top-[18.33%] z-10 w-[38%] [transform-style:preserve-3d]"
-                    style={{ transform: "rotateY(-22deg) translateZ(-70px)" }}
-                  >
-                    <motion.div
-                      initial={reduced ? false : { opacity: 0, y: 72, scale: 0.92 }}
-                      animate={reduced ? undefined : { opacity: 1, x: [0, -3, 0, 2, 0], y: [0, -14, 0], scale: 1 }}
-                      transition={{ opacity: { duration: 0.8, delay: 0.9 }, scale: { duration: 0.8, delay: 0.9 }, x: { duration: 10, repeat: Infinity, ease: "easeInOut", delay: -6 }, y: { duration: 10, repeat: Infinity, ease: "easeInOut", delay: -6 } }}
-                    >
-                      <HeroDevicePreview src="/assets/img/pegstudio.png" domain="peg-studio-ten.vercel.app" />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-
-              <motion.div
-                className="pointer-events-none absolute left-[4%] top-[5%] z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
-                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -2 }}
-              >
-                <span className="relative grid h-6 w-6 place-items-center rounded-full bg-[conic-gradient(#5AE6AA_0_95%,rgba(255,255,255,.12)_0)] text-[8px] font-bold text-white before:absolute before:inset-[3px] before:rounded-full before:bg-[#0a0f1e] before:content-['']"><b className="relative">95</b></span>
-                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">Lighthouse</b><small className="text-[7px] font-normal text-white/60">Performance score</small></span>
-              </motion.div>
-              <motion.div
-                className="pointer-events-none absolute right-[3%] top-0 z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
-                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -5 }}
-              >
-                <span className="grid h-6 w-6 place-items-center rounded-[8px] bg-primary/25 text-white" aria-hidden="true">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
-                </span>
-                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">Mobile-first</b><small className="text-[7px] font-normal text-white/60">Every screen, every time</small></span>
-              </motion.div>
-              <motion.div
-                className="pointer-events-none absolute bottom-[35.8%] left-[7%] z-30 flex items-center gap-1.5 rounded-[14px] border border-white/15 bg-[#0a0f1e]/75 py-1.5 pl-2 pr-2.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,.8)] backdrop-blur-xl"
-                animate={reduced ? undefined : { y: [0, -6, 0], rotate: [0, 0.45, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: -7 }}
-              >
-                <span className="grid h-6 w-6 place-items-center rounded-[8px] bg-primary/25 text-white" aria-hidden="true">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="11" cy="11" r="6.5"/><path d="M20.5 20.5l-4.8-4.8"/></svg>
-                </span>
-                <span className="grid gap-0.5"><b className="text-[9px] font-semibold text-white">SEO-ready</b><small className="text-[7px] font-normal text-white/60">Built to be found</small></span>
-              </motion.div>
-
-              <div className="absolute left-1/2 top-[50%] z-30 -translate-x-1/2">
-                <motion.div {...fadeUp(0.95, 16)}>
-                  <motion.div
-                    animate={reduced ? undefined : { y: [0, -5, 0], rotate: [0, 0.25, 0] }}
-                    transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut", delay: -4 }}
-                  >
-                    <HeroStats compact />
-                  </motion.div>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
+          {/* Right column: the live build stage */}
+          <div className="hero-exit-stage">
+            <HeroStage scene={scene} setScene={setScene} paused={paused} reduced={reduced} />
           </div>
         </div>
       </div>
 
-      {/* ===== Bottom marquee ticker ===== */}
+      {/* ===== Social proof: real clients ===== */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 overflow-hidden border-t pointer-events-none"
+        className="hero-proof absolute bottom-0 left-0 right-0 z-10 flex items-center border-t"
         style={{
           borderColor: "rgba(255,255,255,0.06)",
-          background:
-            "linear-gradient(180deg, rgba(7,12,22,0) 0%, rgba(7,12,22,0.55) 60%, rgba(7,12,22,0.78) 100%)",
+          background: "linear-gradient(180deg, rgba(7,12,22,0) 0%, rgba(7,12,22,0.5) 60%, rgba(7,12,22,0.72) 100%)",
         }}
-        aria-hidden="true"
       >
-        <motion.div
-          className="flex whitespace-nowrap py-4"
-          animate={reduced ? {} : { x: ["0%", "-50%"] }}
-          transition={reduced ? {} : { duration: 38, repeat: Infinity, ease: "linear" }}
-        >
-          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
-            <span key={i} className="flex items-center gap-6 px-6 shrink-0">
-              <span
-                className="font-display font-black uppercase text-[15px] tracking-[0.22em]"
-                style={{ color: "var(--text-primary)", opacity: 0.55 }}
-              >
-                {item}
+        <p className="sr-only">Trusted by {CLIENTS.join(", ")}</p>
+        <span className="hero-proof-label" aria-hidden="true">Trusted by GTA businesses</span>
+        <div className="hero-proof-viewport" aria-hidden="true">
+          <div className="hero-marquee-track flex whitespace-nowrap py-4">
+            {[...CLIENTS, ...CLIENTS].map((client, i) => (
+              <span key={i} className="hero-proof-item">
+                {client}
+                <i />
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ color: "var(--accent)", opacity: 0.85 }}>
-                <path d="M12 2 L13.6 9.4 L21 11 L13.6 12.6 L12 20 L10.4 12.6 L3 11 L10.4 9.4 Z" />
-              </svg>
-            </span>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        aria-hidden
-        className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1"
-        style={{ opacity: 0.45, color: "var(--accent)" }}
-        animate={{ y: [0, 6, 0] }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <path d="M6 9l6 6 6-6"/>
-        </svg>
-      </motion.div>
     </section>
   );
 }
