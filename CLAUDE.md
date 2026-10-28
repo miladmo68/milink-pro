@@ -12,7 +12,7 @@
 
 1. Marketing files change only when the owner asks. Record each authorization in `PROJECT_CONTEXT.md`.
 2. Use the shared pieces (`src/config/business.js`, `Button`, `Field`, `content.js`, `Reveal`); never hard-code a phone, URL, price or hand-roll a button/field.
-3. **Never ship invented social proof**: testimonials, ratings, logos, project counts, results. The current `testimonials` are unverified placeholders (see known issues, section 12).
+3. **Never ship invented social proof**: testimonials, ratings, logos, project counts, results. The current `testimonials` are client-approved quotes supplied by the owner; change them only with the client's approval. The Hero's "50+ projects" is still unverified (section 12).
 4. Keep the site light: lazy below-fold sections, no new heavy libraries or large media without running the `perf-check` skill.
 5. Verify visually (desktop, mobile 390px, light/dark, reduced motion) and run `npm run build` before reporting done. Say plainly what was and was not verified.
 6. Commit and push **straight to `main`, only when asked**. No feature branches unless requested. A push to `main` deploys to production on Vercel.

@@ -32,5 +32,5 @@ Never type a phone number, handle, URL or price into a component. Hero (magnetic
 
 ## Content integrity (hard rules)
 
-- No invented testimonials, ratings, client logos, project counts, or results. If a number is not verified by the owner, it does not ship. `testimonials` in `content.js` currently hold **unverified placeholder quotes**; see the known-issues list in the context file.
+- No invented testimonials, ratings, client logos, project counts, or results. If a number is not verified by the owner, it does not ship. `testimonials` in `content.js` are the seven client-approved quotes (no star ratings are shown, because none were given). Change them only with the client's approval.
 - Project tags and summaries describe what the live site visibly is.

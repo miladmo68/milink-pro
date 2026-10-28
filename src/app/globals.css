@@ -2807,8 +2807,6 @@ html[data-theme="light"] .mk-alert--error { color: #b91c1c; background: rgb(239 
 .mk-footer-main { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
 .mk-footer-logo { display: inline-flex; align-items: center; }
 .mk-footer-logo img { height: 32px; width: auto; }
-.mk-footer-wordmark { display: inline-flex; gap: .18rem; margin-left: -.75rem; font-family: var(--font-syne), system-ui, sans-serif; font-size: 18px; line-height: 1; letter-spacing: -.02em; color: var(--text-primary); }
-.mk-footer-wordmark b { font-weight: 900; }
 .mk-footer-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem 1.4rem; margin: 0; padding: 0; list-style: none; }
 .mk-footer-nav a { font-size: 14px; color: var(--text-secondary); transition: color .25s ease; }
 .mk-footer-nav a:hover { color: var(--text-primary); }

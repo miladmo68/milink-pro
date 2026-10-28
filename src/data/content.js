@@ -222,48 +222,47 @@ export const pricing = [
 const essentialPackage = pricing.find((plan) => plan.name === "Essential");
 const essentialStartingPriceLabel = `${essentialPackage.startingPrice} ${essentialPackage.priceCurrency}`;
 
+// Written and approved by the clients themselves (supplied by the owner on
+// 2026-10-27). Keep their exact wording; only add or change an entry with the
+// client's approval. `name` is the business, `role` its industry.
 export const testimonials = [
   {
-    name: "Reza Mohammadi",
-    text: "Their UI/UX design completely elevated our product. Users love the new interface.",
-    role: "",
+    name: "Fair Construction",
+    role: "Construction & Building",
+    text: "We needed a website that looked as professional as the work we do, and Milink nailed it. They took our ideas and turned them into something modern, clean, and impressive. The attention to detail was excellent, and we're genuinely proud to share our new website.",
   },
   {
-    name: "Sarah Lee",
-    text: "Milink built a stunning website for us — fast, modern, and scalable.",
-    role: "",
+    name: "Kind Steps",
+    role: "Therapy & Behavioral Services",
+    text: "What we loved most about working with Milink was how much care they put into the little details. They created a warm, welcoming website that truly reflects who we are and what we do. It's beautiful, easy to use, and exactly what we had envisioned.",
   },
   {
-    name: "Leila Karimi",
-    text: "Our e-commerce store runs smoother than ever thanks to Milink.",
-    role: "",
+    name: "Intershine",
+    role: "Professional Cleaning Services",
+    text: "We wanted something fresh, modern, and easy for our customers to use, and Milink absolutely delivered. They made the whole process feel simple and understood our vision perfectly. The finished website looks fantastic and represents our brand beautifully.",
   },
   {
-    name: "James Brown",
-    text: "They boosted our search rankings in just weeks. SEO expertise at its best!",
-    role: "",
+    name: "Zarsa Gold",
+    role: "Jewelry & E-Commerce",
+    text: "Milink brought our vision to life in such a beautiful way. We wanted an elegant online store that would really let our jewelry shine, and that's exactly what they created. From the overall design to the smallest details, everything feels premium and thoughtfully crafted.",
   },
   {
-    name: "Omid Farahani",
-    text: "Their ongoing maintenance support is top-notch. Always reliable.",
-    role: "",
+    name: "Sky Contracting Inc.",
+    role: "Renovation & Contracting",
+    text: "Milink understood exactly what we wanted from day one. They gave our business a clean, professional website that really reflects the quality of our work. Everything feels polished, easy to navigate, and thoughtfully put together. We couldn't be happier with the result.",
   },
   {
-    name: "Anna White",
-    text: "The branding strategy they delivered gave us a strong new identity.",
-    role: "",
+    name: "Tarahan Choob",
+    role: "Cabinetry & Interior Design",
+    text: "Our work is all about design, craftsmanship, and the details that make a difference. Milink understood that right away. They built a beautiful, minimal website that lets our projects speak for themselves. The final result feels elegant, modern, and very true to our brand.",
   },
   {
-    name: "Maryam Rahimi",
-    text: "From concept to launch, they handled everything seamlessly.",
-    role: "",
-  },
-  {
-    name: "David Chen",
-    text: "We launched faster thanks to their automation and integration expertise.",
-    role: "",
+    name: "PEG Studio",
+    role: "Custom Furniture & Interior Design",
+    text: "Working with Milink was a great experience from start to finish. They really understood our creative direction and turned it into a website that feels modern, refined, and full of personality. Every detail was carefully considered, and the result exceeded our expectations.",
   },
 ];
+
 
 export const faqs = [
   {

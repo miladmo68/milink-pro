@@ -14,7 +14,6 @@ function TestimonialCard({ testimonial, hidden = false }) {
   return (
     <figure className="testimonial-marquee-card" aria-hidden={hidden || undefined}>
       <div>
-        <div className="testimonial-marquee-stars" aria-hidden="true">★★★★★</div>
         <blockquote>“{testimonial.text}”</blockquote>
       </div>
 
