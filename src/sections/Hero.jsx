@@ -17,10 +17,10 @@ const STATS = [
 // browser frame while a widget acts out the promise of that word. The tint
 // colours the backdrop light and the stage rim for that scene.
 const SCENES = [
-  { word: "converts.", tag: "Lead capture", title: "Kind Steps", src: "/assets/img/kindsteps.png", width: 2881, height: 1626, widget: "inquiry", tint: [0.22, 0.62, 1] },
-  { word: "sells.", tag: "E-commerce", title: "Zarsa Gold", src: "/assets/img/zarsagold.png", width: 2881, height: 1626, widget: "order", tint: [1, 0.74, 0.36] },
-  { word: "ranks.", tag: "Search", title: "Fair Construction", src: "/assets/img/fairconstruction.png", width: 3596, height: 1914, widget: "serp", tint: [0.3, 0.92, 0.66] },
-  { word: "lasts.", tag: "Performance", title: "PEG Studio", src: "/assets/img/pegstudio.png", width: 3586, height: 1910, widget: "lighthouse", tint: [0.62, 0.48, 1] },
+  { word: "converts.", tag: "Lead capture", title: "Kind Steps", src: "/assets/work/kind-steps-cover.jpg", width: 1200, height: 675, widget: "inquiry", tint: [0.22, 0.62, 1] },
+  { word: "sells.", tag: "E-commerce", title: "Zarsa Gold", src: "/assets/work/zarsa-gold-cover.jpg", width: 1200, height: 675, widget: "order", tint: [1, 0.74, 0.36] },
+  { word: "ranks.", tag: "Search", title: "Fair Construction", src: "/assets/work/fair-construction-cover.jpg", width: 1200, height: 675, widget: "serp", tint: [0.3, 0.92, 0.66] },
+  { word: "lasts.", tag: "Performance", title: "PEG Studio", src: "/assets/work/peg-studio-cover.jpg", width: 1200, height: 675, widget: "lighthouse", tint: [0.62, 0.48, 1] },
 ];
 
 // Real clients from the Work section, shown as the Hero's social-proof row.
@@ -347,6 +347,7 @@ function HeroStage({ scene, setScene, paused, reduced }) {
                   width={s.width}
                   height={s.height}
                   sizes="(min-width: 1280px) 600px, (min-width: 1024px) 46vw, 92vw"
+                  quality={60}
                   priority={i === 0}
                   className={`hero-browser-shot ${i === scene ? "is-active" : ""}`}
                 />

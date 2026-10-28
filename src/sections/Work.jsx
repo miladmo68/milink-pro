@@ -6,10 +6,10 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight, Globe, Instagram, Maximize2, Monitor, Smartphone, X } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import ScrollParallax from "../components/ScrollParallax.jsx";
+import Button from "../components/ui/Button.jsx";
 import { work } from "../data/content.js";
+import { BUSINESS } from "../config/business.js";
 
-const INSTAGRAM_URL = "https://instagram.com/milink.ca";
-const PORTFOLIO_URL = "https://miladweb.com";
 const AUTO_MS = 9000;
 const EASE = [0.2, 0.8, 0.2, 1];
 
@@ -221,9 +221,9 @@ function Viewer({ items, state, setState, onClose }) {
           <h3 className="work-viewer-title">{project.title}</h3>
           <p className="work-viewer-summary">{project.summary}</p>
           <ul className="work-tags">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
-          <a href={project.liveUrl} target="_blank" rel="noreferrer noopener" className="marketing-cta marketing-cta--primary marketing-cta--compact work-viewer-visit">
+          <Button size="compact" href={project.liveUrl} external className="work-viewer-visit">
             Visit live site <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
+          </Button>
           <nav className="work-viewer-nav" aria-label="Project navigation">
             <button type="button" onClick={() => go(-1)}>
               <ChevronLeft size={16} aria-hidden="true" />
@@ -383,12 +383,12 @@ export default function Work() {
                               <p>{w.summary}</p>
                               <ul className="work-tags">{w.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
                               <div className="work-actions">
-                                <button type="button" onClick={() => openViewer(i)} className="marketing-cta marketing-cta--primary marketing-cta--compact">
+                                <Button size="compact" onClick={() => openViewer(i)}>
                                   Explore the site <Maximize2 size={15} aria-hidden="true" />
-                                </button>
-                                <a href={w.liveUrl} target="_blank" rel="noreferrer noopener" className="marketing-cta marketing-cta--secondary marketing-cta--compact">
+                                </Button>
+                                <Button variant="secondary" size="compact" href={w.liveUrl} external>
                                   Visit live <ArrowUpRight size={15} aria-hidden="true" />
-                                </a>
+                                </Button>
                               </div>
                               <div className={`work-progress ${running ? "" : "is-paused"} ${auto ? "" : "is-off"}`} aria-hidden="true">
                                 <i key={index} style={{ "--auto-ms": `${AUTO_MS}ms` }} />
@@ -459,12 +459,12 @@ export default function Work() {
                   <ul className="work-tags">{w.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
                 </div>
                 <div className="work-actions">
-                  <button type="button" onClick={() => openViewer(i)} className="marketing-cta marketing-cta--primary marketing-cta--compact">
+                  <Button size="compact" onClick={() => openViewer(i)}>
                     Explore the site <Maximize2 size={15} aria-hidden="true" />
-                  </button>
-                  <a href={w.liveUrl} target="_blank" rel="noreferrer noopener" className="marketing-cta marketing-cta--secondary marketing-cta--compact">
+                  </Button>
+                  <Button variant="secondary" size="compact" href={w.liveUrl} external>
                     Visit live <ArrowUpRight size={15} aria-hidden="true" />
-                  </a>
+                  </Button>
                 </div>
               </article>
             </Reveal>
@@ -484,22 +484,12 @@ export default function Work() {
                 </p>
 
                 <div className="card-actions mt-4 flex gap-3">
-                  <a
-                    href={INSTAGRAM_URL}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="marketing-cta marketing-cta--secondary marketing-cta--compact"
-                  >
-                    <Instagram size={18} /> Instagram
-                  </a>
-                  <a
-                    href={PORTFOLIO_URL}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="marketing-cta marketing-cta--primary marketing-cta--compact"
-                  >
-                    <Globe size={18} /> Full Portfolio
-                  </a>
+                  <Button variant="secondary" size="compact" href={BUSINESS.instagram.url} external>
+                    <Instagram size={18} aria-hidden="true" /> Instagram
+                  </Button>
+                  <Button size="compact" href={BUSINESS.portfolioUrl} external>
+                    <Globe size={18} aria-hidden="true" /> Full Portfolio
+                  </Button>
                 </div>
 
                 <div className="mt-4 h-px w-20 bg-primary/30 rounded-full" />

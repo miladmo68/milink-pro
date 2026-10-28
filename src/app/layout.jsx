@@ -1,6 +1,7 @@
 import { Bricolage_Grotesque, Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { pricing, services } from "../data/content.js";
+import { BUSINESS } from "../config/business.js";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -23,9 +24,12 @@ const bricolage = Bricolage_Grotesque({
   weight: ["400", "500", "600", "700"],
   variable: "--font-bricolage",
   display: "swap",
+  // Only the Services card titles use it, so it must not compete with the
+  // Hero for bandwidth: fetched when first needed instead of preloaded.
+  preload: false,
 });
 
-const BASE_URL = "https://milink.ca";
+const BASE_URL = BUSINESS.url;
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.jpg`;
 const ORGANIZATION_ID = `${BASE_URL}/#organization`;
 const LOCAL_BUSINESS_ID = `${BASE_URL}/#localbusiness`;
@@ -131,12 +135,12 @@ const jsonLd = {
       },
       contactPoint: {
         "@type": "ContactPoint",
-        telephone: "+1-437-600-3139",
+        telephone: BUSINESS.phone.schema,
         contactType: "customer service",
         areaServed: SERVICE_AREAS,
       },
       areaServed: SERVICE_AREAS,
-      sameAs: ["https://www.instagram.com/milink.ca"],
+      sameAs: [BUSINESS.instagram.url],
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Website packages",
@@ -181,7 +185,7 @@ const jsonLd = {
       name: "Milink Digital Agency",
       image: DEFAULT_IMAGE,
       url: BASE_URL,
-      telephone: "+1-437-600-3139",
+      telephone: BUSINESS.phone.schema,
       description:
         "Web Design and Development, E-Commerce Solutions, SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Toronto.",
       parentOrganization: { "@id": ORGANIZATION_ID },

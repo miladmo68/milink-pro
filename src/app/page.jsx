@@ -1,18 +1,24 @@
 "use client";
 
 import { useEffect, useState, Suspense, lazy } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import Navbar from "../components/Navbar.jsx";
-import Footer from "../components/Footer.jsx";
 import Hero from "../sections/Hero.jsx";
-import Services from "../sections/Services.jsx";
-import Process from "../sections/Process.jsx";
-import Work from "../sections/Work.jsx";
-import Pricing from "../sections/Pricing.jsx";
-import Testimonials from "../sections/Testimonials.jsx";
-import FAQ from "../sections/FAQ.jsx";
-import Contact from "../sections/Contact.jsx";
 import { faqJsonLd } from "../data/content.js";
+
+// Everything below the Hero is split into its own chunk and hydrated on its
+// own Suspense boundary. Their HTML is still server-rendered (SEO and #anchor
+// links are unchanged), but React no longer hydrates the whole page in one
+// long task, which is what blocked mobile input for ~3s.
+const Services = dynamic(() => import("../sections/Services.jsx"));
+const Work = dynamic(() => import("../sections/Work.jsx"));
+const Process = dynamic(() => import("../sections/Process.jsx"));
+const Pricing = dynamic(() => import("../sections/Pricing.jsx"));
+const Testimonials = dynamic(() => import("../sections/Testimonials.jsx"));
+const FAQ = dynamic(() => import("../sections/FAQ.jsx"));
+const Contact = dynamic(() => import("../sections/Contact.jsx"));
+const Footer = dynamic(() => import("../components/Footer.jsx"));
 
 const Modal = lazy(() => import("../components/Modal.jsx"));
 const Lightbox = lazy(() => import("../components/Lightbox.jsx"));

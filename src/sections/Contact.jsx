@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  MapPinIcon,
-  PhoneIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { MapPinIcon, PhoneIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { Instagram } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import ScrollParallax from "../components/ScrollParallax.jsx";
+import Button from "../components/ui/Button.jsx";
+import Field from "../components/ui/Field.jsx";
+import { BUSINESS, mapsUrl, whatsappLinks } from "../config/business.js";
+import { openWhatsApp } from "../lib/whatsapp.js";
 
 /* ─── Shared easing ─────────────────────────────────────── */
 const EASE = [0.4, 0, 0.2, 1];
 const PACKAGE_OPTIONS = ["Essential", "Professional", "E-commerce & Custom"];
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 /* ─── Card: lift + blue-glow on hover ───────────────────── */
 const cardVariants = {
@@ -41,113 +41,137 @@ const iconVariants = {
   hover: { scale: 1.18, rotate: -8, transition: { duration: 0.25, ease: EASE } },
 };
 
+const WhatsAppIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-primary" aria-hidden="true">
+    <path d="M20.52 3.48A11.78 11.78 0 0012 0C5.38 0 0 5.38 0 12c0 2.12.55 4.18 1.6 6.02L0 24l6.16-1.6A11.96 11.96 0 0012 24c6.62 0 12-5.38 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 21.82c-1.83 0-3.6-.5-5.14-1.45l-.37-.22-3.65.95.97-3.56-.24-.37a9.78 9.78 0 01-1.52-5.17c0-5.42 4.4-9.82 9.82-9.82 2.62 0 5.09 1.02 6.94 2.88 1.85 1.85 2.88 4.32 2.88 6.94 0 5.42-4.4 9.82-9.82 9.82zm5.6-7.4c-.31-.15-1.84-.91-2.13-1.02-.29-.11-.5-.15-.71.15-.21.29-.82 1.02-1.01 1.23-.19.21-.37.23-.68.08-.31-.15-1.31-.48-2.5-1.53-.92-.82-1.53-1.83-1.71-2.14-.18-.31-.02-.48.13-.63.14-.14.31-.37.46-.55.15-.18.2-.31.31-.52.1-.21.05-.4-.02-.55-.08-.15-.71-1.72-.97-2.36-.26-.63-.52-.54-.71-.55h-.61c-.21 0-.55.08-.84.4-.29.31-1.1 1.08-1.1 2.63s1.13 3.05 1.29 3.26c.15.21 2.22 3.39 5.37 4.75.75.32 1.34.51 1.8.65.76.24 1.45.21 2-.13.31-.21 1.02-1.01 1.17-1.42.15-.4.15-.74.1-.82-.05-.08-.29-.18-.6-.32z" />
+  </svg>
+);
+
+const EMPTY_FORM = { name: "", email: "", phone: "", message: "", website: "" };
+
 export default function Contact() {
   /* ── Form state ─────────────────────────────────────────── */
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [form, setForm] = useState(EMPTY_FORM);
   const [selectedPackage, setSelectedPackage] = useState("");
-  const [message, setMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [status, setStatus] = useState({ state: "idle", message: "" });
+  const [sentTo, setSentTo] = useState(null);
+  const openedAt = useRef(0);
+  const turnstileRef = useRef(null);
+  const turnstileToken = useRef("");
+  const turnstileWidget = useRef(null);
+  const loading = status.state === "sending";
 
-  /* ── Captcha + Honeypot ─────────────────────────────────── */
-  const [a, setA] = useState(1);
-  const [b, setB] = useState(1);
-  const [answer, setAnswer] = useState("");
-  const [captchaError, setCaptchaError] = useState(false);
-  const trapRef = useRef(null);
-  const captchaRef = useRef(null);
-
-  /* ── Submission status ──────────────────────────────────── */
-  const [loading, setLoading] = useState(false);
-  const [serverMsg, setServerMsg] = useState(null);
-
-  /* ── WhatsApp ───────────────────────────────────────────── */
-  const WA_PHONE = "14376003139";
-  const WA_TEXT = encodeURIComponent("Hi Milink! I'm interested in your services.");
-  const WA_LINK = `https://wa.me/${WA_PHONE}?text=${WA_TEXT}`;
-  const WA_MOBILE_FALLBACK = `whatsapp://send?phone=${WA_PHONE}&text=${WA_TEXT}`;
-
-  const regen = () => {
-    setA(Math.floor(Math.random() * 9) + 1);
-    setB(Math.floor(Math.random() * 9) + 1);
-    setAnswer("");
-    setCaptchaError(false);
+  const setField = (key) => (event) => {
+    const { value } = event.target;
+    setForm((current) => ({ ...current, [key]: value }));
+    if (fieldErrors[key]) setFieldErrors((current) => ({ ...current, [key]: undefined }));
   };
-  useEffect(() => { regen(); }, []);
+
   useEffect(() => {
+    openedAt.current = Date.now();
     const requestedPackage = new URLSearchParams(window.location.search).get("package");
     if (PACKAGE_OPTIONS.includes(requestedPackage)) setSelectedPackage(requestedPackage);
   }, []);
 
-  const captchaOK = parseInt(answer, 10) === a + b;
+  // Optional Cloudflare Turnstile: only runs when a public site key is set.
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !turnstileRef.current) return undefined;
+    const render = () => {
+      if (!window.turnstile || turnstileWidget.current !== null || !turnstileRef.current) return;
+      turnstileWidget.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "auto",
+        callback: (token) => { turnstileToken.current = token; },
+        "expired-callback": () => { turnstileToken.current = ""; },
+      });
+    };
+    if (window.turnstile) { render(); return undefined; }
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.onload = render;
+    document.head.appendChild(script);
+    return undefined;
+  }, [sentTo]);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (trapRef.current?.value) { setCaptchaError(true); return; }
-    if (!captchaOK) { setCaptchaError(true); captchaRef.current?.focus(); return; }
-
-    setLoading(true);
-    setServerMsg(null);
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (loading) return;
+    setStatus({ state: "sending", message: "" });
+    setFieldErrors({});
 
     try {
-      const res = await fetch("/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, service: selectedPackage || undefined }),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone || undefined,
+          message: form.message,
+          service: selectedPackage || undefined,
+          website: form.website,
+          openedAt: openedAt.current,
+          cfToken: turnstileToken.current || undefined,
+        }),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || "Send failed");
-      setServerMsg({ type: "success", text: "Message sent successfully. Thank you!" });
-      setName(""); setEmail(""); setMessage(""); regen();
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (data?.fields) setFieldErrors(data.fields);
+        setStatus({ state: "error", message: data?.error || "Message failed to send. Please try again." });
+        if (window.turnstile && turnstileWidget.current !== null) window.turnstile.reset(turnstileWidget.current);
+        turnstileToken.current = "";
+        return;
+      }
+      setSentTo({ name: form.name.trim().split(" ")[0], email: form.email.trim() });
+      setForm(EMPTY_FORM);
+      setStatus({ state: "idle", message: "" });
     } catch {
-      setServerMsg({ type: "error", text: "Message failed to send. Please try again." });
-    } finally {
-      setLoading(false);
+      setStatus({ state: "error", message: "We couldn't reach the server. Please check your connection and try again." });
     }
   }
 
+  function sendAnother() {
+    openedAt.current = Date.now();
+    turnstileWidget.current = null;
+    setSentTo(null);
+  }
+
   /* ── Contact info items ─────────────────────────────────── */
+  const whatsapp = whatsappLinks();
   const contactItems = [
     {
       key: "address",
       icon: <MapPinIcon className="h-5 w-5 text-primary" />,
       label: "Address",
-      value: "GTA, Ontario, Canada",
-      href: "https://www.google.com/maps/search/?api=1&query=GTA%2C%20Ontario%2C%20Canada",
+      value: BUSINESS.address.short,
+      href: mapsUrl(),
       external: true,
     },
     {
       key: "instagram",
       icon: <Instagram className="h-5 w-5 text-primary" aria-hidden="true" />,
       label: "Instagram",
-      value: "@milink.ca",
-      href: "https://instagram.com/milink.ca",
+      value: BUSINESS.instagram.handle,
+      href: BUSINESS.instagram.url,
       external: true,
     },
     {
       key: "phone",
       icon: <PhoneIcon className="h-5 w-5 text-primary" />,
       label: "Phone",
-      value: "+1 (437) 600-3139",
-      href: "tel:+14376003139",
+      value: BUSINESS.phone.display,
+      href: `tel:${BUSINESS.phone.tel}`,
     },
     {
       key: "whatsapp",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-          className="h-5 w-5 text-primary" aria-hidden="true">
-          <path d="M20.52 3.48A11.78 11.78 0 0012 0C5.38 0 0 5.38 0 12c0 2.12.55 4.18 1.6 6.02L0 24l6.16-1.6A11.96 11.96 0 0012 24c6.62 0 12-5.38 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 21.82c-1.83 0-3.6-.5-5.14-1.45l-.37-.22-3.65.95.97-3.56-.24-.37a9.78 9.78 0 01-1.52-5.17c0-5.42 4.4-9.82 9.82-9.82 2.62 0 5.09 1.02 6.94 2.88 1.85 1.85 2.88 4.32 2.88 6.94 0 5.42-4.4 9.82-9.82 9.82zm5.6-7.4c-.31-.15-1.84-.91-2.13-1.02-.29-.11-.5-.15-.71.15-.21.29-.82 1.02-1.01 1.23-.19.21-.37.23-.68.08-.31-.15-1.31-.48-2.5-1.53-.92-.82-1.53-1.83-1.71-2.14-.18-.31-.02-.48.13-.63.14-.14.31-.37.46-.55.15-.18.2-.31.31-.52.1-.21.05-.4-.02-.55-.08-.15-.71-1.72-.97-2.36-.26-.63-.52-.54-.71-.55h-.61c-.21 0-.55.08-.84.4-.29.31-1.1 1.08-1.1 2.63s1.13 3.05 1.29 3.26c.15.21 2.22 3.39 5.37 4.75.75.32 1.34.51 1.8.65.76.24 1.45.21 2-.13.31-.21 1.02-1.01 1.17-1.42.15-.4.15-.74.1-.82-.05-.08-.29-.18-.6-.32z" />
-        </svg>
-      ),
+      icon: <WhatsAppIcon />,
       label: "WhatsApp",
       value: "Chat on WhatsApp",
-      href: WA_LINK,
+      href: whatsapp.web,
       external: true,
-      onClick: (event) => {
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-          event.preventDefault();
-          window.location.href = WA_MOBILE_FALLBACK;
-        }
-      },
+      onClick: openWhatsApp,
     },
   ];
 
@@ -168,7 +192,7 @@ export default function Contact() {
         <div className="bg-orb bg-orb--accent bg-orb--bottom-left" aria-hidden="true" />
       </ScrollParallax>
 
-      {/* ① Header — fade-up to match the intershine .section-head pattern */}
+      {/* ① Header */}
       <div className="mb-14 space-y-3 px-5 text-center sm:px-0">
         <Reveal from="up" distance={14}>
           <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Contact</div>
@@ -186,7 +210,7 @@ export default function Contact() {
 
       <div className="container mx-auto grid gap-8 lg:grid-cols-2 items-stretch">
 
-        {/* ② LEFT card — fadeInUp, delay 0 */}
+        {/* ② LEFT card */}
         <Reveal from="up" distance={32} delay={0.1} className="h-full">
           <motion.div
             variants={cardVariants}
@@ -195,16 +219,16 @@ export default function Contact() {
             className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 space-y-8 h-full card-surface card-sweep card-bar"
           >
             <div>
-              <h2 className="text-3xl font-bold">Contact Info</h2>
+              <h3 className="text-3xl font-bold">Contact Info</h3>
               <p className="text-base-content/75 mt-2 text-sm leading-relaxed">
                 We&apos;d love to hear from you. Pick any channel below.
               </p>
             </div>
 
-            {/* ④ Contact rows — staggered fadeInLeft + row hover nudge */}
             <ul className="grid gap-3.5">
               {contactItems.map(({ key, icon, label, value, href, external, onClick }, i) => (
-                <Reveal key={key} from="up" distance={18} delay={0.12 + i * 0.08}>
+                <li key={key}>
+                <Reveal from="up" distance={18} delay={0.12 + i * 0.08}>
                   <motion.a
                     href={href}
                     target={external ? "_blank" : undefined}
@@ -229,12 +253,13 @@ export default function Contact() {
                     </div>
                   </motion.a>
                 </Reveal>
+                </li>
               ))}
             </ul>
           </motion.div>
         </Reveal>
 
-        {/* ③ RIGHT card — fadeInUp, delay 0.2s */}
+        {/* ③ RIGHT card: the form, or the thank-you once it is sent */}
         <Reveal from="up" distance={32} delay={0.22} className="h-full">
           <motion.div
             variants={cardVariants}
@@ -242,247 +267,87 @@ export default function Contact() {
             whileHover="hover"
             className="marketing-navy-surface bg-base-100 rounded-2xl p-8 border border-base-300 h-full card-surface card-sweep card-bar"
           >
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <h2 className="text-3xl font-bold">Send a Message</h2>
-
-              {/* Honeypot */}
-              <input ref={trapRef} type="text" tabIndex={-1} autoComplete="off"
-                className="hidden" aria-hidden="true" />
-
-              {/* ⑤ Animated inputs */}
-              <FocusInput
-                placeholder="Your Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <FocusInput
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <div className="space-y-2">
-                <label htmlFor="contact-package" className="block text-sm font-medium text-base-content/78">
-                  Package you&apos;re interested in <span className="text-base-content/50">(optional)</span>
-                </label>
-                <FocusSelect
-                  id="contact-package"
-                  value={selectedPackage}
-                  onChange={(e) => setSelectedPackage(e.target.value)}
-                >
-                  <option value="">Choose a package</option>
-                  {PACKAGE_OPTIONS.map((packageName) => (
-                    <option key={packageName} value={packageName}>{packageName}</option>
-                  ))}
-                </FocusSelect>
-              </div>
-              <FocusTextarea
-                rows={5}
-                placeholder="Your Message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-              />
-
-              {/* Captcha row */}
-              <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
-                <div className="form-control">
-                  <FocusInput
-                    inputRef={captchaRef}
-                    type="number"
-                    inputMode="numeric"
-                    value={answer}
-                    onChange={(e) => { setAnswer(e.target.value); setCaptchaError(false); }}
-                    extraClass={captchaError ? "input-error" : ""}
-                    placeholder={`What is ${a} + ${b}? *`}
-                    aria-label={`What is ${a} plus ${b}?`}
-                    required
-                  />
-                  {captchaError && (
-                    <label className="label">
-                      <span className="label-text-alt text-error">
-                        Incorrect answer. Please try again.
-                      </span>
-                    </label>
-                  )}
+            {sentTo ? (
+              <div className="mk-thanks" role="status">
+                <span className="mk-thanks-icon" aria-hidden="true"><CheckCircleIcon className="h-8 w-8" /></span>
+                <h3 className="text-3xl font-bold">
+                  Message sent{sentTo.name ? `, ${sentTo.name}` : ""}!
+                </h3>
+                <p className="text-base-content/75 leading-relaxed">
+                  Thanks for reaching out. We&apos;ll reply to <strong className="text-base-content">{sentTo.email}</strong> as
+                  soon as we can. While you wait, you can get a head start:
+                </p>
+                <ul className="mk-thanks-steps">
+                  <li><b>1</b> Fill in your project brief in the client portal. It saves as you go.</li>
+                  <li><b>2</b> Or message us on WhatsApp if it&apos;s time-sensitive.</li>
+                </ul>
+                <div className="flex flex-wrap gap-3">
+                  <Button href="/portal" arrow>Start your project brief</Button>
+                  <Button variant="secondary" href={whatsapp.web} external onClick={openWhatsApp}>WhatsApp us</Button>
                 </div>
-                <motion.button
-                  type="button"
-                  onClick={regen}
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                  transition={{ duration: 0.18 }}
-                  className="btn btn-ghost"
-                >
-                  Refresh
-                </motion.button>
+                <button type="button" onClick={sendAnother} className="mk-link-button">Send another message</button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <h3 className="text-3xl font-bold">Send a Message</h3>
 
-              {/* Status message */}
-              {serverMsg && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`flex items-center gap-2 p-3 rounded-lg text-sm font-medium ${
-                    serverMsg.type === "success"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {serverMsg.type === "success"
-                    ? <CheckCircleIcon className="h-5 w-5 flex-shrink-0" />
-                    : <XCircleIcon className="h-5 w-5 flex-shrink-0" />}
-                  <span>{serverMsg.text}</span>
-                </motion.div>
-              )}
+                {/* Honeypot: invisible to people, irresistible to bots. */}
+                <div className="mk-hp" aria-hidden="true">
+                  <label>
+                    Website
+                    <input type="text" name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={setField("website")} />
+                  </label>
+                </div>
 
-              {/* ⑥ Submit CTA — full-width form action, matching the approved reference. */}
-              <div className="contact-submit-row">
-                <ShimmerButton loading={loading} />
-              </div>
-            </form>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="Your name" name="name" autoComplete="name" required value={form.name} onChange={setField("name")} error={fieldErrors.name} />
+                  <Field label="Email" type="email" name="email" autoComplete="email" required value={form.email} onChange={setField("email")} error={fieldErrors.email} />
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label="Phone" optional type="tel" name="phone" autoComplete="tel" inputMode="tel" value={form.phone} onChange={setField("phone")} error={fieldErrors.phone} />
+                  <Field as="select" label="Package" optional name="package" value={selectedPackage} onChange={(event) => setSelectedPackage(event.target.value)}>
+                    <option value="">Not sure yet</option>
+                    {PACKAGE_OPTIONS.map((packageName) => (
+                      <option key={packageName} value={packageName}>{packageName}</option>
+                    ))}
+                  </Field>
+                </div>
+                <Field as="textarea" label="How can we help?" name="message" rows={5} required minLength={10} placeholder="Tell us about your business and what you need." value={form.message} onChange={setField("message")} error={fieldErrors.message} />
+
+                {TURNSTILE_SITE_KEY ? <div ref={turnstileRef} /> : null}
+
+                {status.state === "error" ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mk-alert mk-alert--error"
+                    role="alert"
+                  >
+                    {status.message}
+                  </motion.div>
+                ) : null}
+
+                <Button type="submit" size="block" arrow={!loading} disabled={loading} className="text-lg">
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <motion.span
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+                        className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                      />
+                      Sending…
+                    </span>
+                  ) : (
+                    "Send Message"
+                  )}
+                </Button>
+              </form>
+            )}
           </motion.div>
         </Reveal>
 
       </div>
     </section>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════
-   Sub-components
-══════════════════════════════════════════════════════════ */
-
-/** Input with hover border + focus glow ring */
-function FocusInput({ inputRef, extraClass = "", ...props }) {
-  const [focused, setFocused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const active = focused || hovered;
-
-  return (
-    <motion.div
-      animate={{
-        boxShadow: focused
-          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
-          : "0 0 0 0px rgb(var(--brand) / 0)",
-      }}
-      transition={{ duration: 0.22 }}
-      className="rounded-lg"
-    >
-      <input
-        ref={inputRef}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className={`input input-bordered w-full rounded-lg transition-all duration-300 ${
-          active ? "border-[rgb(var(--brand))]" : ""
-        } ${focused ? "bg-base-200/40" : ""} ${extraClass}`}
-        {...props}
-      />
-    </motion.div>
-  );
-}
-
-/** Textarea with same hover/focus treatment */
-function FocusTextarea({ ...props }) {
-  const [focused, setFocused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const active = focused || hovered;
-
-  return (
-    <motion.div
-      animate={{
-        boxShadow: focused
-          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
-          : "0 0 0 0px rgb(var(--brand) / 0)",
-      }}
-      transition={{ duration: 0.22 }}
-      className="rounded-lg"
-    >
-      <textarea
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className={`textarea textarea-bordered w-full rounded-lg transition-all duration-300 resize-none ${
-          active ? "border-[rgb(var(--brand))]" : ""
-        } ${focused ? "bg-base-200/40" : ""}`}
-        {...props}
-      />
-    </motion.div>
-  );
-}
-
-/** Select with the same focus treatment as the contact inputs. */
-function FocusSelect({ children, ...props }) {
-  const [focused, setFocused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const active = focused || hovered;
-
-  return (
-    <motion.div
-      animate={{
-        boxShadow: focused
-          ? "0 0 0 4px rgb(var(--brand) / 0.1)"
-          : "0 0 0 0px rgb(var(--brand) / 0)",
-      }}
-      transition={{ duration: 0.22 }}
-      className="rounded-lg"
-    >
-      <select
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className={`select select-bordered h-12 w-full rounded-lg transition-all duration-300 ${
-          active ? "border-[rgb(var(--brand))]" : ""
-        } ${focused ? "bg-base-200/40" : ""}`}
-        {...props}
-      >
-        {children}
-      </select>
-    </motion.div>
-  );
-}
-
-/** Contact submit CTA uses the shared primary motion/shimmer treatment. */
-function ShimmerButton({ loading }) {
-  return (
-    <motion.button
-      type="submit"
-      disabled={loading}
-      initial="rest"
-      whileHover={!loading ? "hover" : undefined}
-      whileTap={!loading ? { scale: 0.98 } : undefined}
-      variants={{
-        rest: { y: 0 },
-        hover: { y: -2, transition: { duration: 0.2, ease: EASE } },
-      }}
-      className="marketing-cta marketing-cta--primary text-lg relative"
-    >
-      <span>
-        {loading ? (
-          <span className="flex items-center gap-2 justify-center">
-            <motion.span
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
-              className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-            />
-            Sending…
-          </span>
-        ) : (
-          <>
-            Send Message
-            <svg className="inline-block ml-2 align-[-2px]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </>
-        )}
-      </span>
-    </motion.button>
   );
 }

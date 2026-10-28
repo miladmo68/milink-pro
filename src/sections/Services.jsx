@@ -91,7 +91,7 @@ function InOutItem({ children, index = 0, delayStep = 0.08 }) {
 }
 
 /* ===== FlippyInteractive ===== */
-function FlippyInteractive({ front, back, className = "" }) {
+function FlippyInteractive({ front, back, title, className = "" }) {
   const [flipped, setFlipped] = useState(false);
 
   const handleKeyDown = (event) => {
@@ -107,7 +107,7 @@ function FlippyInteractive({ front, back, className = "" }) {
       tabIndex={0}
       role="button"
       aria-expanded={flipped}
-      aria-label="Service card. Press Enter or Space to show or hide details."
+      aria-label={`${title}. Press Enter or Space to show or hide details.`}
       onMouseLeave={() => setFlipped(false)}
       onClick={() => setFlipped((value) => !value)}
       onPointerMove={(event) => {
@@ -274,6 +274,7 @@ function ServiceCard({ data, isLight }) {
   return (
     <FlippyInteractive
       className="h-[500px] sm:h-[480px] md:h-[480px]"
+      title={data.title}
       front={Front}
       back={Back}
     />
