@@ -5,7 +5,8 @@ import { faqs } from "../data/content.js";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import ScrollParallax from "../components/ScrollParallax.jsx";
 
-// One panel with a row per question (the first one open), the same header
+// One panel with a row per question (the first one open; rows appear one by one
+// as the panel scrolls into view), the same header
 // pattern as every other section. Copy comes from `faqs` in content.js, which
 // also feeds the FAQPage JSON-LD. Styles: the `.fq-*` block in globals.css.
 export default function FAQ() {
@@ -41,12 +42,13 @@ export default function FAQ() {
           </div>
         </Reveal>
 
-        <Reveal from="up" distance={20}>
+        <Reveal from="up" distance={12}>
           <div className="fq-panel marketing-navy-surface" onPointerMove={spotlight}>
             {faqs.map((f, i) => {
               const open = openIndex === i;
               return (
-                <div key={f.q} className="fq-item" data-open={open}>
+                <Reveal key={f.q} from="up" distance={14} delay={i * 0.05}>
+                <div className="fq-item" data-open={open}>
                   <h3>
                     <button
                       id={`${sectionId}-question-${i}`}
@@ -69,6 +71,7 @@ export default function FAQ() {
                     <div><p>{f.a}</p></div>
                   </div>
                 </div>
+                </Reveal>
               );
             })}
           </div>
