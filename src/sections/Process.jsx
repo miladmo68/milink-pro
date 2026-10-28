@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Check, Lock } from "lucide-react";
+import { Check, ChevronDown, Lock } from "lucide-react";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import { work } from "../data/content.js";
 
@@ -169,15 +169,9 @@ function Story({ active, reduced }) {
 
           {/* 03 and 04: the real site, revealed left to right as it is built */}
           {showReal ? (
-            <motion.div
-              key="real"
-              className="pr-layer pr-l-real"
-              initial={{ clipPath: reduced ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
-              animate={{ clipPath: "inset(0 0% 0 0)" }}
-              transition={{ duration: reduced ? 0 : 3.2, ease: [0.65, 0, 0.35, 1], delay: reduced ? 0 : 0.35 }}
-            >
+            <div key="real" className="pr-layer pr-l-real">
               <Image src="/assets/work/zarsa-gold-cover.jpg" alt="" width={1200} height={675} sizes="(min-width: 1024px) 640px, 92vw" quality={70} />
-            </motion.div>
+            </div>
           ) : null}
           {active === 2 ? <span className="pr-build-bar" /> : null}
 
@@ -229,17 +223,32 @@ function Story({ active, reduced }) {
   );
 }
 
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
 export default function Process() {
   const reduced = useReducedMotion();
   const [active, setActive] = useState(0);
+  // Scroll mode: the panel pins and the page scroll drives the steps (no scroll
+  // hijacking). On short screens it falls back to auto-advancing tabs.
+  const [scrollMode, setScrollMode] = useState(true);
   const [auto, setAuto] = useState(true);
   const [hover, setHover] = useState(false);
   const [inView, setInView] = useState(false);
+  const trackRef = useRef(null);
+  const stickyRef = useRef(null);
   const panelRef = useRef(null);
   const tabRefs = useRef([]);
   const swipe = useRef(null);
-  const running = auto && inView && !hover && !reduced;
+  const running = inView && !reduced && (scrollMode || (auto && !hover));
+  const autoRunning = !scrollMode && auto && inView && !hover && !reduced;
   const step = STEPS[active];
+
+  useEffect(() => {
+    const check = () => setScrollMode(window.innerHeight >= 700 && window.innerWidth >= 340);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     const element = panelRef.current;
@@ -249,21 +258,61 @@ export default function Process() {
     return () => observer.disconnect();
   }, []);
 
-  // The steps advance on their own until the visitor takes over.
+  // Scroll mode: progress through the tall track decides the step, and the
+  // "build" of the real page follows the scroll inside step 03.
   useEffect(() => {
-    if (!running) return undefined;
+    if (!scrollMode) return undefined;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const track = trackRef.current;
+      const sticky = stickyRef.current;
+      const panel = panelRef.current;
+      if (!track || !sticky || !panel) return;
+      const top = parseFloat(getComputedStyle(sticky).top) || 96;
+      const scrollable = Math.max(1, track.offsetHeight - sticky.offsetHeight);
+      const progress = clamp((top - track.getBoundingClientRect().top) / scrollable, 0, 1);
+      panel.style.setProperty("--p", progress.toFixed(4));
+      panel.style.setProperty("--pr-real", clamp(progress * STEPS.length - 2, 0, 1).toFixed(3));
+      const index = Math.min(STEPS.length - 1, Math.floor(progress * STEPS.length));
+      setActive((current) => (current === index ? current : index));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [scrollMode]);
+
+  // Tab mode: the steps advance on their own until the visitor takes over.
+  useEffect(() => {
+    if (!autoRunning) return undefined;
     const timer = window.setTimeout(() => setActive((i) => (i + 1) % STEPS.length), STEP_MS);
     return () => window.clearTimeout(timer);
-  }, [running, active]);
+  }, [autoRunning, active]);
 
   const select = (index) => {
+    if (scrollMode) {
+      const track = trackRef.current;
+      const sticky = stickyRef.current;
+      if (!track || !sticky) return;
+      const top = parseFloat(getComputedStyle(sticky).top) || 96;
+      const scrollable = Math.max(1, track.offsetHeight - sticky.offsetHeight);
+      const target = window.scrollY + track.getBoundingClientRect().top - top + ((index + 0.5) / STEPS.length) * scrollable;
+      window.scrollTo({ top: target, behavior: reduced ? "auto" : "smooth" });
+      return;
+    }
     setAuto(false);
     setActive(index);
   };
 
-  // Phones: swipe the stage sideways to move between steps (vertical scroll is untouched).
+  // Phones in tab mode: swipe the stage sideways to move between steps.
   const onStageDown = (event) => {
-    if (event.pointerType === "touch") swipe.current = { x: event.clientX, y: event.clientY };
+    if (!scrollMode && event.pointerType === "touch") swipe.current = { x: event.clientX, y: event.clientY };
   };
   const onStageUp = (event) => {
     const start = swipe.current;
@@ -289,7 +338,7 @@ export default function Process() {
   };
 
   return (
-    <section id="process" className="relative scroll-mt-24 overflow-hidden bg-base-100 py-24 dark:!bg-transparent sm:py-28">
+    <section id="process" className="relative scroll-mt-24 overflow-clip bg-base-100 py-24 dark:!bg-transparent sm:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block" aria-hidden="true">
         <div className="section-depth-work" />
         <div className="absolute inset-0 opacity-[0.045] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_1.2px)] [background-size:20px_20px]" />
@@ -310,50 +359,55 @@ export default function Process() {
           </Reveal>
         </div>
 
-        <Reveal from="up" distance={28} delay={0.1}>
-          <div
-            ref={panelRef}
-            className={`pr-panel marketing-navy-surface bg-base-100 border border-base-300 card-surface ${running ? "is-running" : ""}`}
-            style={{ "--pr-tint": step.tint, "--pr-ms": `${STEP_MS}ms` }}
-            onPointerEnter={(event) => { if (event.pointerType === "mouse") setHover(true); }}
-            onPointerLeave={(event) => { if (event.pointerType === "mouse") setHover(false); }}
-          >
-            <div className="pr-tabs" role="tablist" aria-label="Our process" onKeyDown={onKeyDown}>
-              {STEPS.map((s, i) => (
-                <button
-                  key={s.number}
-                  ref={(el) => { tabRefs.current[i] = el; }}
-                  type="button"
-                  role="tab"
-                  id={`pr-tab-${i}`}
-                  aria-selected={i === active}
-                  aria-controls="pr-stage"
-                  tabIndex={i === active ? 0 : -1}
-                  className={`pr-tab ${i === active ? "is-active" : ""} ${i < active ? "is-done" : ""}`}
-                  onClick={() => select(i)}
-                >
-                  <span className="pr-tab-num">{s.number}</span>
-                  <span className="pr-tab-title">{s.title}</span>
-                  <i className="pr-tab-bar" aria-hidden="true"><b /></i>
-                </button>
-              ))}
-            </div>
-
-            <div className="pr-stage" id="pr-stage" role="tabpanel" aria-labelledby={`pr-tab-${active}`} onPointerDown={onStageDown} onPointerUp={onStageUp} onPointerCancel={() => { swipe.current = null; }}>
-              <div className="pr-copy" key={active}>
-                <span className="pr-big" aria-hidden="true">{step.number}</span>
-                <h3 className="pr-title">{step.title}</h3>
-                <p className="pr-desc">{step.description}</p>
-                <ul className="pr-points">
-                  {step.points.map((point) => (
-                    <li key={point}><span><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{point}</li>
-                  ))}
-                </ul>
+        <div ref={trackRef} className={`pr-track ${scrollMode ? "is-scroll" : ""}`}>
+          <div ref={stickyRef} className={`pr-sticky ${scrollMode ? "is-scroll" : ""}`}>
+            <div
+              ref={panelRef}
+              className={`pr-panel marketing-navy-surface bg-base-100 border border-base-300 card-surface ${running ? "is-running" : ""} ${scrollMode ? "is-scroll" : "is-timed"}`}
+              style={{ "--pr-tint": step.tint, "--pr-ms": `${STEP_MS}ms` }}
+              onPointerEnter={(event) => { if (event.pointerType === "mouse") setHover(true); }}
+              onPointerLeave={(event) => { if (event.pointerType === "mouse") setHover(false); }}
+            >
+              <div className="pr-tabs" role="tablist" aria-label="Our process" onKeyDown={onKeyDown}>
+                {STEPS.map((s, i) => (
+                  <button
+                    key={s.number}
+                    ref={(el) => { tabRefs.current[i] = el; }}
+                    type="button"
+                    role="tab"
+                    id={`pr-tab-${i}`}
+                    aria-selected={i === active}
+                    aria-controls="pr-stage"
+                    tabIndex={i === active ? 0 : -1}
+                    className={`pr-tab ${i === active ? "is-active" : ""} ${i < active ? "is-done" : ""}`}
+                    style={{ "--i": i }}
+                    onClick={() => select(i)}
+                  >
+                    <span className="pr-tab-num">{s.number}</span>
+                    <span className="pr-tab-title">{s.title}</span>
+                    <i className="pr-tab-bar" aria-hidden="true"><b /></i>
+                  </button>
+                ))}
               </div>
-              <Story active={active} reduced={reduced} />
+
+              <div className="pr-stage" id="pr-stage" role="tabpanel" aria-labelledby={`pr-tab-${active}`} onPointerDown={onStageDown} onPointerUp={onStageUp} onPointerCancel={() => { swipe.current = null; }}>
+                <div className="pr-copy" key={active}>
+                  <span className="pr-big" aria-hidden="true">{step.number}</span>
+                  <h3 className="pr-title">{step.title}</h3>
+                  <p className="pr-desc">{step.description}</p>
+                  <ul className="pr-points">
+                    {step.points.map((point) => (
+                      <li key={point}><span><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+                <Story active={active} reduced={reduced} />
+              </div>
+
+              {scrollMode && active < STEPS.length - 1 ? <span className="pr-hint" aria-hidden="true"><ChevronDown size={18} /></span> : null}
             </div>
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

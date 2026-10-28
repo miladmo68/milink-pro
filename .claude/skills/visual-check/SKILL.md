@@ -32,3 +32,7 @@ It prints `pageWidth` vs `viewport`; they must be equal (no horizontal overflow)
 - Use a **production build** for anything that measures performance (`perf-check`), `next dev` for iteration.
 - Never run `npm run build` while `next dev` is running (shared `.next` gets corrupted: "Cannot find module ./vendor-chunks/...").
 - Kill leftovers: `pkill -f "next dev"; pkill -f "next start"; pkill -f next-server; pkill -f remote-debugging-port`.
+
+## Scroll-linked sections
+
+To test a pinned/scroll-driven section, scroll to a fraction of its track and read state: `document.documentElement.style.scrollBehavior='auto'` first (the site uses smooth scrolling), then `window.scrollTo(0, window.scrollY + track.getBoundingClientRect().top - pinOffset + fraction * (track.offsetHeight - sticky.offsetHeight))`. **Never name a variable `top` in `EVAL`** (it collides with `window.top` and the whole script fails silently). Lazy sections hydrate late in headless Chrome: wait ~5s before clicking or scrolling-then-asserting, or you will see false failures. Run tests one at a time with a browser reset in between (`pkill -f remote-debugging-port; sleep 1.5`).

@@ -25,6 +25,7 @@ Never type a phone number, handle, URL or price into a component. Hero (magnetic
 1. Light and dark theme, desktop and 390px mobile, `prefers-reduced-motion` (see `visual-check`).
 2. No horizontal overflow at 390px.
 3. Anything clickable shows the pointer cursor (one global rule in `globals.css` covers links, buttons, `role=button/tab/radio`, `aria-pressed`, `summary`, `select`, radio/checkbox and their labels, plus `.work-viewer`, which is portalled outside `.marketing-site`). If you portal something new to `<body>`, add its root class to that rule. Verify with `PRINT` in `scripts/shoot.mjs`.
+3a. `position: sticky` needs every ancestor to be `overflow: visible` or `clip` (never hidden/auto/scroll), and `body` must not set `overflow-x: hidden` (it is `clip`). A sticky element cannot move outside its parent, so its parent must be the tall element.
 3b. Keyboard: focus ring visible, Esc/Enter/Space work, accessible names contain their visible text.
 4. Heavy work stays lazy: below-fold sections are `dynamic()` imports in `src/app/page.jsx`; animation pauses off-screen and in hidden tabs.
 5. `npm run build` passes; run `perf-check` if you added JS, images, fonts or animation.
