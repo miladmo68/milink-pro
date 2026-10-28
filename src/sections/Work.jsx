@@ -213,7 +213,6 @@ function Viewer({ items, state, setState, onClose }) {
       >
         <aside className="work-viewer-info">
           <div className="work-viewer-top">
-            <span className="work-row-no">{String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}</span>
             <button ref={closeRef} type="button" className="work-viewer-close" onClick={onClose} aria-label="Close viewer">
               <X size={18} aria-hidden="true" />
             </button>
@@ -366,7 +365,6 @@ export default function Work() {
                   return (
                     <li key={w.id} className={`work-row ${isActive ? "is-active" : ""}`}>
                       <button type="button" className="work-row-head" aria-pressed={isActive} onClick={() => pick(i)}>
-                        <span className="work-row-no">{String(i + 1).padStart(2, "0")}</span>
                         <span className="work-row-title">{w.title}</span>
                         <ArrowUpRight className="work-row-arrow" size={18} aria-hidden="true" />
                       </button>
@@ -453,7 +451,6 @@ export default function Work() {
                   />
                 </Browser>
                 <div className="work-card-meta">
-                  <span className="work-row-no">{String(i + 1).padStart(2, "0")}</span>
                   <h3>{w.title}</h3>
                   <p>{w.summary}</p>
                   <ul className="work-tags">{w.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>

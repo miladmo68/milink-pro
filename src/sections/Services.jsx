@@ -130,21 +130,31 @@ function ArtFlow() {
 
 const ART = { web: ArtWeb, ecom: ArtShop, seo: ArtSearch, maint: ArtCare, brand: ArtBrand, ux: ArtFlow };
 
-function ServiceCard({ data, flipped, onFlip, onClose }) {
+function ServiceCard({ data, flipped, tapped, onTap, onFlip, onClose }) {
   const Icon = ICONS[data.icon] || CodeBracketIcon;
   const Art = ART[data.id];
 
-  const spotlight = (event) => {
-    if (event.pointerType !== "mouse") return;
+  const place = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
     event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  };
+  const spotlight = (event) => {
+    if (event.pointerType === "mouse") place(event);
+  };
+  // Touch has no hover: a tap gives the card the same lift and light.
+  const touch = (event) => {
+    if (event.pointerType === "mouse") return;
+    place(event);
+    onTap();
   };
 
   return (
     <article
       className="sv-card"
       data-flipped={flipped}
+      data-tap={tapped}
+      onPointerDown={touch}
       style={{ "--sv-tint": TINTS[data.id] || TINTS.web }}
       onPointerMove={spotlight}
       onPointerLeave={(event) => { if (event.pointerType === "mouse") onClose(); }}
@@ -199,6 +209,16 @@ function ServiceCard({ data, flipped, onFlip, onClose }) {
 export default function Services() {
   const gridRef = useRef(null);
   const [flippedId, setFlippedId] = useState(null);
+  const [tappedId, setTappedId] = useState(null);
+
+  // A tap anywhere outside the cards clears the tapped look.
+  useEffect(() => {
+    const clear = (event) => {
+      if (event.pointerType !== "mouse" && !event.target.closest?.(".sv-card")) setTappedId(null);
+    };
+    document.addEventListener("pointerdown", clear);
+    return () => document.removeEventListener("pointerdown", clear);
+  }, []);
 
   // The little animations run only while the cards are on screen.
   useEffect(() => {
@@ -246,6 +266,8 @@ export default function Services() {
               <ServiceCard
                 data={service}
                 flipped={flippedId === service.id}
+                tapped={tappedId === service.id}
+                onTap={() => setTappedId(service.id)}
                 onFlip={() => setFlippedId(service.id)}
                 onClose={() => setFlippedId((current) => (current === service.id ? null : current))}
               />

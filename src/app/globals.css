@@ -2264,15 +2264,6 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
   transition: color .3s ease;
 }
 .work-row-head:focus-visible { outline: 2px solid rgb(var(--brand-accent)); outline-offset: 3px; border-radius: 6px; }
-.work-row-no {
-  min-width: 1.9rem;
-  font-family: var(--font-syne), system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  opacity: .55;
-  transition: color .3s ease, opacity .3s ease;
-}
 .work-row-title {
   font-family: var(--font-syne), system-ui, sans-serif;
   font-size: clamp(18px, 1.7vw, 25px);
@@ -2286,10 +2277,9 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
 .work-row-head:hover .work-row-title { transform: translateX(6px); }
 .work-row-head:hover .work-row-arrow { opacity: .8; transform: none; }
 .work-row.is-active .work-row-head { color: var(--text-primary); }
-.work-row.is-active .work-row-no { color: rgb(var(--work-tint)); opacity: 1; }
 .work-row.is-active .work-row-arrow { opacity: 0; }
 .work-row-body { overflow: hidden; }
-.work-row-inner { padding: 0 0 1.35rem 2.9rem; }
+.work-row-inner { padding: 0 0 1.35rem; }
 .work-row-inner > p { margin: 0 0 .85rem; max-width: 34ch; font-size: 15px; line-height: 1.6; color: var(--text-secondary); }
 .work-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 1.1rem; padding: 0; list-style: none; }
 .work-tags li {
@@ -2440,8 +2430,7 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
 
 .work-cards { display: grid; gap: 3rem; margin: 3rem auto 0; max-width: 560px; }
 .work-card { --work-tint: 56 158 255; }
-.work-card-meta { position: relative; margin-top: 1.1rem; padding-left: 2.6rem; }
-.work-card-meta .work-row-no { position: absolute; left: 0; top: .5rem; color: rgb(var(--work-tint)); opacity: 1; }
+.work-card-meta { position: relative; margin-top: 1.1rem; }
 .work-card-meta h3 { margin: 0; font-family: var(--font-syne), system-ui, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
 .work-card-meta p { margin: .4rem 0 .8rem; font-size: 14.5px; line-height: 1.55; color: var(--text-secondary); }
 .work-card .work-actions { margin-top: .25rem; justify-content: center; }
@@ -2464,8 +2453,7 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
   color: #fff;
 }
 .work-viewer-info { display: flex; flex-direction: column; gap: .9rem; padding: 1.5rem 1.5rem 1.5rem 1.75rem; border-right: 1px solid rgb(255 255 255 / .08); overflow-y: auto; }
-.work-viewer-top { display: flex; align-items: center; justify-content: space-between; }
-.work-viewer .work-row-no { color: rgb(var(--work-tint)); opacity: 1; }
+.work-viewer-top { display: flex; align-items: center; justify-content: flex-end; }
 .work-viewer-close {
   display: inline-grid;
   place-items: center;
@@ -2536,7 +2524,6 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
   .work-viewer-panel { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); border-radius: 0; border: 0; }
   .work-viewer-info { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; padding: .85rem 1rem; border-right: 0; border-bottom: 1px solid rgb(255 255 255 / .08); overflow: visible; }
   .work-viewer-top { order: 3; margin-left: auto; gap: .6rem; }
-  .work-viewer-top .work-row-no { display: none; }
   .work-viewer-title { order: 1; margin: 0; font-size: 20px; }
   .work-viewer-summary, .work-viewer .work-tags, .work-viewer-visit { display: none; }
   .work-viewer-nav { order: 2; display: flex; margin: 0; }
@@ -2887,7 +2874,7 @@ html[data-theme="light"] .pr-points li span { color: color-mix(in oklab, rgb(var
    hijack) drives the step (`--p` = 0..1 through the track) and the build of the
    real page (`--pr-real`). Tab mode (short screens) uses timers instead. */
 .pr-track { margin-top: 3.25rem; }
-.pr-track.is-scroll { height: 380svh; }
+.pr-track.is-scroll { height: 250svh; }
 .pr-sticky.is-scroll { position: sticky; top: 6rem; }
 .pr-panel.is-scroll .pr-tab .pr-tab-bar b,
 .pr-panel.is-scroll .pr-tab.is-active .pr-tab-bar b,
@@ -3197,11 +3184,17 @@ html[data-theme="dark"] .sv-face { border-color: rgb(255 255 255 / .09); box-sha
 .sv-card[data-flipped="true"] .sv-front { visibility: hidden; }
 .sv-face > * { position: relative; z-index: 1; }
 .sv-face::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s ease; background: radial-gradient(420px circle at var(--mx) var(--my), rgb(var(--sv-tint) / .17), transparent 62%); }
+/* Lift, tinted border and light: on hover for a mouse, on tap (`data-tap`) for touch. */
 @media (hover: hover) {
   .sv-card:hover { transform: translateY(-5px); }
   .sv-card:hover .sv-face { border-color: rgb(var(--sv-tint) / .5); box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 36px 80px -40px rgb(var(--sv-tint) / .45); }
   .sv-card:hover .sv-face::before { opacity: 1; }
+  .sv-card:hover .sv-icon { transform: rotate(-8deg) scale(1.08); }
 }
+.sv-card[data-tap="true"] { transform: translateY(-5px); }
+.sv-card[data-tap="true"] .sv-face { border-color: rgb(var(--sv-tint) / .5); box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 36px 80px -40px rgb(var(--sv-tint) / .45); }
+.sv-card[data-tap="true"] .sv-face::before { opacity: 1; }
+.sv-card[data-tap="true"] .sv-icon { transform: rotate(-8deg) scale(1.08); }
 
 .sv-visual {
   position: relative; height: 172px; margin: 12px 12px 0; overflow: hidden; border-radius: 16px;
@@ -3218,7 +3211,6 @@ html[data-theme="dark"] .sv-face { border-color: rgb(255 255 255 / .09); box-sha
 .sv-top { display: flex; align-items: center; justify-content: space-between; }
 .sv-icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 14px; color: rgb(var(--sv-tint)); border: 1px solid rgb(var(--sv-tint) / .4); background: rgb(var(--sv-tint) / .14); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
 .sv-icon svg { width: 22px; height: 22px; }
-@media (hover: hover) { .sv-card:hover .sv-icon { transform: rotate(-8deg) scale(1.08); } }
 .sv-tag { padding: 5px 11px; border-radius: 999px; font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; border: 1px solid rgb(var(--sv-tint) / .45); color: var(--text-secondary); }
 .sv-title { margin-top: 1rem; font-family: var(--font-bricolage), var(--font-syne), system-ui, sans-serif; font-size: 1.5rem; font-weight: 600; line-height: 1.12; letter-spacing: -.025em; }
 @media (min-width: 640px) { .sv-title { min-height: 2.24em; } }

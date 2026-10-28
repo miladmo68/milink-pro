@@ -244,7 +244,7 @@ export default function Process() {
   const step = STEPS[active];
 
   useEffect(() => {
-    const check = () => setScrollMode(window.innerHeight >= 700 && window.innerWidth >= 340);
+    const check = () => setScrollMode(window.innerHeight >= 700 && window.innerWidth >= 768);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
