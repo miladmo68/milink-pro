@@ -5,9 +5,8 @@ import { nav } from "../data/content.js";
 import { BUSINESS, whatsappLinks } from "../config/business.js";
 import { openWhatsApp } from "../lib/whatsapp.js";
 
-// Public-site footer: deliberately small. A faint MILINK wordmark sits behind
-// one row (logo mark, links, contact icons) and one fine-print line. CSS only, no
-// animation library. Every value comes from src/config/business.js; styles are
+// Public-site footer: deliberately small. One row (logo + MILINK wordmark,
+// links, contact icons) and one fine-print line. CSS only, no animation library. Every value comes from src/config/business.js; styles are
 // the `.mk-footer*` block in globals.css. The floating WhatsApp launcher also
 // lives here so it appears on every marketing page.
 
@@ -30,12 +29,14 @@ export default function Footer() {
         <div className="absolute inset-0 -z-10 pointer-events-none hidden dark:block" aria-hidden="true">
           <div className="section-depth-footer" />
         </div>
-        <div className="mk-footer-mark" aria-hidden="true">MILINK</div>
 
         <div className="container relative z-10">
           <div className="mk-footer-main">
             <a href="/" className="mk-footer-logo" aria-label={`${BUSINESS.brand} home`}>
               <img src="/Logo-Blue.png" alt="" width={74} height={40} />
+              <span className="mk-footer-wordmark">
+                <b>MI</b><b className="text-[color:var(--accent)]">LINK</b>
+              </span>
             </a>
 
             <nav className="mk-footer-nav-wrap" aria-label="Footer navigation">

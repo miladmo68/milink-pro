@@ -2767,8 +2767,7 @@ html[data-theme="light"] .mk-alert--error { color: #b91c1c; background: rgb(239 
 .mk-link-button:focus-visible { outline: 2px solid rgb(var(--brand-accent)); outline-offset: 3px; border-radius: 4px; }
 
 /* ===== Footer (public site) ============================================
-   Small on purpose: one row + one fine-print line, with a faint MILINK
-   wordmark as the footer's own background. Theme-aware, CSS-only. The dark
+   Small on purpose: one row + one fine-print line. Theme-aware, CSS-only. The dark
    navy ramp (.section-depth-footer) continues the Contact section. */
 .mk-footer { position: relative; overflow: hidden; padding: 1.75rem 0 0; border-top: 1px solid var(--surface-border); }
 .mk-footer::before {
@@ -2783,30 +2782,11 @@ html[data-theme="light"] .mk-alert--error { color: #b91c1c; background: rgb(239 
   box-shadow: 0 0 22px 2px rgb(var(--brand) / .3);
   pointer-events: none;
 }
-/* The wordmark lives behind the content and bleeds off the bottom edge. */
-.mk-footer-mark {
-  position: absolute;
-  z-index: 0;
-  left: 0;
-  right: 0;
-  bottom: -.2em;
-  font-family: var(--font-syne), system-ui, sans-serif;
-  font-size: clamp(76px, 17.5vw, 250px);
-  font-weight: 800;
-  line-height: .8;
-  letter-spacing: -.045em;
-  text-align: center;
-  white-space: nowrap;
-  color: transparent;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--text-primary) 13%, transparent), color-mix(in oklab, var(--text-primary) 3%, transparent) 90%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  user-select: none;
-  pointer-events: none;
-}
 .mk-footer-main { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
 .mk-footer-logo { display: inline-flex; align-items: center; }
 .mk-footer-logo img { height: 32px; width: auto; }
+.mk-footer-wordmark { display: inline-flex; gap: .18rem; margin-left: -.75rem; font-family: var(--font-syne), system-ui, sans-serif; font-size: 18px; line-height: 1; letter-spacing: -.02em; color: var(--text-primary); }
+.mk-footer-wordmark b { font-weight: 900; }
 .mk-footer-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem 1.4rem; margin: 0; padding: 0; list-style: none; }
 .mk-footer-nav a { font-size: 14px; color: var(--text-secondary); transition: color .25s ease; }
 .mk-footer-nav a:hover { color: var(--text-primary); }
