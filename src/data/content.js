@@ -174,6 +174,7 @@ export const work = [
 export const pricing = [
   {
     name: "Essential",
+    mobileBadge: "Best Value", // shown only on phones, where the selected card gets the featured look
     startingPrice: "$399",
     priceCurrency: "CAD",
     scopeNote: "Final text, logo, and imagery supplied by your team.",
@@ -217,6 +218,21 @@ export const pricing = [
       "Optional booking, integrations, or multilingual support",
     ],
   },
+];
+
+// Side-by-side rows for the Pricing comparison table. Every cell restates what
+// the approved package copy above already says (true = included, false = not
+// part of the package, string = the short wording). Add nothing that is not in
+// `pricing`. Order matches `pricing`: Essential, Professional, E-commerce & Custom.
+export const pricingCompare = [
+  { label: "Starting price", values: ["$399 CAD", "$699 CAD", "Custom quote"] },
+  { label: "Pages", values: ["One page", "Up to five", "Tailored to your goals"] },
+  { label: "Mobile-friendly design", values: [true, true, true] },
+  { label: "On-page SEO", values: ["Essential", "Core pages", "Scoped with you"] },
+  { label: "Proof sections and calls to action", values: [false, true, true] },
+  { label: "Online store and checkout", values: [false, false, true] },
+  { label: "Booking, integrations, multilingual", values: [false, false, "Optional"] },
+  { label: "Refinement before launch", values: ["One round", "One round", "Scoped with you"] },
 ];
 
 const essentialPackage = pricing.find((plan) => plan.name === "Essential");

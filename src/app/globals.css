@@ -2617,7 +2617,7 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
 .work-card-meta .work-row-no { position: absolute; left: 0; top: .5rem; color: rgb(var(--work-tint)); opacity: 1; }
 .work-card-meta h3 { margin: 0; font-family: var(--font-syne), system-ui, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
 .work-card-meta p { margin: .4rem 0 .8rem; font-size: 14.5px; line-height: 1.55; color: var(--text-secondary); }
-.work-card .work-actions { margin-top: .25rem; }
+.work-card .work-actions { margin-top: .25rem; justify-content: center; }
 
 /* Full-screen viewer */
 .work-viewer { --work-tint: 56 158 255; position: fixed; inset: 0; z-index: 999; display: grid; place-items: center; padding: clamp(0px, 2.5vh, 28px) clamp(0px, 2.5vw, 28px); }
@@ -3199,4 +3199,141 @@ html[data-theme="light"] .pr-chip svg { color: color-mix(in oklab, rgb(var(--pr-
   .pr-site { transform: none; transition: none; }
   .pr-scan, .pr-caret, .pr-live b { animation: none; }
   .pr-tick, .pr-row-bar i, .pr-w, .pr-palette i, .pr-line i, .pr-chip, .pr-curve, .pr-area, .pr-dot, .pr-build-bar { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* ===== Pricing (packages) ================================================
+   Three cards side by side on desktop (Professional lifted, with a light that
+   travels its border while on screen), one card at a time behind a switch on
+   phones, then a collapsed comparison table and a "not sure" strip. A soft
+   light follows the mouse on every card. Scoped `.pk-*`; reuses the registered
+   `--mk-angle` and `mk-orbit-angle` from the Contact panel. */
+.pk-switch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-width: 26rem; margin: 2rem auto 0; padding: 4px; border-radius: 999px; border: 1px solid var(--surface-border); background: var(--frost-72); }
+.pk-switch button { min-height: 44px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: background .25s ease, color .25s ease; }
+.pk-switch button[aria-pressed="true"] { background: rgb(var(--brand)); color: #fff; box-shadow: 0 6px 18px -8px rgb(var(--brand) / .8); }
+@media (min-width: 768px) { .pk-switch { display: none; } }
+
+.pk-grid { display: grid; gap: 1.5rem; max-width: 26rem; margin: 1.5rem auto 0; }
+@media (min-width: 768px) { .pk-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 72rem; margin-top: 3.5rem; align-items: stretch; gap: 1.25rem; } }
+@media (min-width: 1024px) { .pk-grid { gap: 1.75rem; } }
+.pk-slot { min-width: 0; }
+.pk-slot > * { height: 100%; }
+@media (max-width: 767px) {
+  .pk-slot[data-active="false"] { display: none; }
+  .pk-slot[data-active="true"] { animation: pk-swap .35s ease both; }
+}
+@keyframes pk-swap { from { opacity: 0; transform: translateY(8px); } }
+
+.pk-card {
+  --mx: 50%; --my: 0%;
+  position: relative; isolation: isolate; display: flex; flex-direction: column; height: 100%;
+  padding: 1.5rem; border-radius: 22px; border: 1px solid var(--surface-border); background: var(--surface-card);
+  box-shadow: 0 1px 2px rgb(13 24 41 / .04), 0 24px 60px -40px rgb(0 0 0 / .55);
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+html[data-theme="dark"] .pk-card { border-color: rgb(255 255 255 / .09); box-shadow: inset 0 1px 0 rgb(255 255 255 / .06), 0 30px 70px -44px rgb(0 0 0 / .8); }
+@media (min-width: 768px) { .pk-card { padding: 1.5rem 1.35rem; } }
+@media (min-width: 1024px) { .pk-card { padding: 1.9rem 1.75rem; } }
+.pk-card > *:not(.pk-chip) { position: relative; z-index: 1; }
+/* The mouse-following light. */
+.pk-card::before { content: ""; position: absolute; inset: 0; z-index: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s ease; background: radial-gradient(420px circle at var(--mx) var(--my), rgb(var(--brand) / .16), transparent 62%); }
+@media (hover: hover) {
+  .pk-card:hover { transform: translateY(-4px); border-color: rgb(var(--brand) / .45); }
+  .pk-card:hover::before { opacity: 1; }
+}
+
+/* Featured look: Professional always (lifted on desktop); on phones whichever
+   card is selected gets it too. Tinted from above, border arc travelling. */
+.pk-card--pro { border-color: rgb(var(--brand) / .5); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), inset 0 70px 90px -70px rgb(var(--brand) / .5), 0 40px 90px -44px rgb(var(--brand) / .7); }
+html[data-theme="dark"] .pk-card--pro { border-color: rgb(var(--brand) / .5); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), inset 0 70px 90px -70px rgb(var(--brand) / .5), 0 40px 90px -44px rgb(var(--brand) / .7); }
+@media (max-width: 767px) {
+  .pk-slot[data-active="true"] .pk-card, html[data-theme="dark"] .pk-slot[data-active="true"] .pk-card { border-color: rgb(var(--brand) / .5); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), inset 0 70px 90px -70px rgb(var(--brand) / .5), 0 40px 90px -44px rgb(var(--brand) / .7); }
+  .pk-slot[data-active="true"] .pk-card::after { display: block; }
+}
+@media (min-width: 768px) { .pk-card--pro { translate: 0 -14px; } }
+.pk-card::after {
+  content: ""; display: none; position: absolute; inset: 0; z-index: 2; padding: 1.5px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--mk-angle), transparent 0 55%, rgb(var(--brand-accent) / .95) 76%, rgb(var(--brand)) 88%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: mk-orbit-angle 6s linear infinite; animation-play-state: paused;
+}
+.pk-card--pro::after { display: block; }
+.pk-grid[data-live="true"] .pk-card::after { animation-play-state: running; }
+/* Essential's phone-only badge and the matching phone/desktop CTA pair. */
+@media (min-width: 768px) { .pk-chip--m, .pk-card .pk-cta--m { display: none; } }
+@media (max-width: 767px) {
+  .pk-card .pk-cta--d { display: none; }
+  /* Switching cards already fades in (pk-swap); skip the scroll-reveal so a freshly shown card is never blank. */
+  .pk-slot > div { opacity: 1 !important; transform: none !important; }
+}
+
+.pk-chip { position: absolute; top: 0; left: 50%; z-index: 3; translate: -50% -50%; white-space: nowrap; padding: .28rem .7rem; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .02em; color: #fff; background: rgb(var(--brand)); box-shadow: 0 8px 22px -10px rgb(var(--brand) / .9); }
+.pk-name { margin-top: 0; font-size: 1.75rem; font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
+@media (min-width: 1024px) { .pk-name { font-size: 2rem; } }
+/* "& Custom" sits on its own small line; every card reserves it so the rows line up. */
+.pk-name-sub { display: block; margin-top: .25rem; font-size: .95rem; font-weight: 500; letter-spacing: 0; color: var(--text-muted); }
+@media (min-width: 768px) { .pk-name { min-height: calc(1.05 * 1.75rem + 1.25rem); } }
+@media (min-width: 1024px) { .pk-name { min-height: calc(1.05 * 2rem + 1.25rem); } }
+.pk-tagline { margin-top: .7rem; font-size: .9rem; line-height: 1.55; opacity: .74; }
+@media (min-width: 768px) { .pk-tagline { min-height: 6.3rem; } }
+@media (min-width: 1024px) { .pk-tagline { min-height: 5rem; } }
+
+.pk-price { margin-top: 1.1rem; padding: 1rem 0 .9rem; border-block: 1px solid color-mix(in srgb, currentColor 13%, transparent); }
+.pk-price-label { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
+.pk-figure { margin-top: .3rem; font-size: 3rem; font-weight: 800; line-height: 1.05; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
+.pk-figure small { margin-left: .4rem; font-size: .9rem; font-weight: 600; letter-spacing: 0; color: var(--text-muted); }
+@media (min-width: 768px) and (max-width: 1023px) { .pk-note { min-height: 2.4rem; } }
+.pk-figure--text { font-size: 2.15rem; line-height: 1.2; padding-block: .42rem .2rem; }
+.pk-note { margin-top: .45rem; min-height: 1.2rem; font-size: 12px; line-height: 1.2rem; color: var(--text-muted); }
+
+.pk-list { display: grid; flex: 1; align-content: start; gap: .75rem; margin: 1.25rem 0 1.75rem; }
+.pk-list li { display: flex; align-items: flex-start; gap: .7rem; font-size: .875rem; line-height: 1.45; }
+.pk-tick { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 18px; height: 18px; margin-top: 1px; border-radius: 999px; color: rgb(var(--brand-accent)); background: rgb(var(--brand) / .14); box-shadow: inset 0 0 0 1px rgb(var(--brand) / .32); }
+html[data-theme="light"] .pk-tick { color: rgb(var(--brand)); }
+
+.pk-card .marketing-cta--secondary { margin-top: auto; }
+html[data-theme="light"] :is(.pk-card, .pk-help) .marketing-cta--secondary { background: #fff; color: #0d1829; border: 1px solid rgb(var(--brand) / .4); box-shadow: none; }
+html[data-theme="light"] :is(.pk-card, .pk-help) .marketing-cta--secondary:hover { background: rgb(var(--brand) / .08); }
+
+/* Comparison table (collapsed until asked for). */
+.pk-compare { max-width: 56rem; margin: 3rem auto 0; text-align: center; }
+.pk-compare-toggle { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 1.2rem; border-radius: 999px; border: 1px solid var(--surface-border); background: var(--frost-72); font-size: 14px; font-weight: 600; transition: border-color .25s ease, background .25s ease; }
+.pk-compare-toggle:hover { border-color: rgb(var(--brand) / .5); }
+.pk-compare-toggle svg { transition: transform .35s ease; }
+.pk-compare-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.pk-compare-body { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .45s ease, visibility 0s .45s; }
+.pk-compare-body[data-open="true"] { grid-template-rows: 1fr; visibility: visible; transition: grid-template-rows .45s ease; }
+.pk-compare-body > div { min-height: 0; overflow: hidden; }
+.pk-table-wrap { margin-top: 1.25rem; overflow-x: auto; border-radius: 18px; border: 1px solid var(--surface-border); background: var(--surface-card); text-align: left; }
+html[data-theme="dark"] .pk-table-wrap { background: #0B1429; border-color: rgb(255 255 255 / .09); }
+.pk-table { width: 100%; min-width: 21rem; table-layout: fixed; border-collapse: collapse; font-size: 12.5px; }
+@media (min-width: 640px) { .pk-table { font-size: 14px; } }
+.pk-table th, .pk-table td { padding: .85rem .4rem; text-align: center; vertical-align: middle; }
+@media (min-width: 640px) { .pk-table th, .pk-table td { padding: .95rem 1.1rem; } }
+.pk-table thead th { white-space: nowrap; }
+.pk-table thead th:first-child { width: 29%; }
+@media (min-width: 640px) { .pk-table thead th:first-child { width: 34%; } }
+.pk-table tbody th { text-align: left; font-weight: 500; color: var(--text-muted); }
+.pk-table thead th { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.pk-table tbody tr + tr > * { border-top: 1px solid color-mix(in srgb, currentColor 9%, transparent); }
+.pk-table .is-pro { background: rgb(var(--brand) / .08); }
+.pk-table thead .is-pro { color: rgb(var(--brand-accent)); }
+html[data-theme="light"] .pk-table thead .is-pro { color: rgb(var(--brand)); }
+.pk-table svg { display: inline-block; vertical-align: middle; }
+.pk-yes { color: rgb(var(--brand-accent)); }
+html[data-theme="light"] .pk-yes { color: rgb(var(--brand)); }
+.pk-no { opacity: .35; }
+
+/* "Not sure which one?" */
+.pk-help { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; max-width: 56rem; margin: 2.5rem auto 0; padding: 1.25rem 1.4rem; border-radius: 20px; border: 1px solid rgb(var(--brand) / .28); background: rgb(var(--brand) / .06); }
+.pk-help p { font-size: .95rem; line-height: 1.5; }
+.pk-help p span { opacity: .72; }
+.pk-help-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+@media (min-width: 768px) { .pk-help p { flex: 1; } .pk-help-actions { flex: none; flex-wrap: nowrap; } .pk-help { flex-direction: row; align-items: center; justify-content: space-between; padding: 1.25rem 1.6rem; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-card, .pk-card::before, .pk-compare-body, .pk-compare-toggle svg, .pk-switch button { transition: none; }
+  .pk-card::after { animation: none; }
+  .pk-slot[data-active="true"] { animation: none; }
 }

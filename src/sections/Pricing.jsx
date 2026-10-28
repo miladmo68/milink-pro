@@ -1,12 +1,58 @@
-import { pricing } from "../data/content.js";
-import { Check } from "lucide-react"; // optional
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, Minus } from "lucide-react";
+import { pricing, pricingCompare } from "../data/content.js";
+import { whatsappLinks } from "../config/business.js";
+import { openWhatsApp } from "../lib/whatsapp.js";
 import { Reveal } from "../components/scroll-reveal.jsx";
 import ScrollParallax from "../components/ScrollParallax.jsx";
+import Button from "../components/ui/Button.jsx";
+
+// Three packages, one clearly recommended. Desktop shows all three side by side
+// (Professional lifted, with a light that travels its border); phones show one
+// at a time behind a three-way switch so nobody scrolls three tall cards. A
+// collapsed comparison table (progressive disclosure) and a "not sure" strip
+// finish the section. Copy and prices come from `pricing` / `pricingCompare`
+// in content.js; styles are the `.pk-*` block at the end of globals.css.
+
+// The owner wants the entry package (lowest price) open first on phones.
+const DEFAULT_MOBILE = Math.max(0, pricing.findIndex((plan) => plan.name === "Essential"));
+
+function Cell({ value }) {
+  if (value === true) return <Check className="pk-yes" size={16} aria-label="Included" />;
+  if (value === false) return <Minus className="pk-no" size={16} aria-label="Not included" />;
+  return value;
+}
 
 export default function Pricing() {
+  const gridRef = useRef(null);
+  const [mobile, setMobile] = useState(DEFAULT_MOBILE);
+  const [compare, setCompare] = useState(false);
+  const whatsapp = whatsappLinks();
+
+  // The travelling border animates only while the cards are on screen.
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      grid.dataset.live = entry.isIntersecting ? "true" : "false";
+    }, { threshold: 0.2 });
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, []);
+
+  const spotlight = (event) => {
+    if (event.pointerType !== "mouse") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--my", `${event.clientY - rect.top}px`);
+  };
+
   return (
     <section
       id="pricing"
+      aria-labelledby="pricing-title"
       className="relative scroll-mt-24 overflow-hidden py-24 bg-base-100 dark:!bg-transparent"
     >
       <ScrollParallax className="pointer-events-none absolute inset-0 -z-10" offset={70}>
@@ -22,130 +68,150 @@ export default function Pricing() {
           <Reveal from="up" distance={12}>
             <div className="badge badge-outline mb-4 uppercase tracking-widest text-[10px] border-primary/38 text-primary/90">Our Packages</div>
           </Reveal>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+          <h2 id="pricing-title" className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
             <span className="gradient-text">Pricing</span> &amp; Packages
           </h2>
           <p className="mt-4 text-base-content/68 max-w-sm mx-auto">
             Choose what fits now—upgrade any time as you grow.
           </p>
-          <div className="mx-auto mt-6 h-[3px] w-24 rounded-full bg-gradient-to-r from-[rgb(var(--brand)/0.9)] via-[rgb(var(--brand)/0.6)] to-[rgb(var(--brand)/0.9)]" />
         </div>
 
-        <div className="mt-14 grid items-stretch gap-6 sm:gap-8 md:grid-cols-3">
-          {pricing.map((p, i) => {
-            const isPopular = !!p.popular;
-            const isPro = (p.name || "").toLowerCase() === "professional";
-            const quoteHref = `/?package=${encodeURIComponent(p.name)}#contact`;
-            const frameBase = "group relative overflow-hidden rounded-2xl transition-transform duration-300";
-            const framePadding = isPro ? "p-[2px] md:p-[3px]" : "p-[1px]";
-            const borderBase = "before:absolute before:inset-0 before:-z-10 before:rounded-2xl";
-            const borderGradient = isPro
-              ? "before:opacity-100 before:bg-[conic-gradient(from_-60deg_at_0%_0%,rgba(59,130,246,0.95)_0deg,rgba(59,130,246,0.60)_210deg,transparent_330deg)]"
-              : "before:opacity-100 before:bg-[conic-gradient(from_0deg,rgba(59,130,246,0.78),rgba(59,130,246,0.32),transparent_220deg)]";
-            const lift = "hover:-translate-y-1";
-            // Keep the featured plan visually elevated on desktop without changing its shared card dimensions.
-            const featuredOffset = isPro ? "md:-translate-y-4 md:hover:-translate-y-5" : "";
-            const proGlow = isPro
-              ? "z-[1] ring-2 ring-[rgb(var(--brand)/0.68)] [box-shadow:0_0_72px_-16px_rgba(59,130,246,0.68)] after:absolute after:inset-[-14%] after:-z-20 after:rounded-[32px] after:blur-3xl after:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(59,130,246,0.24),transparent_70%)]"
-              : "";
-            const cardOuter = [frameBase, framePadding, borderBase, borderGradient, lift, featuredOffset, proGlow, "h-full w-full max-w-sm mx-auto"].join(" ");
-            const innerLift = isPro
-              ? "shadow-[0_22px_54px_-18px_rgba(0,0,0,0.6),0_0_0_1px_oklch(0.4_0.02_265_/_0.48)]"
-              : "ring-1 ring-inset ring-base-300/50 shadow-[0_36px_88px_-12px_rgba(0,0,0,0.68),0_0_0_1px_oklch(0.46_0.02_265_/_0.55)]";
+        <div className="pk-switch" role="group" aria-label="Choose a package">
+          {pricing.map((plan, i) => (
+            <button key={plan.name} type="button" aria-pressed={mobile === i} onClick={() => setMobile(i)}>
+              {plan.name.split(" & ")[0]}
+            </button>
+          ))}
+        </div>
 
+        <div ref={gridRef} className="pk-grid">
+          {pricing.map((plan, i) => {
+            const pro = !!plan.popular;
+            const note = plan.scopeNote || plan.quoteDetail;
+            const [mainName, suffix] = plan.name.split(/ (?=&)/);
             return (
-              <Reveal key={i} from="up" distance={24} delay={i * 0.08} className="h-full">
-                <article className={cardOuter}>
-                  <div className={`marketing-navy-surface relative h-full rounded-2xl card-surface--pricing card-lift card-sweep card-bar ${innerLift} flex flex-col justify-between min-h-[540px] md:min-h-[560px]`}>
-                    <div aria-hidden className="absolute inset-0 -z-10">
-                      <div className="absolute inset-0 [mask-image:radial-gradient(60%_60%_at_50%_30%,#000,transparent_75%)] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(59,130,246,0.14),transparent_65%)]" />
+              <div key={plan.name} className="pk-slot" data-active={mobile === i}>
+                <Reveal from="up" distance={24} delay={i * 0.08} className="h-full">
+                  <article
+                    className={`pk-card marketing-navy-surface${pro ? " pk-card--pro" : ""}`}
+                    onPointerMove={spotlight}
+                  >
+                    {pro && <span className="pk-chip">{plan.badge || "Most Popular"}</span>}
+                    {plan.mobileBadge && <span className="pk-chip pk-chip--m">{plan.mobileBadge}</span>}
+                    <h3 className="pk-name">
+                      {mainName}
+                      {suffix ? <span className="pk-name-sub"> {suffix}</span> : null}
+                    </h3>
+                    <p className="pk-tagline">{plan.tagline}</p>
+
+                    <div className="pk-price">
+                      {plan.startingPrice ? (
+                        <>
+                          <span className="pk-price-label">Starting from</span>
+                          <p className="pk-figure" aria-label={`Starting from ${plan.startingPrice} ${plan.priceCurrency}`}>
+                            {plan.startingPrice}<small>{plan.priceCurrency}</small>
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <span className="pk-price-label">Flexible pricing</span>
+                          <p className="pk-figure pk-figure--text">{plan.quoteTitle}</p>
+                        </>
+                      )}
+                      <p className="pk-note">{note || " "}</p>
                     </div>
 
-                    <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <div className="absolute -inset-1 bg-gradient-to-tr from-transparent via-white/10 to-transparent rotate-[8deg]" />
-                    </div>
+                    <ul className="pk-list">
+                      {plan.items.map((item) => (
+                        <li key={item}>
+                          <span className="pk-tick"><Check size={12} aria-hidden="true" /></span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
 
-                    {isPopular && (
-                      <div className="absolute -right-9 top-6 rotate-45">
-                        <span className="relative text-[11px] px-7 py-1 rounded-sm bg-[rgb(var(--brand))] text-white shadow-md">
-                          {p.badge || "Most Popular"}
-                          <span className="pointer-events-none absolute inset-0 rounded-sm animate-glowPulse bg-[rgb(var(--brand)/0.40)] blur-sm" />
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="relative z-10 flex h-full flex-col p-5 sm:p-6">
-                      <div className="text-center">
-                        <h3 className={`flex min-h-[60px] items-center justify-center text-balance text-[30px] font-semibold leading-[1] tracking-[-0.035em] text-transparent md:min-h-[76px] md:text-[38px] bg-clip-text ${
-                          isPro
-                            ? "bg-gradient-to-r from-[rgb(var(--brand)/0.85)] via-[rgb(var(--brand))] to-[rgb(var(--brand)/0.80)]"
-                            : isPopular
-                              ? "bg-gradient-to-r from-[rgb(var(--brand))] via-[rgb(var(--brand)/0.85)] to-[rgb(var(--brand))]"
-                              : "bg-gradient-to-r from-base-content to-base-content/70"
-                        }`}>{p.name}</h3>
-                        <div className="mt-3 min-h-[66px]">
-                          {p.startingPrice ? (
-                            <div aria-label={`Starting from ${p.startingPrice} ${p.priceCurrency}`}>
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/62">Starting from</p>
-                              <p className="mt-1 text-3xl font-extrabold tracking-tight text-base-content">
-                                {p.startingPrice}<span className="ml-1 text-sm font-semibold text-base-content/66">{p.priceCurrency}</span>
-                              </p>
-                            </div>
-                          ) : (
-                            <div>
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-base-content/62">Flexible pricing</p>
-                              <p className="mt-1 text-2xl font-extrabold tracking-tight text-base-content">{p.quoteTitle}</p>
-                              <p className="mt-1 text-xs leading-5 text-base-content/62">{p.quoteDetail}</p>
-                            </div>
-                          )}
-                        </div>
-                        <p className="mt-2.5 flex min-h-[72px] items-start justify-center text-pretty text-sm leading-6 text-base-content/88 font-medium md:text-[15px]">{p.tagline}</p>
-                        <p className="mt-2 min-h-4 text-[11px] leading-4 text-base-content/55">
-                          {p.scopeNote || "\u00A0"}
-                        </p>
-                      </div>
-
-                      <div className="my-4 h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent" />
-
-                      <ul className="flex-1 space-y-2.5">
-                        {p.items.map((item) => (
-                          <li key={item} className="flex items-start gap-3">
-                            <span className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ring-1 ${
-                              isPro ? "bg-[rgb(var(--brand)/0.10)] ring-[rgb(var(--brand)/0.40)]" : "bg-[rgb(var(--brand)/0.12)] ring-[rgb(var(--brand)/0.30)]"
-                            }`}>
-                              <Check className={`h-3 w-3 ${isPro ? "text-[rgb(var(--brand)/0.95)]" : "text-[rgb(var(--brand)/0.90)]"}`} aria-hidden="true" />
-                            </span>
-                            <span className="text-[13px] leading-[1.45] text-base-content/92 md:text-sm">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="mt-auto flex justify-center pt-14">
-                        <a
-                          href={quoteHref}
-                          className={`marketing-cta ${
-                            isPro ? "marketing-cta--primary" : "marketing-cta--secondary"
-                          } marketing-cta--block`}
-                        >
-                          Get a Quote
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </Reveal>
+                    {[pro ? null : "d", pro ? "p" : "m"].filter(Boolean).map((kind) => (
+                      <Button
+                        key={kind}
+                        href={`/?package=${encodeURIComponent(plan.name)}#contact`}
+                        variant={kind === "d" ? "secondary" : "primary"}
+                        size="block"
+                        arrow
+                        className={`pk-cta pk-cta--${kind}`}
+                      >
+                        Get a Quote
+                      </Button>
+                    ))}
+                  </article>
+                </Reveal>
+              </div>
             );
           })}
         </div>
-      </div>
 
-      <style>{`
-        @keyframes glowPulse {
-          0%, 100% { opacity: .15; }
-          50% { opacity: .45; }
-        }
-        .animate-glowPulse { animation: glowPulse 2.4s ease-in-out infinite; }
-      `}</style>
+        <div className="pk-compare">
+          <button
+            type="button"
+            className="pk-compare-toggle"
+            aria-expanded={compare}
+            aria-controls="pk-compare-table"
+            onClick={() => setCompare((open) => !open)}
+          >
+            {compare ? "Hide comparison" : "Compare packages"}
+            <ChevronDown size={16} aria-hidden="true" />
+          </button>
+          <div className="pk-compare-body" data-open={compare}>
+            <div id="pk-compare-table">
+              <div className="pk-table-wrap">
+                <table className="pk-table">
+                  <caption className="sr-only">Package comparison</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col"><span className="sr-only">Feature</span></th>
+                      {pricing.map((plan) => (
+                        <th key={plan.name} scope="col" className={plan.popular ? "is-pro" : ""}>
+                          {plan.name.split(" & ")[0]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pricingCompare.map((row) => (
+                      <tr key={row.label}>
+                        <th scope="row">{row.label}</th>
+                        {row.values.map((value, i) => (
+                          <td key={i} className={pricing[i].popular ? "is-pro" : ""}><Cell value={value} /></td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Reveal from="up" distance={14}>
+          <div className="pk-help">
+            <p>
+              <strong>Not sure which one fits?</strong>
+              <span> Tell us about your project and we&apos;ll point you to the right package.</span>
+            </p>
+            <div className="pk-help-actions">
+              <Button href="/#contact" size="compact" arrow>Tell us about it</Button>
+              <Button
+                href={whatsapp.web}
+                variant="secondary"
+                size="compact"
+                external
+                onClick={openWhatsApp}
+              >
+                WhatsApp
+              </Button>
+            </div>
+          </div>
+        </Reveal>
+      </div>
     </section>
   );
 }
