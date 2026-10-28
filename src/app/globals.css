@@ -3344,16 +3344,6 @@ html[data-theme="light"] {
 }
 html[data-theme="light"] .marketing-cta--secondary { box-shadow: 0 1px 2px rgb(13 24 41 / .06), 0 8px 20px -16px rgb(13 24 41 / .3); }
 
-/* Testimonials on phones: a swipeable, snapping row the visitor controls instead
-   of a moving marquee that crops the text at the screen edge. */
-@media (max-width: 767px) {
-  .testimonial-marquee { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; -webkit-mask-image: none; mask-image: none; padding: .5rem 0 1rem; }
-  .testimonial-marquee::-webkit-scrollbar { display: none; }
-  .testimonial-marquee-track { animation: none; transform: none; padding-inline: 1.25rem; }
-  .testimonial-marquee-group[aria-hidden="true"] { display: none; }
-  .testimonial-marquee-card { scroll-snap-align: center; width: min(86vw, 22rem); }
-}
-
 /* The floating WhatsApp button steps aside while scrolling down on phones so it
    never covers a button, and comes back as soon as the visitor scrolls up. */
 @media (max-width: 767px) {
