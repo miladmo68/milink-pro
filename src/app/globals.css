@@ -1072,9 +1072,18 @@ html[data-theme="dark"] .marketing-site .marketing-navy-surface {
 }
 /* Marketing navigation and CTAs are always visibly interactive. Scoped so the
    dashboard/portal retain their independent control language. */
-.marketing-site :is(a[href], button:not(:disabled), [role="button"]) {
+/* Every clickable thing on the public site shows the pointer: links, buttons,
+   role=button/tab/radio, toggles, <summary>, <select>, radio/checkbox and their
+   labels. `.work-viewer` is portalled to <body>, outside `.marketing-site`. */
+.marketing-site :is(a[href], button:not(:disabled), [role="button"], [role="tab"], [role="radio"], [aria-pressed], summary,
+  select:not(:disabled), input[type="radio"], input[type="checkbox"], input[type="submit"]:not(:disabled), input[type="range"],
+  label:has(> input[type="radio"]), label:has(> input[type="checkbox"])),
+.work-viewer :is(a[href], button:not(:disabled), [role="button"], [role="tab"], [role="radio"], [aria-pressed], summary,
+  select:not(:disabled), input[type="radio"], input[type="checkbox"], input[type="submit"]:not(:disabled), input[type="range"],
+  label:has(> input[type="radio"]), label:has(> input[type="checkbox"])) {
   cursor: pointer;
 }
+.marketing-site :is(button, select, input[type="submit"]):disabled { cursor: not-allowed; }
 
 /* Services cards: reference-inspired interaction, while retaining MiLink's
    existing card gradient. Clicking flips for details; hover only adds lift,
@@ -1514,10 +1523,10 @@ html[data-theme="light"] .marketing-site .service-card__points {
   flex: none;
   flex-direction: column;
   justify-content: space-between;
-  width: min(26.25rem, calc(100vw - 2.5rem));
-  min-height: 17.5rem;
+  width: min(25rem, calc(100vw - 2.5rem));
+  min-height: 15rem;
   margin: 0;
-  padding: 2rem 2rem 1.75rem;
+  padding: 1.75rem 1.75rem 1.5rem;
   border: 1px solid var(--surface-border);
   border-radius: 1.625rem;
   background: linear-gradient(170deg, var(--frost-78), var(--surface-card));
@@ -1532,19 +1541,23 @@ html[data-theme="light"] .marketing-site .service-card__points {
   font-size: .9375rem;
   letter-spacing: .25em;
 }
+/* Client quotes run 250+ characters, so they use the readable body face at a
+   normal size (the wide display face at 22px looked oversized). */
 .testimonial-marquee-card blockquote {
   margin: 0;
-  font-family: var(--font-syne), ui-sans-serif, sans-serif;
-  font-size: clamp(1.25rem, 1.8vw, 1.375rem);
-  font-weight: 600;
-  line-height: 1.32;
-  letter-spacing: -.02em;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
+  color: var(--text-primary);
+  text-wrap: pretty;
 }
 .testimonial-marquee-person {
   display: flex;
   align-items: center;
   gap: .875rem;
-  margin-top: 1.625rem;
+  margin-top: 1.25rem;
   font-size: .9375rem;
   font-weight: 700;
 }
@@ -1576,8 +1589,8 @@ html[data-theme="light"] .marketing-site .service-card__points {
 }
 @media (max-width: 640px) {
   .testimonial-marquee { padding-bottom: .75rem; }
-  .testimonial-marquee-card { min-height: 16.5rem; padding: 1.625rem; }
-  .testimonial-marquee-card blockquote { font-size: 1.1875rem; }
+  .testimonial-marquee-card { min-height: 14rem; padding: 1.4rem; }
+  .testimonial-marquee-card blockquote { font-size: .9375rem; }
 }
 
 /* The two Hero CTAs alone receive the reference's pointer-follow movement.
@@ -2711,11 +2724,12 @@ html[data-theme="dark"] .label .label-text-alt:not(.text-error) {
 .mk-field-optional { font-weight: 400; color: var(--text-muted); }
 .mk-field-control {
   width: 100%;
-  min-height: 3rem;
-  padding: .75rem 1rem;
+  min-height: 3.1rem;
+  padding: .8rem 1rem;
   border-radius: 12px;
   border: 1px solid var(--surface-border);
-  background: color-mix(in oklab, var(--text-primary) 4%, transparent);
+  background: color-mix(in oklab, var(--text-primary) 4.5%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .04);
   color: var(--text-primary);
   font: inherit;
   font-size: 15px;
@@ -2790,6 +2804,8 @@ html[data-theme="light"] .mk-alert--error { color: #b91c1c; background: rgb(239 
 .mk-footer-logo img { height: 32px; width: auto; margin-left: -16px; }
 .mk-footer-wordmark { display: inline-flex; gap: .18rem; margin-left: -.75rem; font-family: var(--font-syne), system-ui, sans-serif; font-size: 18px; line-height: 1; letter-spacing: -.02em; color: var(--text-primary); }
 .mk-footer-wordmark b { font-weight: 900; }
+/* The brand blue is too dark for text on the dark footer (contrast 3.9:1); lift it there only. */
+html[data-theme="dark"] .mk-footer-wordmark b + b { color: #4d94ff; }
 .mk-footer-nav-wrap { justify-self: center; }
 .mk-footer-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem 1.4rem; margin: 0; padding: 0; list-style: none; }
 .mk-footer-nav a { font-size: 14px; color: var(--text-secondary); transition: color .25s ease; }
@@ -2830,4 +2846,159 @@ html[data-theme="light"] .mk-alert--error { color: #b91c1c; background: rgb(239 
   /* Short, divider-free fine print so the floating WhatsApp button never covers it. */
   .mk-footer-bottom { margin-top: .6rem; padding: .4rem 0 1.5rem; border-top: 0; font-size: 11.5px; }
   .mk-footer-area { display: none; }
+}
+
+/* ===== Contact (public site): the signal panel ===========================
+   One unified panel instead of two boxes. Left: the email, and a "signal map"
+   (rings radiate from the MiLink mark, flowing lines reach four channels).
+   Right: the form. A light-travelling border and a mouse-following glow frame
+   it. Animations run only while `data-live="true"` (set when it is on screen)
+   and stop for reduced motion. Shared form pieces (.mk-field*, .mk-alert,
+   .mk-thanks*, .mk-hp) are defined above. */
+@property --mk-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.mk-signal {
+  --mx: 50%;
+  --my: 0%;
+  position: relative;
+  display: grid;
+  max-width: 1120px;
+  margin: 3.5rem auto 0;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 28px;
+  box-shadow: 0 40px 90px -48px rgb(0 0 0 / .7);
+}
+@media (min-width: 1024px) { .mk-signal { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); } }
+/* The mouse-following glow. */
+.mk-signal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(520px circle at var(--mx) var(--my), rgb(var(--brand) / .16), transparent 60%);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.mk-signal:hover::before { opacity: 1; }
+/* A bright arc that travels around the border. */
+.mk-signal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--mk-angle), transparent 0 58%, rgb(var(--brand-accent) / .95) 76%, rgb(var(--brand)) 86%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: mk-orbit-angle 7s linear infinite;
+  animation-play-state: paused;
+}
+.mk-signal[data-live="true"]::after { animation-play-state: running; }
+@keyframes mk-orbit-angle { to { --mk-angle: 360deg; } }
+
+.mk-signal-left, .mk-signal-right { position: relative; z-index: 1; padding: clamp(1.5rem, 3.2vw, 2.6rem); }
+.mk-signal-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--surface-border);
+  background:
+    radial-gradient(120% 70% at 50% 100%, rgb(var(--brand) / .16), transparent 70%),
+    linear-gradient(rgb(var(--brand) / .045) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgb(var(--brand) / .045) 1px, transparent 1px) 0 0 / 28px 28px,
+    color-mix(in oklab, var(--text-primary) 2.5%, transparent);
+}
+@media (min-width: 1024px) { .mk-signal-left { border-bottom: 0; border-right: 1px solid var(--surface-border); } }
+
+/* Left: a dotted map with a glowing pin on Toronto, then four clear rows. */
+.mk-map { position: relative; width: 100%; }
+.mk-map-svg { display: block; width: 100%; height: 100%; -webkit-mask-image: radial-gradient(ellipse 92% 94% at 50% 50%, #000 68%, transparent 100%); mask-image: radial-gradient(ellipse 92% 94% at 50% 50%, #000 68%, transparent 100%); }
+.mk-dots { stroke: rgb(var(--brand-accent) / .42); }
+html[data-theme="light"] .mk-dots { stroke: rgb(var(--brand) / .3); }
+.mk-dots-near { stroke: rgb(var(--brand-accent) / .9); }
+html[data-theme="light"] .mk-dots-near { stroke: rgb(var(--brand) / .85); }
+.mk-sweep { animation: mk-sweep 6s ease-in-out infinite; animation-play-state: paused; }
+.mk-signal[data-live="true"] .mk-sweep { animation-play-state: running; }
+@keyframes mk-sweep { from { transform: translateX(0); } to { transform: translateX(48px); } }
+.mk-pin { position: absolute; width: 0; height: 0; }
+.mk-pin b { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgb(var(--brand)), 0 0 22px 6px rgb(var(--brand-accent) / .8); }
+.mk-pin i { position: absolute; left: -24px; top: -24px; width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgb(var(--brand-accent) / .75); opacity: 0; animation: mk-pin-ring 3.2s ease-out infinite; animation-play-state: paused; }
+.mk-pin i + i { animation-delay: 1.6s; }
+.mk-signal[data-live="true"] .mk-pin i { animation-play-state: running; }
+@keyframes mk-pin-ring { 0% { transform: scale(.25); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+.mk-map-chip {
+  position: absolute;
+  transform: translate(14px, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .4rem .75rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--brand-accent) / .45);
+  background: color-mix(in oklab, #0b1224 78%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  box-shadow: 0 10px 26px -12px rgb(0 0 0 / .8);
+  transition: border-color .25s ease, background .25s ease;
+}
+html[data-theme="light"] .mk-map-chip { background: rgb(255 255 255 / .88); color: #0d1829; box-shadow: 0 10px 26px -14px rgb(var(--brand) / .5); }
+.mk-map-chip:hover { border-color: rgb(var(--brand-accent)); background: rgb(var(--brand) / .55); }
+html[data-theme="light"] .mk-map-chip:hover { background: #fff; border-color: rgb(var(--brand)); }
+.mk-map-chip:focus-visible, .mk-row-link:focus-visible { outline: 2px solid rgb(var(--brand-accent)); outline-offset: 3px; border-radius: 12px; }
+
+.mk-rows { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--surface-border); }
+.mk-row { display: flex; align-items: center; gap: .75rem; border-bottom: 1px solid var(--surface-border); }
+.mk-row-link { display: flex; flex: 1; min-width: 0; align-items: center; gap: 1rem; padding: .8rem .2rem; color: var(--text-primary); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.mk-row-link:hover { transform: translateX(4px); }
+.mk-row-icon { display: inline-grid; flex: none; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 12px; background: rgb(var(--brand) / .14); color: rgb(var(--brand-accent)); transition: background .3s ease; }
+html[data-theme="light"] .mk-row-icon { color: rgb(var(--brand)); }
+.mk-row-link:hover .mk-row-icon { background: rgb(var(--brand) / .26); }
+.mk-row-text { display: grid; min-width: 0; line-height: 1.25; }
+.mk-row-text small { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.mk-row-text b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 600; }
+.mk-row-arrow { margin-left: auto; flex: none; opacity: .35; transition: opacity .3s ease, transform .3s ease; }
+.mk-row-link:hover .mk-row-arrow { opacity: .9; transform: translate(2px, -2px); }
+.mk-copy {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: .4rem;
+  padding: .4rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--surface-border);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: color .25s ease, border-color .25s ease, background .25s ease;
+}
+.mk-copy:hover { color: var(--text-primary); border-color: rgb(var(--brand) / .6); background: rgb(var(--brand) / .1); }
+.mk-copy:focus-visible { outline: 2px solid rgb(var(--brand-accent)); outline-offset: 3px; }
+
+/* Right side: the form. */
+.mk-form { display: grid; gap: 1.25rem; }
+.mk-form-title { margin: 0 0 .1rem; font-size: 1.875rem; font-weight: 700; line-height: 1.2; }
+.mk-form-row { display: grid; gap: 1.25rem; }
+@media (min-width: 640px) { .mk-form-row { grid-template-columns: 1fr 1fr; } }
+.mk-reply-time { margin: -.25rem 0 0; text-align: center; font-size: 12.5px; color: var(--text-muted); }
+.mk-spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid currentColor; border-top-color: transparent; border-radius: 999px; animation: mk-spin .9s linear infinite; }
+@keyframes mk-spin { to { transform: rotate(360deg); } }
+/* Thank-you: the check draws itself. */
+.mk-check { width: 64px; height: 64px; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.mk-check circle { stroke: rgb(90 230 170 / .35); fill: rgb(90 230 170 / .1); }
+.mk-check path { stroke: #3ddc97; stroke-dasharray: 40; stroke-dashoffset: 40; animation: mk-draw .6s .25s ease-out forwards; }
+@keyframes mk-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .mk-signal::after, .mk-sweep, .mk-pin i { animation: none; }
+  .mk-pin i { opacity: .35; transform: scale(1.1); }
+  .mk-signal::before { transition: none; }
+  .mk-check path { animation: none; stroke-dashoffset: 0; }
+  .mk-row-link { transition: none; }
 }

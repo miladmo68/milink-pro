@@ -14,6 +14,8 @@ EVAL="document.getElementById('work').scrollIntoView()" BASE_URL=... node script
 RM=1 BASE_URL=... node scripts/shoot.mjs /tmp/still 1440 900 0 6000                     # prefers-reduced-motion
 ```
 
+`PRINT="js"` evaluates JavaScript at the end and prints the result: use it to measure instead of guessing (for example, count clickable elements whose `getComputedStyle(el).cursor` is not `pointer`, or read bounding boxes to check centring).
+
 It prints `pageWidth` vs `viewport`; they must be equal (no horizontal overflow). Then **look at the PNGs** (Read tool).
 
 ## What to cover

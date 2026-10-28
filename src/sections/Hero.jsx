@@ -34,7 +34,9 @@ const CLIENTS = [
   "Tarahan Choob",
 ];
 
-const SCRAMBLE_GLYPHS = "abcdefghijklmnopqrstuvwxyz#%&*+=/<>";
+// Letters only: symbol glyphs come from a fallback font with a taller line box,
+// which made the headline shift by a few pixels while the word decoded.
+const SCRAMBLE_GLYPHS = "abcdefghijklmnopqrstuvwxyz";
 
 const EASE = [0.2, 0.8, 0.2, 1];
 

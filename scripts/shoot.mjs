@@ -6,6 +6,7 @@
 // Optional env:
 //   EVAL="js"   run this JavaScript in the page ~4s after load (click things, scroll to a section)
 //   RM=1        emulate prefers-reduced-motion
+//   PRINT="js"   evaluate this JavaScript at the end and print its result (e.g. computed styles)
 //   URL=...     full URL instead of BASE_URL + "/"
 // Prints page width vs viewport width, so horizontal overflow is easy to spot.
 import { spawn } from "node:child_process";
@@ -57,5 +58,9 @@ for (const t of times.split(",").map(Number)) {
 }
 const info = await send("Runtime.evaluate", { expression: "JSON.stringify({ pageWidth: document.documentElement.scrollWidth, viewport: document.documentElement.clientWidth })", returnByValue: true });
 console.log(info.result.value);
+if (process.env.PRINT) {
+  const out = await send("Runtime.evaluate", { expression: process.env.PRINT, returnByValue: true, awaitPromise: true });
+  console.log(typeof out.result?.value === "string" ? out.result.value : JSON.stringify(out.result?.value));
+}
 ws.close();
 chrome.kill();

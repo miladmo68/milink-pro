@@ -91,7 +91,7 @@ function InOutItem({ children, index = 0, delayStep = 0.08 }) {
 }
 
 /* ===== FlippyInteractive ===== */
-function FlippyInteractive({ front, back, title, className = "" }) {
+function FlippyInteractive({ front, back, className = "" }) {
   const [flipped, setFlipped] = useState(false);
 
   const handleKeyDown = (event) => {
@@ -107,7 +107,8 @@ function FlippyInteractive({ front, back, title, className = "" }) {
       tabIndex={0}
       role="button"
       aria-expanded={flipped}
-      aria-label={`${title}. Press Enter or Space to show or hide details.`}
+      // No aria-label: the accessible name comes from the card text, so it always
+      // contains the visible words (WCAG 2.5.3 Label in Name).
       onMouseLeave={() => setFlipped(false)}
       onClick={() => setFlipped((value) => !value)}
       onPointerMove={(event) => {
@@ -274,7 +275,6 @@ function ServiceCard({ data, isLight }) {
   return (
     <FlippyInteractive
       className="h-[500px] sm:h-[480px] md:h-[480px]"
-      title={data.title}
       front={Front}
       back={Back}
     />

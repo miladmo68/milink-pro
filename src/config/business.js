@@ -24,6 +24,9 @@ export const BUSINESS = {
   linkedinUrl: "",
   portfolioUrl: "https://miladweb.com",
   whatsappMessage: "Hi Milink! I'm interested in your services.",
+  // Shown under the contact form when set, e.g. "We usually reply within one business day."
+  // Leave empty until the owner confirms a real reply time; never promise one that is not kept.
+  replyTime: "",
 };
 
 /** Google Maps search link for the public service area. */
