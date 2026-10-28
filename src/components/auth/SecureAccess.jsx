@@ -30,7 +30,6 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
     event.preventDefault();
     const normalized = email.trim().toLowerCase();
     if (area === "client" && ADMIN_EMAILS.has(normalized)) { router.replace("/admin"); return; }
-    if (isAdmin && !ADMIN_EMAILS.has(normalized)) { setNotice("This email is not authorised for the MIlink admin workspace."); return; }
     const supabase = getSupabaseBrowserClient();
     if (!supabase) { setNotice("Secure sign-in needs Supabase keys. Add them to .env.local before using accounts in production."); return; }
     setBusy(true); setNotice("");
@@ -50,7 +49,20 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
       else setNotice("Account created. Please verify your email before accessing your workspace.");
       return;
     }
-    else router.replace(isAdmin ? "/admin" : "/portal");
+    // Where the account belongs is decided by its profile role (the same rule the
+    // API routes and database policies use); the owner emails are bootstrap admins.
+    const user = result.data.user;
+    let adminAccount = ADMIN_EMAILS.has(normalized);
+    if (!adminAccount && user) {
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      adminAccount = ["admin", "super_admin"].includes(profile?.role);
+    }
+    if (isAdmin && !adminAccount) {
+      await supabase.auth.signOut();
+      setNotice("This account is not authorised for the MIlink admin workspace.");
+      return;
+    }
+    router.replace(adminAccount ? "/admin" : "/portal");
   }
 
   async function resendVerification() {
