@@ -45,3 +45,6 @@
 .adminInspector :global(.mi-stage-picker-menu){z-index:50}
 .adminInspector :global(.mi-admin-project-tabs){position:relative;z-index:1}
 .adminInspector :global(.mi-client-actions){z-index:2}
+
+/* The hero button label and its arrow stay on one line. */
+.heroPrimaryButton{display:inline-flex!important;align-items:center;justify-content:center;white-space:nowrap!important;flex-wrap:nowrap!important;gap:10px;width:auto!important;min-width:max-content}

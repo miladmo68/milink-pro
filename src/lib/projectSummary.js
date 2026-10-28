@@ -44,5 +44,9 @@ export function composeProjectSummary({brief,fileRequests=[],approvals=[]}={}){
   else if(targetIsValid&&!["completed","draft"].includes(status))action=`Your target launch window is ${targetDate.toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})}. Nothing is needed from you right now.`;
   else action="Nothing is needed from you at the moment. The MiLink team will post the next update here.";
 
+  const sentence=(text)=>text?text.charAt(0).toUpperCase()+text.slice(1):text;
+  summary=sentence(summary);
+  action=sentence(action);
+
   return {summary,action,stage:stageNames[status]||"project update",status,hasAction:Boolean(pendingFiles||pendingApprovals||isPaymentDue(brief)||status==="draft"),latestUpdate};
 }
