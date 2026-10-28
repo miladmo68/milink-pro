@@ -5,7 +5,7 @@ import Testimonials from "../../sections/Testimonials.jsx";
 
 export default function TestimonialsPageContent() {
   return (
-    <SectionPage>
+    <SectionPage title="Client Testimonials">
       <Testimonials />
     </SectionPage>
   );

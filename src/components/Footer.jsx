@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Instagram, Mail, Phone } from "lucide-react";
 import { nav } from "../data/content.js";
 import { BUSINESS, whatsappLinks } from "../config/business.js";
@@ -22,6 +23,27 @@ const LINKS = [...nav, { label: "Client Portal", href: "/portal" }];
 export default function Footer() {
   const year = new Date().getFullYear();
   const whatsapp = whatsappLinks();
+  const [away, setAway] = useState(false);
+
+  // On phones the launcher hides while scrolling down and returns on scroll up (CSS only applies below 768px).
+  useEffect(() => {
+    let last = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (Math.abs(y - last) > 8) {
+          setAway(y > last && y > 120);
+          last = y;
+        }
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -83,7 +105,7 @@ export default function Footer() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Milink on WhatsApp"
-        className="marketing-whatsapp-float"
+        className={`marketing-whatsapp-float${away ? " is-away" : ""}`}
         onClick={openWhatsApp}
       >
         <WhatsAppGlyph size={28} />

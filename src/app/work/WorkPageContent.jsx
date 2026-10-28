@@ -5,7 +5,7 @@ import Work from "../../sections/Work.jsx";
 
 export default function WorkPageContent() {
   return (
-    <SectionPage>
+    <SectionPage title="Our Work — Web Design and Development Portfolio">
       <Work />
     </SectionPage>
   );

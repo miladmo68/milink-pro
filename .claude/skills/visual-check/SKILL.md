@@ -36,3 +36,7 @@ It prints `pageWidth` vs `viewport`; they must be equal (no horizontal overflow)
 ## Scroll-linked sections
 
 To test a pinned/scroll-driven section, scroll to a fraction of its track and read state: `document.documentElement.style.scrollBehavior='auto'` first (the site uses smooth scrolling), then `window.scrollTo(0, window.scrollY + track.getBoundingClientRect().top - pinOffset + fraction * (track.offsetHeight - sticky.offsetHeight))`. **Never name a variable `top` in `EVAL`** (it collides with `window.top` and the whole script fails silently). Lazy sections hydrate late in headless Chrome: wait ~5s before clicking or scrolling-then-asserting, or you will see false failures. Run tests one at a time with a browser reset in between (`pkill -f remote-debugging-port; sleep 1.5`).
+
+## Whole-page audit
+
+`BASE_URL=http://localhost:3200 node scripts/audit.mjs <outDir> <width> <height> <mobile 0|1> <dark|light>` loads the home page once, scrolls it so lazy sections hydrate, screenshots every section (several frames for tall ones) and prints console errors, failed requests, broken images, unnamed buttons, wrong cursors and overflow. Pass the arguments explicitly (in zsh an unquoted `$cfg` is not word-split). Build contact sheets by embedding the PNGs in an HTML file and screenshotting it with `URL=file://... scripts/shoot.mjs`.

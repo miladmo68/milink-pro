@@ -189,7 +189,9 @@ const jsonLd = {
       description:
         "Web Design and Development, E-Commerce Solutions, SEO & Performance Optimization, UI/UX, Branding/Identity, and ongoing Website Maintenance & Support. Toronto.",
       parentOrganization: { "@id": ORGANIZATION_ID },
+      address: { "@type": "PostalAddress", addressRegion: "ON", addressCountry: "CA" },
       areaServed: SERVICE_AREAS,
+      sameAs: [BUSINESS.instagram.url],
     },
     ...services.map((service) => ({
       "@type": "Service",

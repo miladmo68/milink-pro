@@ -5,7 +5,7 @@ import Contact from "../../sections/Contact.jsx";
 
 export default function ContactPageContent() {
   return (
-    <SectionPage>
+    <SectionPage title="Contact MILINK">
       <Contact />
     </SectionPage>
   );

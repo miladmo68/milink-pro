@@ -47,10 +47,6 @@ export default function HomePage() {
       <Navbar />
 
       <main>
-        <h1 className="sr-only">
-          MILINK — Web Design, E-Commerce Solutions, SEO, UI/UX & Branding
-        </h1>
-
         <nav aria-label="Primary internal links" className="sr-only">
           <a href="/#services">Our Services</a> • <a href="/#work">Work</a> •{" "}
           <a href="/#pricing">Pricing</a> •{" "}
@@ -60,39 +56,32 @@ export default function HomePage() {
         </nav>
 
         <section id="hero" aria-label="Hero">
-          <h2 className="sr-only">Welcome to MILINK</h2>
           <Hero onOpenLightbox={(img) => setLightbox(img)} />
         </section>
 
         <section aria-label="Our Services">
-          <h2 className="sr-only">Our Services</h2>
           <Services onOpen={(payload) => setModal(payload)} />
         </section>
 
         <section aria-label="Selected Work">
-          <h2 className="sr-only">Selected Work & Case Studies</h2>
           <Work onOpen={(payload) => setModal(payload)} />
         </section>
 
         <section aria-label="How We Work">
-          <h2 className="sr-only">How We Work</h2>
           <Process />
         </section>
 
         <section aria-label="Pricing & Packages">
-          <h2 className="sr-only">Pricing & Packages</h2>
           <Pricing />
         </section>
 
         <section aria-label="Testimonials">
-          <h2 className="sr-only">Testimonials</h2>
           <Testimonials />
         </section>
 
         <FAQ />
 
         <section aria-label="Contact">
-          <h2 className="sr-only">Contact</h2>
           <Contact />
         </section>
       </main>
