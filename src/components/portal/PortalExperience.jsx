@@ -35,6 +35,11 @@ const stageTone=value=>({draft:"is-plain",submitted:"is-brand",reviewing:"is-bra
 const projectStages=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];
 const contactLabels={email:"Email",portal:"Messages here",whatsapp:"WhatsApp"};
 const paymentDue=brief=>{const order=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];return Number(brief?.proposal_amount_cents)>0&&order.indexOf(brief?.status)>=3&&!["paid","approved","e_transfer_submitted","pending_review"].includes(brief?.payment_status);};
+// Opens a clean, printable page (receipt or signed agreement) so the client can save it as PDF.
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+function printDocument(heading,rows,body=""){const win=window.open("","_blank","noopener=no,width=820,height=960");if(!win)return false;win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(heading)}</title><style>body{font:15px/1.55 -apple-system,Segoe UI,Arial,sans-serif;color:#0d1728;max-width:720px;margin:48px auto;padding:0 24px}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0a5cff;padding-bottom:16px;margin-bottom:24px}h1{font-size:24px;margin:0}small{color:#5a6a80}table{width:100%;border-collapse:collapse;margin:16px 0}td{padding:10px 0;border-bottom:1px solid #e3e8f0;vertical-align:top}td:first-child{color:#5a6a80;width:38%}pre{white-space:pre-wrap;font:inherit;background:#f4f6fa;padding:16px;border-radius:8px}footer{margin-top:32px;color:#5a6a80;font-size:13px}@media print{body{margin:0}button{display:none}}</style></head><body><header><div><h1>${escapeHtml(heading)}</h1><small>${escapeHtml(BUSINESS.name)} · ${escapeHtml(BUSINESS.email)} · ${escapeHtml(BUSINESS.address.short)}</small></div><button onclick="window.print()">Save as PDF</button></header><table>${rows.map(([label,value])=>`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join("")}</table>${body?`<pre>${escapeHtml(body)}</pre>`:""}<footer>Issued ${escapeHtml(new Date().toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"}))}</footer></body></html>`);win.document.close();return true;}
+const noteStyle={message:[MessageCircle,"is-brand"],contract:[FileSignature,"is-wait"],approval:[ShieldCheck,"is-wait"],file_request:[Upload,"is-wait"],payment:[CircleDollarSign,"is-go"],brief:[FileText,"is-brand"],handoff:[FileArchive,"is-go"],status_update:[RefreshCw,""]};
+const actionKinds=["contract","approval","file_request"];
 const cx=(...v)=>v.filter(Boolean).join(" "); const title=(v="draft")=>v.replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase()); const initials=(v="MI")=>String(v||"MI").split(/\s+/).map(x=>x.replace(/[^\p{L}\p{N}]/gu,"")[0]).filter(Boolean).join("").slice(0,2).toUpperCase()||"MI";
 const clientProjects=client=>client?.project_briefs||[];
 const awaitingProposal=projects=>(projects||[]).find(project=>["draft","submitted","reviewing"].includes(project.status||"draft"));
@@ -166,7 +171,7 @@ function ClientPayments({brief,onRefresh}) {
     {returnState==="cancelled"&&<div className="d-notice" role="status"><span>Checkout was cancelled. No payment was made.</span></div>}
     <section className={cx("d-panel","d-amount",paid&&"is-paid")}>
       <div><small>{paid?"Paid":"Amount due"}</small><b className="d-num">{hasAmount?formatCad(paid?(brief.amount_paid_cents||amount):amount):"Not set yet"}</b><p>{paid?`${stripePaid?"Card payment":"e-Transfer"} confirmed on ${paidOn}.`:hasAmount?`For ${brief.business_name||"your website project"}, in Canadian dollars.`:"MIlink sets the amount when your proposal is ready."}</p></div>
-      <span className={cx("d-pill",paid?"is-go":eTransferSubmitted?"is-wait":"is-plain")}>{paid?"Paid":eTransferSubmitted?"Checking transfer":brief.payment_status==="checkout_pending"?"Checkout started":"Not paid"}</span>
+      <span className="d-amount-side"><span className={cx("d-pill",paid?"is-go":eTransferSubmitted?"is-wait":"is-plain")}>{paid?"Paid":eTransferSubmitted?"Checking transfer":brief.payment_status==="checkout_pending"?"Checkout started":"Not paid"}</span>{paid&&<button type="button" className="d-btn is-sm" onClick={()=>printDocument("Payment receipt",[["Project",brief.business_name||"Website project"],["Amount paid",formatCad(brief.amount_paid_cents||amount)],["Method",stripePaid?"Card (Stripe)":"Interac e-Transfer"],["Date",paidOn],["Reference",brief.id.slice(0,8).toUpperCase()]])}><Download size={15}/>Receipt</button>}</span>
     </section>
     {!paid&&hasAmount&&<div className="d-pay-options">
       <section className="d-panel d-pay-option">
@@ -291,7 +296,7 @@ function AdminPayments({ briefs, refresh }) {
   const unpaid=briefs.filter(brief=>Number(brief.proposal_amount_cents)>0&&!["paid","approved","e_transfer_submitted","pending_review"].includes(brief.payment_status));
   const received=history.filter(brief=>["paid","approved"].includes(brief.payment_status)).reduce((sum,brief)=>sum+Number(brief.amount_paid_cents||brief.proposal_amount_cents||0),0);
   const outstanding=unpaid.reduce((sum,brief)=>sum+Number(brief.proposal_amount_cents||0),0);
-  const updateManual=async(brief,action)=>{setBusy(`${brief.id}-${action}`);setNotice(null);try{await updateETransfer(brief.id,action);setNotice({tone:"go",text:action==="confirm"?"Marked as received. The client was notified.":"Marked as not received. The client was notified."});await refresh();}catch(error){setNotice({tone:"stop",text:error.message||"Could not update this payment."});}finally{setBusy("");}};
+  const updateManual=async(brief,action)=>{setBusy(`${brief.id}-${action}`);setNotice(null);try{await updateETransfer(brief.id,action);if(action==="confirm")dispatchEmailEvent("payment_confirmed",brief.id);setNotice({tone:"go",text:action==="confirm"?"Marked as received. The client was notified.":"Marked as not received. The client was notified."});await refresh();}catch(error){setNotice({tone:"stop",text:error.message||"Could not update this payment."});}finally{setBusy("");}};
   const name=brief=>brief.business_name||brief.client?.full_name||brief.client?.email;
   const statusOf=brief=>brief.payment_status==="paid"||brief.payment_status==="approved"?["Paid","is-go"]:brief.payment_status==="rejected"?["Not received","is-stop"]:brief.payment_status==="checkout_pending"?["Checkout started","is-wait"]:["Open","is-plain"];
   return <div className="d-page">
@@ -360,7 +365,7 @@ function ActionCenter({clients,briefs,submitted,noBrief,refresh,onNavigate,onOpe
   const followUps=noBrief.filter(client=>Date.now()-new Date(client.created_at).getTime()>86400000);
   const threads=[...inbox.reduce((map,message)=>{const entry=map.get(message.sender_id)||{sender:message.sender_id,count:0,latest:message};entry.count+=1;map.set(message.sender_id,entry);return map;},new Map()).values()];
   const reminder=async client=>{setBusy(`r-${client.id}`);const s=getSupabaseBrowserClient();const {data:{user}}=await s.auth.getUser();const {error}=await s.from("notifications").insert({user_id:client.id,recipient_id:client.id,sender_id:user?.id||null,title:"A quick reminder from MIlink",message:"Your project workspace is ready whenever you are. Complete your project brief to get started.",link:"/portal",type:"brief"});setBusy("");if(error){setNotice(`Could not send the reminder: ${error.message}`);return;}setSent(current=>({...current,[client.id]:true}));setNotice(`Reminder sent to ${client.full_name||client.email}.`);};
-  const settle=async(brief,action)=>{setBusy(`p-${brief.id}`);try{await updateETransfer(brief.id,action);setNotice(action==="confirm"?"Payment marked as received. The client was notified.":"Payment marked as not received. The client was notified.");refresh();}catch(error){setNotice(error.message||"Could not update this payment.");}setBusy("");};
+  const settle=async(brief,action)=>{setBusy(`p-${brief.id}`);try{await updateETransfer(brief.id,action);if(action==="confirm")dispatchEmailEvent("payment_confirmed",brief.id);setNotice(action==="confirm"?"Payment marked as received. The client was notified.":"Payment marked as not received. The client was notified.");refresh();}catch(error){setNotice(error.message||"Could not update this payment.");}setBusy("");};
   const openThread=clientId=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",clientId);onNavigate("Messages");};
   const name=brief=>brief.business_name||brief.client?.full_name||brief.client?.email||"Untitled project";
   const briefById=new Map(briefs.map(brief=>[brief.id,brief]));
@@ -410,10 +415,14 @@ function ProjectHealthBadge({health,detail=false}) {
 }
 
 function ClientDirectory({ clients, refresh, onNavigate }) {
-  const [selected,setSelected]=useState(null),[query,setQuery]=useState(""),[filter,setFilter]=useState("all");
+  const [selected,setSelected]=useState(null),[query,setQuery]=useState(""),[filter,setFilter]=useState("all"),[sort,setSort]=useState({key:"activity",dir:-1});
+  const desktop=useIsDesktop();
+  const lastActivity=client=>Math.max(new Date(client.created_at).getTime(),...clientProjects(client).map(project=>new Date(project.updated_at||project.created_at||0).getTime()));
+  const stageIndex=client=>{const brief=latestClientProject(client);return brief?projectStages.indexOf(brief.status||"draft"):-1;};
+  const sortBy=key=>setSort(current=>({key,dir:current.key===key?-current.dir:(key==="name"?1:-1)}));
   const filters=[["all","All"],["registered","No brief"],["submitted","New and proposal"],["development","Building"],["completed","Live"]];
   const matchesFilter=(client,value)=>{const projects=clientProjects(client);return value==="all"||value==="registered"&&!projects.length||value==="submitted"&&clientHasProjectStatus(client,["draft","submitted","reviewing","proposal_sent"])||value==="development"&&clientHasProjectStatus(client,["in_progress","client_review"])||value==="completed"&&clientHasProjectStatus(client,["completed"]);};
-  const rows=clients.filter(client=>`${client.full_name||""} ${client.email||""}`.toLowerCase().includes(query.trim().toLowerCase())&&matchesFilter(client,filter));
+  const rows=clients.filter(client=>`${client.full_name||""} ${client.email||""}`.toLowerCase().includes(query.trim().toLowerCase())&&matchesFilter(client,filter)).sort((a,b)=>{const value=client=>sort.key==="name"?(client.full_name||client.email||"").toLowerCase():sort.key==="stage"?stageIndex(client):sort.key==="joined"?new Date(client.created_at).getTime():lastActivity(client);const x=value(a),y=value(b);return (x<y?-1:x>y?1:0)*sort.dir;});
   if(selected)return <ClientFullView record={selected} refresh={refresh} onBack={()=>setSelected(null)} onNavigate={onNavigate}/>;
   const openMessages=client=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",client.id);onNavigate("Messages");};
   return <div className="d-page">
@@ -423,7 +432,15 @@ function ClientDirectory({ clients, refresh, onNavigate }) {
         <div className="d-segment" role="tablist" aria-label="Filter clients">{filters.map(([value,label])=><button type="button" role="tab" key={value} aria-selected={filter===value} onClick={()=>setFilter(value)}>{label}<span className="d-num">{clients.filter(client=>matchesFilter(client,value)).length}</span></button>)}</div>
         <label className="d-search"><Search size={16}/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search name or email" aria-label="Search clients"/></label>
       </div>
-      {rows.length?<ul className="d-list">{rows.map(client=>{const brief=latestClientProject(client),projectCount=clientProjects(client).length,health=clientHealth(client),name=client.full_name||client.email;return <li key={client.id} className="d-client-row">
+      {rows.length&&desktop?<div className="d-table-wrap"><table className="d-table"><thead><tr>{[["name","Client"],["stage","Stage"],[null,"Health"],["activity","Last activity"],["joined","Joined"]].map(([key,label])=><th key={label} scope="col" aria-sort={key&&sort.key===key?(sort.dir===1?"ascending":"descending"):undefined}>{key?<button type="button" onClick={()=>sortBy(key)}>{label}{sort.key===key&&<ChevronDown size={14} className={sort.dir===1?"is-up":""}/>}</button>:label}</th>)}<th scope="col"><span className="d-visually-hidden">Actions</span></th></tr></thead><tbody>{rows.map(client=>{const brief=latestClientProject(client),projectCount=clientProjects(client).length,health=clientHealth(client),name=client.full_name||client.email;return <tr key={client.id} onClick={()=>setSelected(client)}>
+          <td><span className="d-cell-person"><span className="d-avatar">{initials(client.full_name||client.email)}</span><span><b>{name}</b><small>{client.full_name?client.email:""}{projectCount>1?`${client.full_name?" · ":""}${projectCount} projects`:""}</small></span></span></td>
+          <td><span className={cx("d-pill",brief?stageTone(brief.status):"is-plain")}>{brief?stageLabel(brief.status):"No brief yet"}</span></td>
+          <td>{health&&health.level!=="neutral"?<ProjectHealthBadge health={health}/>:<span className="d-muted-cell">—</span>}</td>
+          <td className="d-num">{relativeTime(new Date(lastActivity(client)).toISOString())}</td>
+          <td className="d-num">{new Date(client.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</td>
+          <td className="d-cell-actions"><button type="button" className="d-icon-button" aria-label={`Message ${name}`} title="Message" onClick={event=>{event.stopPropagation();openMessages(client);}}><MessageCircle size={18}/></button></td>
+        </tr>;})}</tbody></table></div>
+      :rows.length?<ul className="d-list">{rows.map(client=>{const brief=latestClientProject(client),projectCount=clientProjects(client).length,health=clientHealth(client),name=client.full_name||client.email;return <li key={client.id} className="d-client-row">
         <button type="button" className="d-client-open" onClick={()=>setSelected(client)}>
           <span className="d-avatar">{initials(client.full_name||client.email)}</span>
           <span className="d-row-main"><b>{name}</b><small>{client.full_name?client.email:`Joined ${new Date(client.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}`}</small></span>
@@ -461,8 +478,10 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
   useEffect(()=>{setStatus(brief?.status||"draft");},[brief?.id,brief?.status]);
   const saveStatus=async()=>{if(!brief||status===brief.status)return;setSavingStage(true);const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status}).eq("id",brief.id);setSavingStage(false);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:`Stage changed to “${stageLabel(status)}”. The client was notified.`});dispatchEmailEvent("status_updated",brief.id);refresh();};
   const openQuote=()=>{setQuote({amount:brief?.proposal_amount_cents?String(brief.proposal_amount_cents/100):"",days:brief?.proposal_delivery_days?String(brief.proposal_delivery_days):"",summary:brief?.proposal_summary||""});setShowQuote(true);};
-  const proposal=async()=>{if(!brief)return;const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status:"proposal_sent",proposal_amount_cents:Math.round(Number(quote.amount||0)*100),proposal_delivery_days:Number(quote.days)||null,proposal_summary:quote.summary}).eq("id",brief.id);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:"Proposal sent. Next: add the agreement in the Contract tab."});dispatchEmailEvent("status_updated",brief.id);setShowQuote(false);refresh();};
+  const proposal=async()=>{if(!brief)return;const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status:"proposal_sent",proposal_amount_cents:Math.round(Number(quote.amount||0)*100),proposal_delivery_days:Number(quote.days)||null,proposal_summary:quote.summary}).eq("id",brief.id);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:"Proposal sent. Next: add the agreement in the Contract tab."});dispatchEmailEvent("proposal_sent",brief.id);setShowQuote(false);refresh();};
   const openChat=()=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",record.id);onNavigate("Messages");};
+  const phoneDigits=String(record.phone||"").replace(/\D/g,"");
+  const whatsapp=phoneDigits.length>=10?`https://wa.me/${phoneDigits.length===10?`1${phoneDigits}`:phoneDigits}?text=${encodeURIComponent(`Hi ${record.full_name?.split(" ")[0]||""}, this is MIlink about your website.`)}`:"";
   const nextAction=!brief?null:["submitted","reviewing"].includes(brief.status)?{label:"Send proposal",run:openQuote}:brief.status==="proposal_sent"?{label:"Add agreement",run:()=>setTab("contract")}:["in_progress","client_review"].includes(brief.status)?{label:"Post an update",run:()=>setTab("work")}:null;
   return <div className="d-page">
     <button type="button" className="d-back" onClick={onBack}><ChevronLeft size={18}/>All clients</button>
@@ -474,7 +493,7 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
         <div><dt>Prefers</dt><dd>{contactLabels[record.preferred_contact]||"Email"}</dd></div>
         <div><dt>Joined</dt><dd>{new Date(record.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</dd></div>
       </dl>
-      <div className="d-btn-row"><button type="button" className="d-btn" onClick={openChat}><MessageCircle size={17}/>Message</button>{nextAction&&<button type="button" className="d-btn is-primary" onClick={nextAction.run}>{nextAction.label}</button>}</div>
+      <div className="d-btn-row"><button type="button" className="d-btn" onClick={openChat}><MessageCircle size={17}/>Message</button>{whatsapp&&<a className="d-btn" href={whatsapp} target="_blank" rel="noreferrer">WhatsApp</a>}{nextAction&&<button type="button" className="d-btn is-primary" onClick={nextAction.run}>{nextAction.label}</button>}</div>
     </section>
     {projects.length>1&&<ProjectTabs projects={projects} activeId={activeProjectId} onSelect={onSelectProject}/>}
     {notice&&<div className={cx("d-notice",`is-${notice.tone}`)} role="status">{notice.text}</div>}
@@ -707,7 +726,7 @@ function Sheet({open,onClose,label,children}){
 function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,projectSwitcher,navItems,context,children}) {
   const admin=mode==="admin",nav=admin?adminNav:(navItems||clientNav),desktop=useIsDesktop();
   const [collapsed,setCollapsed]=useState(false),[light,setLight]=useState(false),[account,setAccount]=useState(false),[bell,setBell]=useState(false),[more,setMore]=useState(false),[notes,setNotes]=useState([]),[notificationUser,setNotificationUser]=useState(null),[notificationClock,setNotificationClock]=useState(Date.now()),[unreadMessages,setUnreadMessages]=useState(0),[commandOpen,setCommandOpen]=useState(false);
-  const accountRef=useRef(null),bellRef=useRef(null),[scrolled,setScrolled]=useState(false);
+  const accountRef=useRef(null),bellRef=useRef(null),[scrolled,setScrolled]=useState(false),[help,setHelp]=useState(false);
   useEffect(()=>{const onScroll=()=>setScrolled(window.scrollY>4);onScroll();window.addEventListener("scroll",onScroll,{passive:true});return()=>window.removeEventListener("scroll",onScroll);},[]);
   useDismiss(account,setAccount,accountRef);useDismiss(bell&&desktop,setBell,bellRef);
   useEffect(()=>{setCollapsed(readPreference("milink-dash-collapsed",false));setLight(readPreference("milink-dash-light",false));},[]);
@@ -736,7 +755,8 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
     <div className="d-menu-head"><span className="d-avatar">{accountInitials}</span><span><b>{accountName}</b><small>{notificationUser?.email||accountRole}</small></span></div>
     {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>go("Profile")}><UserRound size={18}/>Profile and settings</button>}
     <button type="button" role="menuitem" className="d-menu-item" onClick={toggleTheme}>{light?<Moon size={18}/>:<Sun size={18}/>}{light?"Dark theme":"Light theme"}</button>
-    <a role="menuitem" className="d-menu-item" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support"><HelpCircle size={18}/>Contact support</a>
+    {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>{setAccount(false);setHelp(true);}}><HelpCircle size={18}/>How this works</button>}
+    <a role="menuitem" className="d-menu-item" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support"><MessageCircle size={18}/>Email support</a>
     <div className="d-menu-sep"/>
     <button type="button" role="menuitem" className="d-menu-item is-danger" onClick={onSignOut}><LogOut size={18}/>Sign out</button>
   </div>;
@@ -789,21 +809,40 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
     </Sheet>}
     {!desktop&&<Sheet open={account} onClose={()=>setAccount(false)} label="Account">{accountMenu}</Sheet>}
     {!desktop&&<Sheet open={bell} onClose={()=>setBell(false)} label="Notifications">{notifications}</Sheet>}
+    {help&&<HelpDialog onClose={()=>setHelp(false)} go={next=>{setHelp(false);go(next);}}/>}
     {admin&&<AdminCommandPalette open={commandOpen} onClose={()=>setCommandOpen(false)} onNavigate={next=>go(next)} onOpenClient={client=>{go("Projects");window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-client",{detail:{clientId:client.id}})),0);}} onOpenProject={(projectId,clientId,focus)=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-admin-project-focus",JSON.stringify({projectId,focus}));go("Projects");window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-project",{detail:{projectId,clientId,focus}})),0);}} onOpenMessages={clientId=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",clientId);go("Messages");window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-message-client",{detail:{clientId}})),0);}} light={light} onToggleTheme={toggleTheme}/>}
   </main>;
 }
 
+const helpTopics=[
+  ["How do I send files?","Open Files and choose them, or drop them in. If we asked for something specific, it is at the top of Files with its own button.","Assets"],
+  ["How do I approve a design?","When we share something, it appears under “Waiting for you”. Open it, then press Approve or Ask for changes and write what you would like different.","Approvals"],
+  ["How do I pay?","Open Payment. Pay by card through Stripe, or send an Interac e-Transfer to the address shown and press “I have sent it”. You can download a receipt once it is confirmed.","Payments"],
+  ["Can I change my brief?","Yes. Open Brief, change anything and it saves as you type. We see the changes.","Project brief"],
+  ["How do I reach the team?","Send a message in Messages. Files can be attached there too. We also email you when we reply.","Messages"],
+  ["Where are my logins after launch?","In Handoff, together with a training video and notes on looking after your site.","Handoff & Docs"],
+];
+function HelpDialog({onClose,go}){
+  const [open,setOpen]=useState(0);
+  return <AdminModal label="How this works" heading="How this works" onClose={onClose}>
+    <div className="d-modal-body d-help">{helpTopics.map(([question,answer,to],index)=><div key={question} className={cx("d-help-item",open===index&&"is-open")}><button type="button" aria-expanded={open===index} onClick={()=>setOpen(open===index?-1:index)}><span>{question}</span><ChevronDown size={17}/></button>{open===index&&<div className="d-help-answer"><p>{answer}</p><button type="button" className="d-btn is-sm" onClick={()=>go(to)}>Open {navLabel(to)}</button></div>}</div>)}</div>
+    <footer className="d-modal-foot"><a className="d-btn" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support">Email support</a><button type="button" className="d-btn is-primary" onClick={onClose}>Done</button></footer>
+  </AdminModal>;
+}
 function NotificationPopover({notes,unread,now,onNavigate,onDismiss,onMarkAll,onClearAll}) {
+  const [filter,setFilter]=useState("all");
+  const shown=filter==="action"?notes.filter(note=>actionKinds.includes(notificationKind(note))):filter==="unread"?notes.filter(note=>!note.is_read):notes;
+  const groups=["Today","Yesterday","Earlier"].map(label=>[label,shown.filter(note=>noteDay(note.created_at,now)===label)]).filter(([,items])=>items.length);
   return <div className="d-notes" role="region" aria-label="Notifications">
     <div className="d-notes-head"><div><b>Notifications</b>{unread>0&&<small>{unread} unread</small>}</div><button type="button" className="d-btn is-quiet is-sm" onClick={onMarkAll} disabled={!unread}>Mark all read</button></div>
-    <div className="d-notes-list">{notes.length?notes.map(note=><div className={cx("d-note",!note.is_read&&"is-unread")} key={note.id} role="button" tabIndex={0} onClick={()=>onNavigate(note)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onNavigate(note);}}}>
-      <i className="d-note-dot" aria-hidden="true"/><div><b>{notificationLabel(note.title)}</b><p>{note.message||"Open for details."}</p><time>{relativeTime(note.created_at,now)}</time></div>
+    <div className="d-notes-filter"><div className="d-segment" role="tablist" aria-label="Show">{[["all","All"],["unread","Unread"],["action","Needs you"]].map(([value,label])=><button type="button" role="tab" key={value} aria-selected={filter===value} onClick={()=>setFilter(value)}>{label}</button>)}</div></div>
+    <div className="d-notes-list">{groups.length?groups.map(([label,items])=><div key={label}><p className="d-notes-day">{label}</p>{items.map(note=>{const [Icon,tone]=noteStyle[notificationKind(note)]||noteStyle.status_update;return <div className={cx("d-note",!note.is_read&&"is-unread")} key={note.id} role="button" tabIndex={0} onClick={()=>onNavigate(note)} onKeyDown={event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();onNavigate(note);}}}>
+      <span className={cx("d-row-icon",tone)} aria-hidden="true"><Icon size={16}/></span><div><b>{notificationLabel(note.title)}</b><p>{note.message||"Open for details."}</p><time>{relativeTime(note.created_at,now)}</time></div>
       <button type="button" className="d-icon-button" aria-label={`Dismiss ${notificationLabel(note.title)}`} onClick={event=>{event.stopPropagation();onDismiss(note.id);}}><X size={15}/></button>
-    </div>):<div className="d-empty"><Bell size={22}/><b>You are all caught up</b><p>New updates about your project appear here.</p></div>}</div>
+    </div>;})}</div>):<div className="d-empty"><Bell size={22}/><b>{filter==="all"?"You are all caught up":"Nothing here"}</b><p>{filter==="all"?"New updates about your project appear here.":"Try another filter."}</p></div>}</div>
     {notes.length>0&&<div className="d-notes-foot"><button type="button" className="d-btn is-quiet is-sm" onClick={onClearAll}>Clear all</button></div>}
   </div>;
 }
-
 function notificationLabel(value="") { return value.trim().toLowerCase()==="new project message" ? "New message" : value; }
 
 function WaitingStrip({brief,go,todos}){
@@ -1009,6 +1048,7 @@ function ClientApprovals({brief}) {
     setBusy("");
     if(error){setNotice({tone:"stop",text:error.message});return;}
     setApprovals(current=>current.map(item=>item.id===approval.id?data:item));
+    dispatchEmailEvent("approval_decided",approval.id);
     setOpenFeedback("");
     setNotice({tone:"go",text:success});
   };
@@ -1047,6 +1087,7 @@ function AdminApprovals({brief,client}) {
     setSaving(false);
     if(error){setNotice({tone:"stop",text:error.message});return;}
     setApprovals(current=>[data,...current]);
+    dispatchEmailEvent("approval_requested",data.id);
     setDraft({title:"",description:"",deliverable_type:"link",deliverable_url:""});
     setOpen(false);
     setNotice({tone:"go",text:"Sent for approval. The client sees it on their overview."});
@@ -1074,7 +1115,7 @@ function ClientContracts({brief}) {
   const [contracts,setContracts]=useState([]),[loading,setLoading]=useState(true),[notice,setNotice]=useState(null),[signers,setSigners]=useState({}),[declines,setDeclines]=useState({}),[openDecline,setOpenDecline]=useState(""),[busy,setBusy]=useState("");
   const load=useCallback(async()=>{if(!brief?.id){setContracts([]);setLoading(false);return;}const supabase=getSupabaseBrowserClient();if(!supabase){setLoading(false);return;}const {data,error}=await supabase.from("contracts").select("*").eq("project_id",brief.id).order("created_at",{ascending:false});if(error){console.error("Could not load contracts",error);setNotice({tone:"stop",text:error.message});}else setContracts(data||[]);setLoading(false);},[brief?.id]);
   useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`client-contracts-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"contracts",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
-  const decide=async(contract,status)=>{const signer=(signers[contract.id]||"").trim(),reason=(declines[contract.id]||"").trim();if(status==="signed"&&signer.length<3){setNotice({tone:"wait",text:"Type your full name to sign."});return;}if(status==="declined"&&!reason){setNotice({tone:"wait",text:"Tell us briefly what you would like changed."});return;}setBusy(contract.id);setNotice(null);const payload=status==="signed"?{status,signer_name:signer,signer_signature:signer}:{status,decline_reason:reason};const {data,error}=await getSupabaseBrowserClient().from("contracts").update(payload).eq("id",contract.id).eq("project_id",brief.id).select().single();setBusy("");if(error){setNotice({tone:"stop",text:error.message});return;}setContracts(current=>current.map(item=>item.id===contract.id?data:item));setOpenDecline("");setNotice({tone:"go",text:status==="signed"?"Signed. MIlink has been notified and will start work.":"Your note was sent to MIlink. We will follow up with an updated agreement."});};
+  const decide=async(contract,status)=>{const signer=(signers[contract.id]||"").trim(),reason=(declines[contract.id]||"").trim();if(status==="signed"&&signer.length<3){setNotice({tone:"wait",text:"Type your full name to sign."});return;}if(status==="declined"&&!reason){setNotice({tone:"wait",text:"Tell us briefly what you would like changed."});return;}setBusy(contract.id);setNotice(null);const payload=status==="signed"?{status,signer_name:signer,signer_signature:signer}:{status,decline_reason:reason};const {data,error}=await getSupabaseBrowserClient().from("contracts").update(payload).eq("id",contract.id).eq("project_id",brief.id).select().single();setBusy("");if(error){setNotice({tone:"stop",text:error.message});return;}setContracts(current=>current.map(item=>item.id===contract.id?data:item));dispatchEmailEvent("contract_decided",contract.id);setOpenDecline("");setNotice({tone:"go",text:status==="signed"?"Signed. MIlink has been notified and will start work.":"Your note was sent to MIlink. We will follow up with an updated agreement."});};
   const proposalAmount=Number(brief?.proposal_amount_cents||0);
   return <div className="d-page">
     <div className="d-page-head"><h2>Proposal and agreement</h2><p>Read the scope and price, then sign with your typed name. Ask in Messages if anything is unclear.</p></div>
@@ -1085,7 +1126,7 @@ function ClientContracts({brief}) {
       <div className="d-contract-body">{contract.body}</div>
       {contract.status==="pending"&&openDecline!==contract.id&&<div className="d-fields"><label className="d-field"><span>Type your full name to sign</span><input value={signers[contract.id]||""} onChange={event=>setSigners(current=>({...current,[contract.id]:event.target.value}))} placeholder="Your full name" autoComplete="name"/><small>Your typed name is your electronic signature for this agreement.</small></label><div className="d-btn-row"><button type="button" className="d-btn is-primary" disabled={busy===contract.id||(signers[contract.id]||"").trim().length<3} onClick={()=>decide(contract,"signed")}><FileSignature size={17}/>{busy===contract.id?"Signing…":"Sign agreement"}</button><button type="button" className="d-btn" onClick={()=>setOpenDecline(contract.id)}>Request changes</button></div></div>}
       {contract.status==="pending"&&openDecline===contract.id&&<div className="d-fields"><label className="d-field"><span>What would you like changed?</span><textarea rows={3} value={declines[contract.id]||""} onChange={event=>setDeclines(current=>({...current,[contract.id]:event.target.value}))} placeholder="For example the payment schedule or a page you do not need." autoFocus/></label><div className="d-btn-row"><button type="button" className="d-btn is-primary" disabled={busy===contract.id} onClick={()=>decide(contract,"declined")}>{busy===contract.id?"Sending…":"Send to MIlink"}</button><button type="button" className="d-btn" onClick={()=>setOpenDecline("")}>Cancel</button></div></div>}
-      {contract.status==="signed"&&<p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}</p>}
+      {contract.status==="signed"&&<div className="d-btn-row d-signed-row"><p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}</p><button type="button" className="d-btn is-sm" onClick={()=>printDocument(contract.title,[["Project",brief?.business_name||"Website project"],["Signed by",contract.signer_name],["Signed on",contractDate(contract.signed_at)],["Agreement reference",contract.id.slice(0,8).toUpperCase()]],contract.body)}><Download size={15}/>Signed copy</button></div>}
       {contract.status==="declined"&&<div className="d-quote"><b>You asked for changes</b><p>{contract.decline_reason||"Changes requested."}</p></div>}
     </article>)}</div>}
   </div>;
@@ -1107,7 +1148,7 @@ function AdminContracts({brief}) {
       if(!user)throw new Error("Your session ended. Sign in again.");
       const {data,error}=await supabase.from("contracts").insert({project_id:brief.id,title:draft.title.trim(),body:draft.body.trim(),created_by:user.id}).select().single();
       if(error)throw error;
-      setContracts(current=>[data,...current]);setDraft({title:"",body:""});setOpen(false);
+      setContracts(current=>[data,...current]);dispatchEmailEvent("contract_sent",data.id);setDraft({title:"",body:""});setOpen(false);
       setNotice({tone:"go",text:"Agreement sent. The client can read and sign it now."});
     }catch(error){console.error("Could not create the agreement",error);setNotice({tone:"stop",text:error?.message||"Could not send the agreement."});}
     finally{setSaving(false);}
@@ -1153,7 +1194,7 @@ function AdminConversation({thread,user,onSent,onBack,desktop,onOpenClient}) {
       {onOpenClient&&<button type="button" className="d-btn is-sm" onClick={()=>onOpenClient(thread.client.id)}>{desktop?"Open client":"Client"}</button>}
     </header>
     <ChatStream messages={thread.messages} currentUserId={user?.id} empty="No messages yet. Say hello and explain the next step."/>
-    <ChatComposer placeholder={`Message ${thread.client.full_name||"the client"}`} onSend={send}/>
+    <ChatComposer placeholder={`Message ${thread.client.full_name||"the client"}`} onSend={send} quickReplies={["Thanks, I will look at this today.","Could you send that as a file in Files?","Your update is live, take a look.","Can we have a quick call this week?"]}/>
   </>;
 }
 
@@ -1177,12 +1218,13 @@ function ChatStream({messages,currentUserId,empty}) {
 
 function ChatAttachment({file}) { const [url,setUrl]=useState(""); const isImage=(file.type||"").startsWith("image/"); useEffect(()=>{let active=true;getSupabaseBrowserClient().storage.from("portal-files").createSignedUrl(file.url,3600).then(({data})=>{if(active)setUrl(data?.signedUrl||"")});return()=>{active=false}},[file.url]);return <a className={cx("d-attachment",isImage&&"is-image")} href={url||undefined} target="_blank" rel="noreferrer">{isImage&&url?<img src={url} alt={file.name}/>:<span className="d-row-icon"><FileText size={17}/></span>}<span className="d-attachment-name"><b>{file.name}</b><small>{formatBytes(file.size)}</small></span></a>; }
 
-function ChatComposer({placeholder,onSend}) {
+function ChatComposer({placeholder,onSend,quickReplies=[]}) {
   const [content,setContent]=useState(""),[attachment,setAttachment]=useState(null),[sending,setSending]=useState(false),[error,setError]=useState("");
   const fileRef=useRef(null),textRef=useRef(null),desktop=useIsDesktop();
   useEffect(()=>{const el=textRef.current;if(!el)return;el.style.height="auto";el.style.height=`${Math.min(el.scrollHeight,180)}px`;},[content]);
   const submit=async()=>{if(sending||(!content.trim()&&!attachment))return;setSending(true);setError("");const result=await onSend({content,attachment});if(result?.error)setError(result.error);else{setContent("");setAttachment(null);if(fileRef.current)fileRef.current.value="";}setSending(false);};
   return <div className="d-composer">
+    {quickReplies.length>0&&!content&&!attachment&&<div className="d-quick" aria-label="Quick replies">{quickReplies.map(text=><button type="button" key={text} className="d-chip" onClick={()=>{setContent(text);textRef.current?.focus();}}>{text}</button>)}</div>}
     {attachment&&<div className="d-file-chip"><FileText size={15}/><span>{attachment.name}</span><button type="button" className="d-icon-button" onClick={()=>{setAttachment(null);if(fileRef.current)fileRef.current.value="";}} aria-label="Remove attachment"><X size={15}/></button></div>}
     <div className="d-composer-row">
       <label className="d-icon-button" title="Attach a file"><Upload size={19}/><span className="d-visually-hidden">Attach a file</span><input ref={fileRef} hidden type="file" onChange={event=>setAttachment(event.target.files?.[0]||null)}/></label>
@@ -1361,5 +1403,6 @@ function nextStepFor(brief,todos){
   return nextSteps[status]||nextSteps.in_progress;
 }
 
+function noteDay(value,now){const date=new Date(value),today=new Date(now);today.setHours(0,0,0,0);const diff=(today-new Date(date).setHours(0,0,0,0))/86400000;return diff<=0?"Today":diff===1?"Yesterday":"Earlier";}
 function Empty({icon:Icon,title:heading,copy,action}){return <section className="d-panel d-empty"><Icon size={26}/><b>{heading}</b><p>{copy}</p>{action}</section>}
-function Loading({label,compact}){return <div className={cx("d-loading",compact&&"is-compact")} role="status"><span className="d-spinner" aria-hidden="true"/><span>{label}</span></div>}
+function Loading({label,compact}){if(compact)return <div className="d-skeleton-list" role="status" aria-label={label}>{[0,1,2].map(i=><div className="d-skeleton-row" key={i}><i className="d-sk is-icon"/><span><i className="d-sk" style={{width:`${62-i*12}%`}}/><i className="d-sk is-thin" style={{width:`${40-i*6}%`}}/></span></div>)}</div>;return <div className="d-page" role="status" aria-label={label}><div className="d-panel d-skeleton-hero"><i className="d-sk is-thin" style={{width:"22%"}}/><i className="d-sk is-title" style={{width:"58%"}}/><i className="d-sk" style={{width:"44%"}}/><i className="d-sk is-btn"/></div><div className="d-panel"><div className="d-skeleton-list">{[0,1].map(i=><div className="d-skeleton-row" key={i}><i className="d-sk is-icon"/><span><i className="d-sk" style={{width:"55%"}}/><i className="d-sk is-thin" style={{width:"35%"}}/></span></div>)}</div></div></div>}

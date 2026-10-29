@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { compileNotificationDigest, composeNotificationDigest, isDigestDue } from "../../../../lib/notificationDigest";
 import { sendWithSmtp } from "../../../../lib/transactionalEmail";
+import { sendReminders } from "../../../../lib/reminders";
+import { ADMIN_EMAILS } from "../../../../config/admins.js";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,7 +50,10 @@ async function processDigests(request) {
       console.error(`Notification digest failed for profile ${profile.id}`, digestError);
     }
   }
-  return NextResponse.json({ ok: true, ...result });
+  let reminders = { sent: 0, skipped: 0, failed: 0 };
+  try { reminders = await sendReminders({ supabase, adminEmails: (process.env.TO_EMAIL || ADMIN_EMAILS.join(",")).split(",").map((email) => email.trim()).filter(Boolean), now }); }
+  catch (reminderError) { console.error("Reminders failed", reminderError); }
+  return NextResponse.json({ ok: true, ...result, reminders });
 }
 
 // Vercel Cron invokes GET; POST is available for a trusted scheduler or manual job.
