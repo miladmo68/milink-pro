@@ -34,6 +34,7 @@ const stageLabel=value=>stageLabels[value||"draft"]||title(value||"draft");
 const stageTone=value=>({draft:"is-plain",submitted:"is-brand",reviewing:"is-brand",proposal_sent:"is-wait",in_progress:"is-brand",client_review:"is-wait",completed:"is-go"}[value||"draft"]||"is-plain");
 const projectStages=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];
 const contactLabels={email:"Email",portal:"Messages here",whatsapp:"WhatsApp"};
+const paymentDue=brief=>{const order=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];return Number(brief?.proposal_amount_cents)>0&&order.indexOf(brief?.status)>=3&&!["paid","approved","e_transfer_submitted","pending_review"].includes(brief?.payment_status);};
 const cx=(...v)=>v.filter(Boolean).join(" "); const title=(v="draft")=>v.replaceAll("_"," ").replace(/\b\w/g,x=>x.toUpperCase()); const initials=(v="MI")=>String(v||"MI").split(/\s+/).map(x=>x.replace(/[^\p{L}\p{N}]/gu,"")[0]).filter(Boolean).join("").slice(0,2).toUpperCase()||"MI";
 const clientProjects=client=>client?.project_briefs||[];
 const awaitingProposal=projects=>(projects||[]).find(project=>["draft","submitted","reviewing"].includes(project.status||"draft"));
@@ -78,7 +79,7 @@ export function ClientExperience({onSignOut}){
   // A new client sees only what they can act on; the rest appears as the project moves on.
   // The section being viewed (for example opened from a notification) always stays listed.
   const visibleNav=useMemo(()=>{const status=brief?.status;const stages=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];const at=stages.indexOf(status);const show={Overview:true,"Project brief":true,Messages:true,Assets:Boolean(brief),Contracts:at>=3,Payments:at>=3,Approvals:at>=4,"Handoff & Docs":at>=5};return clientNav.filter(([label])=>show[label]||label===section);},[brief,section]);
-  return <Shell mode="client" section={section} setSection={navigate} navItems={visibleNav} onNotificationNavigate={handleNotificationNavigate} onSignOut={onSignOut} projectSwitcher={<ProjectSwitcher projects={projects} activeProject={brief} loading={projectsLoading} onSelect={chooseProject} onStartNew={startNewProject}/>}>{section==="Overview"&&<><ClientHome brief={brief} onBriefChange={handleBriefChange} open={()=>navigate("Project brief")} message={()=>navigate("Messages")} go={navigate}/></>} {section==="Project brief"&&<Brief brief={brief} newProject={projectId==="new"} onChange={handleBriefChange}/>} {section==="Assets"&&<Assets brief={brief}/>} {section==="Messages"&&<ClientMessages brief={brief}/>} {section==="Profile"&&<ProfileSettings/>} {section==="Approvals"&&<ClientApprovals brief={brief}/>} {section==="Contracts"&&<ClientContracts brief={brief}/>} {section==="Handoff & Docs"&&<ProjectHandoffHub brief={brief} onMessage={()=>navigate("Messages")}/>} {section==="Payments"&&<ClientPayments brief={brief} onRefresh={refreshProjects}/>}</Shell>;
+  return <Shell mode="client" section={section} setSection={navigate} navItems={visibleNav} context={brief?.business_name||(projectsLoading?"":"New project")} onNotificationNavigate={handleNotificationNavigate} onSignOut={onSignOut} projectSwitcher={<ProjectSwitcher projects={projects} activeProject={brief} loading={projectsLoading} onSelect={chooseProject} onStartNew={startNewProject}/>}>{section==="Overview"&&<><ClientHome brief={brief} onBriefChange={handleBriefChange} open={()=>navigate("Project brief")} message={()=>navigate("Messages")} go={navigate}/></>} {section==="Project brief"&&<Brief brief={brief} newProject={projectId==="new"} onChange={handleBriefChange}/>} {section==="Assets"&&<Assets brief={brief}/>} {section==="Messages"&&<ClientMessages brief={brief}/>} {section==="Profile"&&<ProfileSettings/>} {section==="Approvals"&&<ClientApprovals brief={brief}/>} {section==="Contracts"&&<ClientContracts brief={brief}/>} {section==="Handoff & Docs"&&<ProjectHandoffHub brief={brief} onMessage={()=>navigate("Messages")}/>} {section==="Payments"&&<ClientPayments brief={brief} onRefresh={refreshProjects}/>}</Shell>;
 }
 
 const profileDefaults={full_name:"",company_name:"",job_title:"",phone:"",company_website:"",timezone:"America/Toronto",preferred_contact:"email",notification_email_mode:"instant"};
@@ -349,8 +350,8 @@ function AdminMessages({onOpenClient}) {
 }
 
 function ActionCenter({clients,briefs,submitted,noBrief,refresh,onNavigate,onOpenProject}) {
-  const [notice,setNotice]=useState(""),[busy,setBusy]=useState(""),[inbox,setInbox]=useState([]),[sent,setSent]=useState({});
-  const loadInbox=useCallback(async()=>{const s=getSupabaseBrowserClient();if(!s)return;const {data:{user}}=await s.auth.getUser();if(!user)return;const {data}=await s.from("messages").select("id,content,sender_id,created_at").eq("recipient_id",user.id).eq("is_read",false).order("created_at",{ascending:false}).limit(50);setInbox(data||[]);},[]);
+  const [notice,setNotice]=useState(""),[busy,setBusy]=useState(""),[inbox,setInbox]=useState([]),[sent,setSent]=useState({}),[replies,setReplies]=useState({files:[],changes:[],declined:[]});
+  const loadInbox=useCallback(async()=>{const s=getSupabaseBrowserClient();if(!s)return;const {data:{user}}=await s.auth.getUser();if(!user)return;const [{data},files,changes,declined]=await Promise.all([s.from("messages").select("id,content,sender_id,created_at").eq("recipient_id",user.id).eq("is_read",false).order("created_at",{ascending:false}).limit(50),s.from("file_requests").select("id,title,project_id,completed_at").eq("status","completed").eq("admin_decision","pending").limit(30),s.from("approvals").select("id,title,project_id,decided_at").eq("status","changes_requested").limit(30),s.from("contracts").select("id,title,project_id,created_at").eq("status","declined").limit(30)]);setInbox(data||[]);setReplies({files:files.data||[],changes:changes.data||[],declined:declined.data||[]});},[]);
   useEffect(()=>{loadInbox();},[loadInbox,briefs]);
   const clientById=useMemo(()=>new Map(clients.map(client=>[client.id,client])),[clients]);
   const pendingPayments=briefs.filter(brief=>["e_transfer_submitted","pending_review"].includes(brief.payment_status));
@@ -362,24 +363,31 @@ function ActionCenter({clients,briefs,submitted,noBrief,refresh,onNavigate,onOpe
   const settle=async(brief,action)=>{setBusy(`p-${brief.id}`);try{await updateETransfer(brief.id,action);setNotice(action==="confirm"?"Payment marked as received. The client was notified.":"Payment marked as not received. The client was notified.");refresh();}catch(error){setNotice(error.message||"Could not update this payment.");}setBusy("");};
   const openThread=clientId=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",clientId);onNavigate("Messages");};
   const name=brief=>brief.business_name||brief.client?.full_name||brief.client?.email||"Untitled project";
+  const briefById=new Map(briefs.map(brief=>[brief.id,brief]));
+  const openFocused=(brief,focus)=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-admin-project-focus",JSON.stringify({projectId:brief.id,focus}));onOpenProject?.(brief);};
   const queue=[
     ...toReview.map(brief=>({key:`b-${brief.id}`,tone:"brand",icon:FileText,title:name(brief),detail:`New brief from ${brief.client?.full_name||brief.client?.email}`,actions:[{label:"Open brief",primary:true,run:()=>onOpenProject?.(brief)}]})),
     ...threads.map(thread=>{const client=clientById.get(thread.sender);return {key:`m-${thread.sender}`,tone:"brand",icon:MessageCircle,title:client?.full_name||client?.email||"Client",detail:`${thread.count>1?`${thread.count} new messages`:"New message"}: “${(thread.latest.content||"Attachment").slice(0,90)}”`,meta:relativeTime(thread.latest.created_at),actions:[{label:"Reply",primary:true,run:()=>openThread(thread.sender)}]};}),
+    ...replies.files.map(item=>{const brief=briefById.get(item.project_id);return brief&&{key:`fr-${item.id}`,tone:"brand",icon:Upload,title:name(brief),detail:`Replied to your request for “${item.title}”`,actions:[{label:"Review reply",primary:true,run:()=>openFocused(brief,"request-file")}]};}),
+    ...replies.changes.map(item=>{const brief=briefById.get(item.project_id);return brief&&{key:`ch-${item.id}`,tone:"wait",icon:ShieldCheck,title:name(brief),detail:`Asked for changes to “${item.title}”`,actions:[{label:"See feedback",primary:true,run:()=>openFocused(brief,"approvals")}]};}),
+    ...replies.declined.map(item=>{const brief=briefById.get(item.project_id);return brief&&{key:`dc-${item.id}`,tone:"stop",icon:FileSignature,title:name(brief),detail:`Asked to change the agreement “${item.title}”`,actions:[{label:"See note",primary:true,run:()=>openFocused(brief,"contracts")}]};}),
     ...pendingPayments.map(brief=>({key:`p-${brief.id}`,tone:"wait",icon:CircleDollarSign,title:name(brief),detail:"Client says the e-Transfer was sent. Check your bank, then confirm.",actions:[{label:"Received",primary:true,run:()=>settle(brief,"confirm"),busy:busy===`p-${brief.id}`},{label:"Not received",run:()=>settle(brief,"reject"),busy:busy===`p-${brief.id}`}]})),
     ...atRisk.map(brief=>({key:`h-${brief.id}`,tone:"stop",icon:HeartPulse,title:name(brief),detail:brief.health?.reason||"Needs attention",actions:[{label:"Open project",run:()=>onOpenProject?.(brief)}]})),
     ...followUps.map(client=>({key:`f-${client.id}`,tone:"plain",icon:UserRound,title:client.full_name||client.email,detail:"Signed up more than a day ago and has not started a brief.",actions:[{label:sent[client.id]?"Reminder sent":"Send reminder",run:()=>reminder(client),busy:busy===`r-${client.id}`,disabled:sent[client.id]}]}))
   ];
-  const parts=[toReview.length&&`${toReview.length} new brief${toReview.length===1?"":"s"}`,threads.length&&`${threads.length} conversation${threads.length===1?"":"s"} waiting`,pendingPayments.length&&`${pendingPayments.length} payment${pendingPayments.length===1?"":"s"} to confirm`,atRisk.length&&`${atRisk.length} project${atRisk.length===1?"":"s"} at risk`].filter(Boolean);
+  const queueItems=queue.filter(Boolean);
+  const replyCount=replies.files.length+replies.changes.length+replies.declined.length;
+  const parts=[toReview.length&&`${toReview.length} new brief${toReview.length===1?"":"s"}`,threads.length&&`${threads.length} conversation${threads.length===1?"":"s"} waiting`,pendingPayments.length&&`${pendingPayments.length} payment${pendingPayments.length===1?"":"s"} to confirm`,replyCount&&`${replyCount} client repl${replyCount===1?"y":"ies"} to check`,atRisk.length&&`${atRisk.length} project${atRisk.length===1?"":"s"} at risk`].filter(Boolean);
   const stages=[["New brief","submitted"],["Reviewing","reviewing"],["Proposal sent","proposal_sent"],["Building","in_progress"],["Client review","client_review"],["Live","completed"]];
   const today=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
   return <div className="d-page">
     <div className="d-page-head-row">
-      <div className="d-page-head"><p className="d-muted-text" style={{margin:0}}>{today}</p><h2>{queue.length?`${queue.length} thing${queue.length===1?"":"s"} need${queue.length===1?"s":""} you`:"You are all caught up"}</h2><p>{parts.length?parts.join(", ")+".":"No briefs, messages or payments are waiting."}</p></div>
+      <div className="d-page-head"><p className="d-muted-text" style={{margin:0}}>{today}</p><h2>{queueItems.length?`${queueItems.length} thing${queueItems.length===1?"":"s"} need${queueItems.length===1?"s":""} you`:"You are all caught up"}</h2><p>{parts.length?parts.join(", ")+".":"No briefs, messages or payments are waiting."}</p></div>
       <button type="button" className="d-btn is-sm" onClick={()=>{refresh();loadInbox();}}><RefreshCw size={15}/>Refresh</button>
     </div>
     {notice&&<div className="d-notice is-go" role="status"><CheckCircle2 size={18}/><span>{notice}</span></div>}
     <section className="d-panel" aria-label="Needs you">
-      {queue.length?<ul className="d-list">{queue.map(item=>{const Icon=item.icon;return <li key={item.key} className="d-queue-row">
+      {queueItems.length?<ul className="d-list">{queueItems.map(item=>{const Icon=item.icon;return <li key={item.key} className="d-queue-row">
         <span className={cx("d-row-icon",item.tone!=="plain"&&`is-${item.tone}`)}><Icon size={18}/></span>
         <span className="d-row-main"><b>{item.title}</b><small>{item.detail}</small>{item.meta&&<small className="d-queue-meta">{item.meta}</small>}</span>
         <span className="d-queue-actions">{item.actions.map(action=><button type="button" key={action.label} className={cx("d-btn","is-sm",action.primary&&"is-primary")} onClick={action.run} disabled={action.busy||action.disabled}>{action.busy?"Saving…":action.label}</button>)}</span>
@@ -696,10 +704,11 @@ function Sheet({open,onClose,label,children}){
   </>}</AnimatePresence>;
 }
 
-function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,projectSwitcher,navItems,children}) {
+function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,projectSwitcher,navItems,context,children}) {
   const admin=mode==="admin",nav=admin?adminNav:(navItems||clientNav),desktop=useIsDesktop();
   const [collapsed,setCollapsed]=useState(false),[light,setLight]=useState(false),[account,setAccount]=useState(false),[bell,setBell]=useState(false),[more,setMore]=useState(false),[notes,setNotes]=useState([]),[notificationUser,setNotificationUser]=useState(null),[notificationClock,setNotificationClock]=useState(Date.now()),[unreadMessages,setUnreadMessages]=useState(0),[commandOpen,setCommandOpen]=useState(false);
-  const accountRef=useRef(null),bellRef=useRef(null);
+  const accountRef=useRef(null),bellRef=useRef(null),[scrolled,setScrolled]=useState(false);
+  useEffect(()=>{const onScroll=()=>setScrolled(window.scrollY>4);onScroll();window.addEventListener("scroll",onScroll,{passive:true});return()=>window.removeEventListener("scroll",onScroll);},[]);
   useDismiss(account,setAccount,accountRef);useDismiss(bell&&desktop,setBell,bellRef);
   useEffect(()=>{setCollapsed(readPreference("milink-dash-collapsed",false));setLight(readPreference("milink-dash-light",false));},[]);
   const toggleCollapsed=useCallback(()=>setCollapsed(value=>{writePreference("milink-dash-collapsed",!value);return !value;}),[]);
@@ -753,10 +762,10 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
         </div>
       </aside>
       <div className="d-main">
-        <header className="d-topbar">
+        <header className={cx("d-topbar",scrolled&&"is-scrolled")}>
           <div className="d-topbar-brand">
-            <a href="/" className="d-logo" aria-label="MIlink home">M</a>
-            <div className="d-topbar-title"><h1>{navLabel(section)}</h1></div>
+            {!desktop&&(!admin&&projectSwitcher?<div className="d-topbar-project">{projectSwitcher}</div>:<span className="d-wordmark"><span className="d-logo is-xs" aria-hidden="true">M</span>MIlink Studio</span>)}
+            <div className="d-crumbs">{desktop&&<><span className="d-crumb-root">{admin?"MIlink Studio":context||"Your project"}</span><ChevronRight size={15} aria-hidden="true"/></>}<h1 className={desktop?undefined:"d-visually-hidden"}>{navLabel(section)}</h1></div>
           </div>
           <div className="d-topbar-actions">
             {admin&&<button type="button" className="d-icon-button" aria-label="Search clients and projects" title="Search (⌘K)" onClick={()=>setCommandOpen(true)}><Search size={19}/></button>}
@@ -765,10 +774,9 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
               <button type="button" className="d-icon-button" aria-label={unread?`Notifications, ${unread} unread`:"Notifications"} aria-expanded={bell} onClick={()=>setBell(value=>!value)}><Bell size={19}/>{unread>0&&<i className="d-count">{unread>99?"99+":unread}</i>}</button>
               {bell&&desktop&&<div className="d-popover">{notifications}</div>}
             </div>
-            {!desktop&&<button type="button" className="d-icon-button" aria-label="Account" onClick={()=>setAccount(true)}><span className="d-avatar" style={{width:30,height:30,fontSize:11.5}}>{accountInitials}</span></button>}
+            {!desktop&&<button type="button" className="d-icon-button" aria-label="Account" onClick={()=>setAccount(true)}><span className="d-avatar is-sm">{accountInitials}</span></button>}
           </div>
         </header>
-        {!desktop&&!admin&&projectSwitcher&&<div className="d-phone-switcher">{projectSwitcher}</div>}
         <div className="d-content">{children}</div>
       </div>
       <nav className="d-tabbar" aria-label="Sections">
@@ -798,11 +806,8 @@ function NotificationPopover({notes,unread,now,onNavigate,onDismiss,onMarkAll,on
 
 function notificationLabel(value="") { return value.trim().toLowerCase()==="new project message" ? "New message" : value; }
 
-function WaitingStrip({brief,go}){
-  const [items,setItems]=useState({files:[],approvals:[]});
-  const load=useCallback(async()=>{if(!brief?.id){setItems({files:[],approvals:[]});return;}const supabase=getSupabaseBrowserClient();if(!supabase)return;const [files,approvals]=await Promise.all([supabase.from("file_requests").select("id,title").eq("project_id",brief.id).eq("status","pending"),supabase.from("approvals").select("id,title").eq("project_id",brief.id).eq("status","pending")]);setItems({files:files.data||[],approvals:approvals.data||[]});},[brief?.id]);
-  useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`waiting-strip-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"file_requests",filter:`project_id=eq.${brief.id}`},load).on("postgres_changes",{event:"*",schema:"public",table:"approvals",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
-  const rows=[...items.approvals.map(item=>({key:`a-${item.id}`,icon:ShieldCheck,title:item.title,detail:"Waiting for your approval",action:"Review",to:"Approvals"})),...items.files.map(item=>({key:`f-${item.id}`,icon:Upload,title:item.title,detail:"MIlink asked for this file",action:"Upload",to:"Assets"}))];
+function WaitingStrip({brief,go,todos}){
+  const rows=[...todos.contracts.map(item=>({key:`c-${item.id}`,icon:FileSignature,title:item.title,detail:"Ready for your signature",action:"Sign",to:"Contracts"})),...(paymentDue(brief)?[{key:"pay",icon:CircleDollarSign,title:`Payment of ${formatCad(brief.proposal_amount_cents)}`,detail:"Pay by card or Interac e-Transfer",action:"Pay",to:"Payments"}]:[]),...todos.approvals.map(item=>({key:`a-${item.id}`,icon:ShieldCheck,title:item.title,detail:"Waiting for your approval",action:"Review",to:"Approvals"})),...todos.files.map(item=>({key:`f-${item.id}`,icon:Upload,title:item.title,detail:"MIlink asked for this file",action:"Upload",to:"Assets"}))];
   if(!rows.length)return null;
   return <section className="d-panel d-waiting" aria-label="Waiting for you">
     <div className="d-panel-head"><div><h3>Waiting for you</h3><p>{rows.length===1?"One thing needs your input to keep the project moving.":`${rows.length} things need your input to keep the project moving.`}</p></div></div>
@@ -813,6 +818,7 @@ function WaitingStrip({brief,go}){
 const nextSteps={draft:["Finish your project brief","Four short steps. We start as soon as you send it.","Continue the brief","Project brief"],submitted:["We are reviewing your brief","Nothing is needed from you right now. You can add your logo and photos while you wait.","Add files","Assets"],reviewing:["We are reviewing your brief","Nothing is needed from you right now. You can add your logo and photos while you wait.","Add files","Assets"],proposal_sent:["Your proposal is ready","Read the scope and price, then sign the agreement to start.","Review the proposal","Contracts"],in_progress:["We are building your website","Updates appear below as we go. Questions are always welcome.","Message the team","Messages"],client_review:["Your website is ready for review","Check it, then approve it or tell us what to change.","Review now","Approvals"],completed:["Your website is live","Your logins and training notes are in Handoff.","Open handoff","Handoff & Docs"]};
 function ClientHome({brief,onBriefChange,open,message,go}){
   const status=brief?.status||"draft";
+  const todos=useProjectTodos(brief&&status!=="draft"?brief:null);
   if(!brief||status==="draft") return <div className="d-page">
     <section className="d-hero">
       <p className="d-hero-kicker">{brief?.business_name||"Welcome to MIlink"}</p>
@@ -830,16 +836,16 @@ function ClientHome({brief,onBriefChange,open,message,go}){
       </ol>
     </section>
   </div>;
-  const next=nextSteps[status]||nextSteps.in_progress;
+  const next=todos.loaded?nextStepFor(brief,todos):(nextSteps[status]||nextSteps.in_progress);
   return <div className="d-page">
     <section className="d-hero">
-      <div className="d-hero-top"><p className="d-hero-kicker">{brief.business_name||"Your website project"}</p><span className="d-pill is-brand">{stageLabel(status)}</span></div>
+      <div className="d-hero-top"><span className="d-pill is-brand">{stageLabel(status)}</span></div>
       <h2 className="d-hero-title">{next[0]}</h2>
       <p className="d-hero-copy">{next[1]}</p>
       <div className="d-btn-row"><button type="button" className="d-btn is-primary" onClick={()=>go?.(next[3])}>{next[2]}</button>{next[3]!=="Messages"&&<button type="button" className="d-btn" onClick={message}><MessageCircle size={17}/>Message the team</button>}</div>
       <ProjectRoute status={status}/>
     </section>
-    <WaitingStrip brief={brief} go={go}/>
+    <WaitingStrip brief={brief} go={go} todos={todos}/>
     <div className="d-split">
       <LiveProgressTimeline brief={brief} onChange={onBriefChange}/>
       <div className="d-stack">
@@ -850,7 +856,6 @@ function ClientHome({brief,onBriefChange,open,message,go}){
     <p className="d-footnote"><ShieldCheck size={15}/>Only you and the MIlink team can see this project. Need help? <a href="mailto:info@milink.ca?subject=MIlink%20workspace%20support">info@milink.ca</a></p>
   </div>;
 }
-
 function OnboardingReadiness({brief,onChange,admin=false}){
   const [items,setItems]=useState(()=>normaliseOnboardingChecklist(brief?.onboarding_checklist));
   const [savingId,setSavingId]=useState("");
@@ -1339,6 +1344,21 @@ function BriefFacts({brief}){
   ];
   const link=value=>{const href=/^https?:\/\//i.test(value)?value:`https://${value}`;return <a href={href} target="_blank" rel="noreferrer">{value}</a>;};
   return <div className="d-stack">{groups.map(([heading,rows])=><section className="d-panel" key={heading}><div className="d-panel-head"><div><h3>{heading}</h3></div></div><dl className="d-deflist">{rows.map(([label,value,kind])=><div key={label}><dt>{label}</dt><dd className={!value?"is-empty":""}>{!value?"Not given":kind==="link"?link(value):kind==="links"?value.split(", ").map((item,index)=><Fragment key={item}>{index>0&&", "}{link(item)}</Fragment>):value}</dd></div>)}</dl></section>)}</div>;
+}
+
+function useProjectTodos(brief){
+  const [todos,setTodos]=useState({files:[],approvals:[],contracts:[],loaded:false});
+  const load=useCallback(async()=>{if(!brief?.id){setTodos({files:[],approvals:[],contracts:[],loaded:true});return;}const supabase=getSupabaseBrowserClient();if(!supabase)return;const [files,approvals,contracts]=await Promise.all([supabase.from("file_requests").select("id,title").eq("project_id",brief.id).eq("status","pending"),supabase.from("approvals").select("id,title").eq("project_id",brief.id).eq("status","pending"),supabase.from("contracts").select("id,title").eq("project_id",brief.id).eq("status","pending")]);setTodos({files:files.data||[],approvals:approvals.data||[],contracts:contracts.data||[],loaded:true});},[brief?.id]);
+  useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`project-todos-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"file_requests",filter:`project_id=eq.${brief.id}`},load).on("postgres_changes",{event:"*",schema:"public",table:"approvals",filter:`project_id=eq.${brief.id}`},load).on("postgres_changes",{event:"*",schema:"public",table:"contracts",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
+  return todos;
+}
+function nextStepFor(brief,todos){
+  const status=brief?.status||"draft";
+  if(todos.contracts.length)return ["Sign your agreement","Read the scope and terms, then sign with your typed name.","Read and sign","Contracts"];
+  if(paymentDue(brief))return ["Your payment is due",`${formatCad(brief.proposal_amount_cents)} for ${brief.business_name||"your website"}. Pay by card or Interac e-Transfer.`,"Pay now","Payments"];
+  if(todos.approvals.length)return [todos.approvals.length===1?`“${todos.approvals[0].title}” is ready for you`:`${todos.approvals.length} items are ready for you`,"Take a look, then approve or tell us what to change.","Review now","Approvals"];
+  if(todos.files.length)return [todos.files.length===1?`We need “${todos.files[0].title}”`:`We need ${todos.files.length} files from you`,"Send them when you can, or leave a note if you do not have them yet.","Send files","Assets"];
+  return nextSteps[status]||nextSteps.in_progress;
 }
 
 function Empty({icon:Icon,title:heading,copy,action}){return <section className="d-panel d-empty"><Icon size={26}/><b>{heading}</b><p>{copy}</p>{action}</section>}
