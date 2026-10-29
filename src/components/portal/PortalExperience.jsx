@@ -32,7 +32,7 @@ const onboardingChecklistDefault=[
   {id:"domain_dns",label:"Domain & DNS Access Details",status:"pending"},
   {id:"color_palette",label:"Color Preferences & Typography Approved",status:"pending"}
 ];
-const normaliseOnboardingChecklist=value=>{const saved=Array.isArray(value)?value:[];return onboardingChecklistDefault.map(item=>{const match=saved.find(entry=>entry?.id===item.id);return {...item,status:match?.status==="ready"?"ready":"pending"};});};
+const normaliseOnboardingChecklist=value=>{const saved=Array.isArray(value)?value:[];const base=onboardingChecklistDefault.map(item=>{const match=saved.find(entry=>entry?.id===item.id);return {...item,status:match?.status==="ready"?"ready":"pending"};});const custom=saved.filter(entry=>entry&&typeof entry.id==="string"&&entry.id.startsWith("custom_")&&typeof entry.label==="string"&&entry.label.trim()).slice(0,8).map(entry=>({id:entry.id,label:entry.label.trim().slice(0,80),status:entry.status==="ready"?"ready":"pending",custom:true}));return [...base,...custom];};
 const timelineCategories=["Development","Design","Milestone","Note"];
 const normaliseTimelineUpdates=value=>Array.isArray(value)?value.filter(update=>update&&typeof update.message==="string").map(update=>({id:String(update.id||update.created_at||Math.random()),message:update.message.trim(),category:timelineCategories.includes(update.category)?update.category:"Note",created_at:update.created_at||new Date().toISOString()})).filter(update=>update.message):[];
 const timelineTimestamp=value=>{const date=new Date(value);if(Number.isNaN(date.getTime()))return "Recently";const today=new Date();const sameDay=date.toDateString()===today.toDateString();return sameDay?`Today, ${date.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`:date.toLocaleDateString(undefined,{month:"short",day:"numeric"});};
@@ -183,10 +183,10 @@ function ClientPayments({brief,onRefresh}) {
 export function AdminExperience({onSignOut}){const [section,setSection]=useState("Action Center"),[toast,setToast]=useState("");const syncAdminLocation=useCallback((next,projectId)=>{if(typeof window==="undefined")return;const tabs={"Action Center":"action-center",Clients:"clients",Projects:"projects",Messages:"messages",Payments:"payments"};const url=new URL(window.location.href);url.pathname="/admin";url.searchParams.set("tab",tabs[next]||"action-center");if(projectId)url.searchParams.set("project",projectId);else url.searchParams.delete("project");window.history.pushState({},"",`${url.pathname}${url.search}`);},[]);const navigateAdmin=useCallback((next,projectId)=>{setSection(next);syncAdminLocation(next,projectId);},[syncAdminLocation]);useEffect(()=>{if(typeof window==="undefined")return;const target=new URLSearchParams(window.location.search).get("tab")?.toLowerCase();const tabs={"action-center":"Action Center",action_center:"Action Center",clients:"Clients",projects:"Projects",messages:"Messages",payments:"Payments"};if(tabs[target])setSection(tabs[target]);},[]);useEffect(()=>{let timer;const openClients=event=>{setSection("Clients");setToast(event.detail||"Client deleted successfully.");if(typeof window!=="undefined")window.history.replaceState({},"","/admin?tab=clients");window.clearTimeout(timer);timer=window.setTimeout(()=>setToast(""),4200);};window.addEventListener("milink:client-deleted",openClients);window.addEventListener("milink:admin-toast",openClients);return()=>{window.removeEventListener("milink:client-deleted",openClients);window.removeEventListener("milink:admin-toast",openClients);window.clearTimeout(timer);};},[]);const handleNotificationNavigate=useCallback(target=>{navigateAdmin(target.section,target.projectId);if(target.projectId&&typeof window!=="undefined")window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-project",{detail:{projectId:target.projectId,clientId:target.clientId}})),0);},[navigateAdmin]);return <Shell mode="admin" section={section} setSection={navigateAdmin} onNotificationNavigate={handleNotificationNavigate} onSignOut={onSignOut}><AdminWorkspace currentTab={section} onNavigate={navigateAdmin}/>{toast&&<div className="mi-admin-toast"><CheckCircle2 size={17}/>{toast}</div>}</Shell>}
 
 function AdminWorkspace({ currentTab, onNavigate }) {
-  const [clients, setClients] = useState([]); const [selected, setSelected] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [query, setQuery] = useState(""); const failedRef = useRef(false); const openedUrlProjectRef = useRef("");
+  const [clients, setClients] = useState([]); const [selected, setSelected] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [query, setQuery] = useState(""); const failedRef = useRef(false); const loadedRef = useRef(false); const openedUrlProjectRef = useRef("");
   const fetchClients = useCallback(async () => {
     const supabase = getSupabaseBrowserClient(); if (!supabase) { setError("Supabase is not configured."); setLoading(false); return; }
-    setLoading(true); setError("");
+    if (!loadedRef.current) setLoading(true); setError("");
     const [{ data: profiles, error: clientsError }, { data: briefRows, error: briefsError }, { data: messageRows, error: messagesError }, { data: approvalRows, error: approvalsError }, { data: fileRequestRows, error: fileRequestsError }] = await Promise.all([
       supabase.from("profiles").select("id, email, full_name, role, created_at").order("created_at", { ascending:false }),
       supabase.from("project_briefs").select("*").order("updated_at", { ascending:false }),
@@ -216,7 +216,7 @@ function AdminWorkspace({ currentTab, onNavigate }) {
         const current=briefsByClient.get(brief.client_id)||[]; current.push(brief); briefsByClient.set(brief.client_id,current);
       });
       const clientRows=(profiles||[]).filter((profile)=>!["admin","super_admin"].includes(profile.role)&&!isAdminEmail(profile.email)).map(profile=>({...profile,project_briefs:briefsByClient.get(profile.id)||[]}));
-      failedRef.current = false; setClients(clientRows);
+      failedRef.current = false; loadedRef.current = true; setClients(clientRows);
       setSelected((current) => { const next = current ? clientRows.find((client) => client.id === current.id) : null; return next ? { ...next, _openProjectId: current?._openProjectId } : null; });
     }
     setLoading(false);
@@ -699,20 +699,24 @@ function OnboardingReadiness({brief,onChange,admin=false}){
   useEffect(()=>setItems(normaliseOnboardingChecklist(brief?.onboarding_checklist)),[brief?.id,brief?.onboarding_checklist]);
   const readyCount=items.filter(item=>item.status==="ready").length;
   const percentage=Math.round((readyCount/items.length)*100);
-  const toggle=async id=>{
+  const [draft,setDraft]=useState("");
+  const save=async(next,busyId)=>{
     if(!brief?.id||savingId)return;
     const previous=items;
-    const next=items.map(item=>item.id===id?{...item,status:item.status==="ready"?"pending":"ready"}:item);
-    setItems(next);setSavingId(id);setNotice("");onChange?.({...brief,onboarding_checklist:next});
+    setItems(next);setSavingId(busyId);setNotice("");onChange?.({...brief,onboarding_checklist:next});
     const {data,error}=await getSupabaseBrowserClient().from("project_briefs").update({onboarding_checklist:next}).eq("id",brief.id).select().single();
     setSavingId("");
     if(error){setItems(previous);onChange?.({...brief,onboarding_checklist:previous});setNotice(`Could not save checklist: ${error.message}`);return;}
     onChange?.(data);
   };
+  const toggle=id=>save(items.map(item=>item.id===id?{...item,status:item.status==="ready"?"pending":"ready"}:item),id);
+  const addItem=()=>{const label=draft.trim();if(!label||items.length>=12)return;const id=`custom_${Date.now().toString(36)}`;setDraft("");save([...items,{id,label:label.slice(0,80),status:"pending",custom:true}],id);};
+  const removeItem=id=>save(items.filter(item=>item.id!==id),id);
   return <section className={cx("mi-onboarding-readiness",admin&&"is-admin")} aria-label="Onboarding readiness checklist">
     <header><div><span>Onboarding readiness</span><h3>{readyCount===items.length?"Everything is ready to go.":"Let’s make sure the essentials are ready."}</h3><p>{admin?"Update any item to keep the client workspace in sync.":"Mark each item ready as you provide it. Your MIlink team sees updates instantly."}</p></div><b className={readyCount===items.length?"is-complete":""}>{percentage}% Ready</b></header>
     <div className="mi-onboarding-progress" aria-label={`${percentage}% complete`}><i style={{width:`${percentage}%`}}/></div>
-    <div className="mi-onboarding-items">{items.map(item=>{const ready=item.status==="ready";return <button type="button" key={item.id} className={ready?"is-ready":""} onClick={()=>toggle(item.id)} disabled={Boolean(savingId)} aria-pressed={ready}><i>{ready?<Check size={15}/>:<span/>}</i><span>{item.label}</span><em>{savingId===item.id?"Saving…":ready?"Ready":"Pending"}</em></button>;})}</div>
+    <div className="mi-onboarding-items">{items.map(item=>{const ready=item.status==="ready";return <div className="mi-onboarding-row" key={item.id}><button type="button" className={ready?"is-ready":""} onClick={()=>toggle(item.id)} disabled={Boolean(savingId)} aria-pressed={ready}><i>{ready?<Check size={15}/>:<span/>}</i><span>{item.label}</span><em>{savingId===item.id?"Saving…":ready?"Ready":"Pending"}</em></button>{admin&&item.custom&&<button type="button" className="mi-onboarding-remove" aria-label={`Remove ${item.label}`} disabled={Boolean(savingId)} onClick={()=>removeItem(item.id)}><X size={14}/></button>}</div>;})}</div>
+    {admin&&items.length<12&&<div className="mi-onboarding-add"><input value={draft} maxLength={80} onChange={event=>setDraft(event.target.value)} onKeyDown={event=>event.key==="Enter"&&addItem()} placeholder="Ask for something else, e.g. Social media links"/><button type="button" disabled={!draft.trim()||Boolean(savingId)} onClick={addItem}><Plus size={15}/>Add item</button></div>}
     {notice&&<p className="mi-onboarding-notice">{notice}</p>}
   </section>;
 }
