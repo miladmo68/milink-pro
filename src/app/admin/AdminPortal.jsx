@@ -39,7 +39,8 @@ export default function AdminPortal() {
 
   async function handleSignOut() {
     const supabase = getSupabaseBrowserClient();
-    await supabase?.auth.signOut();
+    // Leave even if the network call fails: the local session is cleared either way.
+    try { await supabase?.auth.signOut(); } catch (error) { console.warn("Sign-out request failed", error); await supabase?.auth.signOut({ scope: "local" }).catch(() => {}); }
     setAuthenticated(false);
     router.replace("/");
   }

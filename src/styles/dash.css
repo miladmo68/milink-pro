@@ -1032,3 +1032,17 @@ html.mi-portal-light:has(.d-app), html.mi-portal-light:has(.d-app) body { backgr
 .d-amount { flex-direction: column; align-items: stretch; }
 .d-amount-side { display: flex; align-items: center; justify-content: space-between; gap: 10px; justify-items: initial; }
 @media (min-width: 640px) { .d-amount { flex-direction: row; align-items: flex-start; } .d-amount-side { display: grid; justify-items: end; } }
+
+/* Phone tab bar docked to the bottom edge (a floating bar moved with the browser toolbar on real phones) */
+.d-tabbar {
+  left: 0; right: 0; bottom: 0;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  border: 0; border-top: 1px solid var(--d-line); border-radius: 0;
+  background: color-mix(in srgb, var(--d-surface) 94%, transparent);
+  box-shadow: none; transform: translateZ(0); will-change: transform;
+}
+.d-app[data-theme="light"] .d-tabbar { box-shadow: none; }
+.d-main { padding-bottom: calc(64px + env(safe-area-inset-bottom) + 20px); }
+.d-toast { bottom: calc(64px + env(safe-area-inset-bottom) + 14px); }
+@media (min-width: 900px) { .d-main { padding-bottom: 48px; } .d-toast { bottom: 28px; } }

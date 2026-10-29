@@ -728,7 +728,7 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
   const [collapsed,setCollapsed]=useState(false),[light,setLight]=useState(false),[account,setAccount]=useState(false),[bell,setBell]=useState(false),[more,setMore]=useState(false),[notes,setNotes]=useState([]),[notificationUser,setNotificationUser]=useState(null),[notificationClock,setNotificationClock]=useState(Date.now()),[unreadMessages,setUnreadMessages]=useState(0),[commandOpen,setCommandOpen]=useState(false);
   const accountRef=useRef(null),bellRef=useRef(null),[scrolled,setScrolled]=useState(false),[help,setHelp]=useState(false);
   useEffect(()=>{const onScroll=()=>setScrolled(window.scrollY>4);onScroll();window.addEventListener("scroll",onScroll,{passive:true});return()=>window.removeEventListener("scroll",onScroll);},[]);
-  useDismiss(account,setAccount,accountRef);useDismiss(bell&&desktop,setBell,bellRef);
+  useDismiss(account&&desktop,setAccount,accountRef);useDismiss(bell&&desktop,setBell,bellRef);
   useEffect(()=>{setCollapsed(readPreference("milink-dash-collapsed",false));setLight(readPreference("milink-dash-light",false));},[]);
   const toggleCollapsed=useCallback(()=>setCollapsed(value=>{writePreference("milink-dash-collapsed",!value);return !value;}),[]);
   const toggleTheme=useCallback(()=>setLight(value=>{writePreference("milink-dash-light",!value);return !value;}),[]);
