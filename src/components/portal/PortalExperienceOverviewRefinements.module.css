@@ -48,3 +48,17 @@
 
 /* The hero button label and its arrow stay on one line. */
 .heroPrimaryButton{display:inline-flex!important;align-items:center;justify-content:center;white-space:nowrap!important;flex-wrap:nowrap!important;gap:10px;width:auto!important;min-width:max-content}
+.infoGrid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+/* Brief: step progress above the stepper and the review step. */
+.briefProgress{display:grid;gap:8px;margin:0 0 14px}.briefProgress>span{font-size:13px;font-weight:700;color:var(--muted,#94a3b8);letter-spacing:.02em}.briefProgress>div{height:6px;border-radius:99px;background:color-mix(in srgb,var(--accent,#4da8ff) 14%,transparent);overflow:hidden}.briefProgress>div i{display:block;height:100%;border-radius:inherit;background:var(--accent,#4da8ff);transition:width .35s ease}
+.reviewList{display:grid;gap:12px;margin-top:6px}.reviewList section{border:1px solid var(--line,#243246);border-radius:14px;padding:14px 16px;background:rgba(255,255,255,.02)}.reviewList header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.reviewList header b{font-size:14px}.reviewList header button{min-height:34px;padding:0 12px;border:1px solid var(--line,#243246);border-radius:999px;font-size:12.5px;font-weight:700;color:var(--accent,#4da8ff);cursor:pointer}.reviewList header button:hover{border-color:var(--accent,#4da8ff)}.reviewList dl{display:grid;gap:8px;margin:0}.reviewList dl>div{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:12px;font-size:14px}.reviewList dt{color:var(--muted,#94a3b8)}.reviewList dt em{color:#f87171;margin-left:2px;font-style:normal}.reviewList dd{margin:0;overflow-wrap:anywhere}.reviewEmpty{color:var(--muted,#94a3b8);font-style:italic}
+@media(max-width:560px){.reviewList dl>div{grid-template-columns:1fr;gap:2px}}
+@media(prefers-reduced-motion:reduce){.briefProgress>div i{transition:none}}
+
+/* Brief form: short helper lines under fields, optional tag, inline fix links */
+.fieldHint{margin:.1rem 0 0;font-size:.8rem;line-height:1.45;color:var(--muted,#94a3b8)}
+.optionalTag{font-style:normal;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;font-size:.68rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase;border:1px solid currentColor;opacity:.6}
+.noticeLink{cursor:pointer;background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline;text-underline-offset:2px}
+.readyNote{display:flex;align-items:center;gap:.5rem;margin-top:.25rem;padding:.7rem .9rem;border-radius:12px;font-size:.88rem;font-weight:600;color:#16a34a;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.28)}
+.tags i button{cursor:pointer;margin-left:.35rem;border:0;background:none;color:inherit;opacity:.7;display:inline-flex;vertical-align:middle;padding:0}
+.tags i button:hover{opacity:1}

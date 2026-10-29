@@ -3,6 +3,8 @@
 // .env.test.local), then screenshots a list of pages and reports console
 // errors, failed requests and the first headings of each page.
 //
+//   ACT="js" runs on every page before its screenshot (for example to click a button).
+//   PRINT="js" evaluates JavaScript on the last page and prints it.
 //   BASE_URL=http://localhost:3200 node scripts/portal-shoot.mjs <outDir> <width> <height> <mobile 0|1> <client|admin> "<path,path,...>" [light]
 //
 // Example paths: "/portal,/portal?tab=messages,/portal?tab=assets" or "/admin,/admin?tab=payments"
@@ -48,13 +50,14 @@ const filled = await ev(`(()=>{const set=(el,v)=>{const s=Object.getOwnPropertyD
  const btn=[...document.querySelectorAll('button')].find(b=>/^sign in$/i.test(b.textContent.trim())&&b.type!=='button')||[...document.querySelectorAll('button[type=submit],form button')].find(b=>/sign in/i.test(b.textContent));if(!btn)return 'no-button';btn.click();return 'submitted'})()`);
 console.log("login:", filled);
 await sleep(7000);
-if (theme === "light") await ev("localStorage.setItem('theme','light')");
 for (const [i, path] of pathsArg.split(",").filter(Boolean).entries()) {
   if (i > 0 || path !== loginPath) { await send("Page.navigate", { url: base + path }); await sleep(6000); }
-  if (theme === "light") { await ev("document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.remove('dark')"); await sleep(500); }
+  if (theme === "light") { await ev(`document.querySelector('[aria-label="Toggle theme"]')?.click()`); await sleep(500); }
+  if (process.env.ACT) { await ev(process.env.ACT); await sleep(1500); }
   await shot(`${String(i + 1).padStart(2, "0")}-${path.replace(/[^a-z0-9]+/gi, "_").slice(0, 40)}`);
   const info = await ev(`JSON.stringify({url:location.pathname+location.search,h1:[...document.querySelectorAll('h1')].map(e=>e.textContent.trim().slice(0,50)),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,hasLoginForm:!!document.querySelector('input[type=password]')})`);
   console.log(info);
 }
+if (process.env.PRINT) console.log("print:", await ev(process.env.PRINT));
 console.log("problems:", JSON.stringify([...new Set(problems)].slice(0, 25), null, 1));
 ws.close(); chrome.kill();

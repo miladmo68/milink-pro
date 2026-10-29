@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
 
 export const runtime = "nodejs";
 
-const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 const UUID = /^[0-9a-f-]{36}$/i;
 
 function json(error, status, extra = {}) {

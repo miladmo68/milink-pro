@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../config/admins.js";
 
-const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 const safeDestination = (next) => next?.startsWith("/") && !next.startsWith("//") ? next : "/portal";
 
 export async function GET(request) {

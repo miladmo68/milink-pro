@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
 
-const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 
 /** Deletes one project brief and its project-scoped records only. Never deletes the client account. */
 export async function POST(request) {

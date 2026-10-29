@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getAppUrl, renderEmailTemplate, renderPlainText, sendWithSmtp } from "../../../lib/transactionalEmail";
 import { normalizeNotificationEmailMode } from "../../../lib/notificationDigest";
+import { ADMIN_EMAILS } from "../../../config/admins.js";
 
 export const runtime = "nodejs";
 
-const ADMIN_EMAILS = ["miladmo68@gmail.com", "info@milink.ca"];
-const ADMIN_ALERT_EMAILS = ["miladmo68@gmail.com", "info@milink.ca", "milinkagency@gmail.com"];
+const ADMIN_ALERT_EMAILS = [...ADMIN_EMAILS, "milinkagency@gmail.com"];
 const adminRecipients = () => (process.env.TO_EMAIL || ADMIN_ALERT_EMAILS.join(",")).split(",").map((email) => email.trim()).filter(Boolean);
 const statusTitle = (value = "") => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 

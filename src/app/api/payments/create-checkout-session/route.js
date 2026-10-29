@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
 
 export const runtime = "nodejs";
 
-const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 
 function json(message, status) {
   return NextResponse.json({ error: message }, { status });

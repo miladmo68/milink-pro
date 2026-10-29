@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
+import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../config/admins.js";
 
-const ADMIN_EMAILS = new Set(["miladmo68@gmail.com", "info@milink.ca"]);
 const getBaseUrl = () => {
   if (typeof window !== "undefined" && window.location.origin) return window.location.origin;
   return process.env.NEXT_PUBLIC_SITE_URL || "https://milink.ca";
