@@ -7,6 +7,7 @@
 //   PRINT="js" evaluates JavaScript on the last page and prints it.
 //   BASE_URL=http://localhost:3200 node scripts/portal-shoot.mjs <outDir> <width> <height> <mobile 0|1> <client|admin> "<path,path,...>" [light]
 //
+//   Each page prints "offscreen": elements that stick out past the right edge (outside scrollable areas).
 // Example paths: "/portal,/portal?tab=messages,/portal?tab=assets" or "/admin,/admin?tab=payments"
 import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
@@ -50,12 +51,12 @@ const filled = await ev(`(()=>{const set=(el,v)=>{const s=Object.getOwnPropertyD
  const btn=[...document.querySelectorAll('button')].find(b=>/^sign in$/i.test(b.textContent.trim())&&b.type!=='button')||[...document.querySelectorAll('button[type=submit],form button')].find(b=>/sign in/i.test(b.textContent));if(!btn)return 'no-button';btn.click();return 'submitted'})()`);
 console.log("login:", filled);
 await sleep(7000);
+await ev(`localStorage.setItem("milink-dash-light","${theme === "light" ? "1" : "0"}")`);
 for (const [i, path] of pathsArg.split(",").filter(Boolean).entries()) {
-  if (i > 0 || path !== loginPath) { await send("Page.navigate", { url: base + path }); await sleep(6000); }
-  if (theme === "light") { await ev(`document.querySelector('[aria-label="Toggle theme"]')?.click()`); await sleep(500); }
+  { await send("Page.navigate", { url: base + path }); await sleep(6000); }
   if (process.env.ACT) { await ev(process.env.ACT); await sleep(1500); }
   await shot(`${String(i + 1).padStart(2, "0")}-${path.replace(/[^a-z0-9]+/gi, "_").slice(0, 40)}`);
-  const info = await ev(`JSON.stringify({url:location.pathname+location.search,h1:[...document.querySelectorAll('h1')].map(e=>e.textContent.trim().slice(0,50)),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,hasLoginForm:!!document.querySelector('input[type=password]')})`);
+  const info = await ev(`JSON.stringify({url:location.pathname+location.search,h1:[...document.querySelectorAll('h1')].map(e=>e.textContent.trim().slice(0,50)),overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,offscreen:[...document.querySelectorAll('body *')].filter(e=>{const r=e.getBoundingClientRect();if(!r.width||r.right<=innerWidth+1)return false;for(let a=e.parentElement;a;a=a.parentElement){const o=getComputedStyle(a).overflowX;if(o==='auto'||o==='scroll'||o==='hidden')return false;}return true;}).slice(0,3).map(e=>e.tagName+'.'+String(e.className).slice(0,40)),hasLoginForm:!!document.querySelector('input[type=password]')})`);
   console.log(info);
 }
 if (process.env.PRINT) console.log("print:", await ev(process.env.PRINT));

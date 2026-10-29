@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getAppUrl, renderEmailTemplate, renderPlainText, sendWithSmtp } from "../../../lib/transactionalEmail";
 import { normalizeNotificationEmailMode } from "../../../lib/notificationDigest";
-import { ADMIN_EMAILS } from "../../../config/admins.js";
+import { ADMIN_EMAILS, isAdminAccount } from "../../../config/admins.js";
 
 export const runtime = "nodejs";
 
@@ -21,7 +21,7 @@ export async function POST(request) {
   const actor = authData?.user;
   if (!trusted && !actor) return NextResponse.json({ error:"Authentication is required." }, { status:401 });
   const admin = createClient(url, service, { auth:{ persistSession:false, autoRefreshToken:false } });
-  const isAdmin = trusted || ADMIN_EMAILS.includes(actor?.email?.toLowerCase());
+  const isAdmin = trusted || await isAdminAccount(admin, actor);
   const portal = `${getAppUrl()}/portal`, portalMessages = `${portal}?tab=messages`, adminUrl = `${getAppUrl()}/admin`;
   const emails = [];
   const add = (to, subject, details) => { if (to) emails.push({ to, subject, html:renderEmailTemplate(details), text:renderPlainText(details) }); };

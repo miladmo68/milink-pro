@@ -7,6 +7,8 @@ export const BUSINESS = {
   brand: "MiLink",
   url: "https://milink.ca",
   email: "info@milink.ca",
+  // Where clients send Interac e-Transfers (shown on the portal Payments page).
+  eTransferEmail: "miladmo68@gmail.com",
   phone: {
     display: "+1 (437) 600-3139",
     tel: "+14376003139",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
+import { isAdminAccount } from "../../../../config/admins.js";
 
 
 /** Deletes one project brief and its project-scoped records only. Never deletes the client account. */
@@ -18,7 +18,8 @@ export async function POST(request) {
   const callerClient = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: callerData, error: callerError } = await callerClient.auth.getUser(token);
   const callerEmail = callerData.user?.email?.toLowerCase();
-  if (callerError || !callerEmail || !ADMIN_EMAILS.has(callerEmail)) return NextResponse.json({ error: "Only MIlink administrators can delete projects." }, { status: 403 });
+  const serviceForCheck = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  if (callerError || !callerEmail || !(await isAdminAccount(serviceForCheck, callerData.user))) return NextResponse.json({ error: "Only MIlink administrators can delete projects." }, { status: 403 });
 
   const adminClient = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: brief, error: briefError } = await adminClient

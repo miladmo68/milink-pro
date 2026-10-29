@@ -40,3 +40,11 @@ To test a pinned/scroll-driven section, scroll to a fraction of its track and re
 ## Whole-page audit
 
 `BASE_URL=http://localhost:3200 node scripts/audit.mjs <outDir> <width> <height> <mobile 0|1> <dark|light>` loads the home page once, scrolls it so lazy sections hydrate, screenshots every section (several frames for tall ones) and prints console errors, failed requests, broken images, unnamed buttons, wrong cursors and overflow. Pass the arguments explicitly (in zsh an unquoted `$cfg` is not word-split). Build contact sheets by embedding the PNGs in an HTML file and screenshotting it with `URL=file://... scripts/shoot.mjs`.
+
+## Dashboard pages (portal-shoot.mjs)
+
+- `node scripts/portal-shoot.mjs <out> <w> <h> <mobile 0|1> <client|admin> "<paths>" [light]` signs in with the test accounts in `.env.test.local`.
+- The theme comes from localStorage `milink-dash-light`; the script sets it after sign-in, so `light` is reliable (clicking a theme button is not: on phones the switch is inside the account sheet).
+- Each page prints `overflow` and `offscreen`. `overflow` is 0 even when a panel is wider than the screen (the page clips horizontally), so trust `offscreen`: it lists elements sticking out past the right edge outside scrollable areas.
+- For flows, `ACT` can type into React inputs only through the native value setter plus an `input` event; stub `window.confirm=()=>true` before clicking delete or approve buttons; check the result in the database, not only on screen.
+- Never loop over "w h mobile" strings in zsh with `set -- $v`: zsh does not split them. Use a bash script.
