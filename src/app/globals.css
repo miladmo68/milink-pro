@@ -3499,3 +3499,7 @@ html[data-theme="light"] .hero-proof {
 .mi-onboarding-add button{cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;min-height:44px;padding:0 1rem;border-radius:12px;border:1px solid var(--accent,#4da8ff);background:transparent;color:var(--accent,#4da8ff);font-weight:600}
 .mi-onboarding-add button:disabled{opacity:.45;cursor:not-allowed}
 @media (max-width:520px){.mi-onboarding-add{flex-direction:column}}
+
+/* Light theme: main buttons use the solid brand blue with white text (the gradient was too pale) */
+.mi-portal-light [class*="primaryButton"]:not(:disabled){background:#2563eb!important;background-image:none!important;color:#fff!important;border-color:#2563eb!important;box-shadow:0 8px 20px rgb(37 99 235/.22)!important}
+.mi-portal-light [class*="primaryButton"]:disabled{opacity:.55}

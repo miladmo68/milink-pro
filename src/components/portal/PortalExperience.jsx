@@ -18,7 +18,8 @@ import { computeProjectHealth } from "../../lib/projectHealth";
 import { notificationKind, resolveNotificationNavigation } from "../../lib/notificationNavigation";
 import { isAdminEmail } from "../../config/admins.js";
 
-const styles = { ...baseStyles, ...overviewRefinements, ...modalStyles, collapseButton: `${baseStyles.collapseButton} ${sidebarSeam.seamToggle}` };
+// modalStyles also defines primaryButton/secondaryButton; keep both classes so buttons outside modals keep the main button look.
+const styles = { ...baseStyles, ...overviewRefinements, ...modalStyles, primaryButton: `${baseStyles.primaryButton} ${modalStyles.primaryButton}`, secondaryButton: `${baseStyles.secondaryButton} ${modalStyles.secondaryButton||""} ${overviewRefinements.secondaryButton||""}`.trim(), collapseButton: `${baseStyles.collapseButton} ${sidebarSeam.seamToggle}` };
 
 const clientNav=[["Overview",LayoutDashboard],["Project brief",FileText],["Assets",FolderKanban],["Messages",MessageCircle],["Approvals",ShieldCheck],["Contracts",FileSignature],["Handoff & Docs",FileArchive],["Payments",CircleDollarSign]];
 const adminNav=[["Action Center",LayoutDashboard],["Clients",Users],["Projects",FolderKanban],["Messages",MessageCircle],["Payments",CircleDollarSign]];
