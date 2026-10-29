@@ -338,7 +338,7 @@ export default function Process() {
   };
 
   return (
-    <section id="process" className="relative scroll-mt-24 overflow-clip bg-base-100 py-24 dark:!bg-transparent sm:py-28">
+    <section id="process" className="relative scroll-mt-24 overflow-clip bg-base-100 py-24 dark:!bg-transparent">
       <div className="pointer-events-none absolute inset-0 -z-10 hidden dark:block" aria-hidden="true">
         <div className="section-depth-work" />
         <div className="absolute inset-0 opacity-[0.045] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_1.2px)] [background-size:20px_20px]" />

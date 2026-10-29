@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import "../../styles/dashboard.css";
 import SecureAccess from "../../components/auth/SecureAccess";
 import { ClientExperience } from "../../components/portal/PortalExperience";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
