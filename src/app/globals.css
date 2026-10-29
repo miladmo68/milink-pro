@@ -3479,3 +3479,6 @@ html[data-theme="light"] .hero-proof {
 /* Timeline entries: category pill and time never overlap */
 .mi-timeline-stream article>div>header{display:flex!important;align-items:center;gap:.6rem;flex-wrap:wrap}
 .mi-timeline-stream article>div>header>span{position:static!important;width:auto!important;height:auto!important;flex:0 0 auto;white-space:nowrap;padding:.15rem .65rem;border-radius:999px}
+
+/* Admin client page: section numbers only made sense in one long page */
+.mi-brief-section>header>span{display:none!important}
