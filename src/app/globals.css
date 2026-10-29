@@ -3482,3 +3482,9 @@ html[data-theme="light"] .hero-proof {
 
 /* Admin client page: section numbers only made sense in one long page */
 .mi-brief-section>header>span{display:none!important}
+
+/* Admin forms: quick request presets and quote context */
+.mi-preset-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:.1rem 0 .3rem}
+.mi-preset-row button{cursor:pointer;min-height:36px;padding:0 .8rem;border-radius:999px;font-size:.84rem;font-weight:600;color:inherit;background:transparent;border:1px solid var(--line,#243246)}
+.mi-preset-row button:hover{border-color:var(--accent,#4da8ff);color:var(--accent,#4da8ff)}
+.mi-quote-context{margin:0 0 .6rem!important;font-size:.88rem;opacity:.85}
