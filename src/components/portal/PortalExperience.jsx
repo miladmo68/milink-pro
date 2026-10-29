@@ -624,6 +624,14 @@ function NotificationPopover({light,notes,unread,now,onNavigate,onDismiss,onMark
 }
 function notificationLabel(value="") { return value.trim().toLowerCase()==="new project message" ? "New message" : value; }
 
+function WaitingStrip({brief,go}){
+  const [counts,setCounts]=useState({files:0,approvals:0});
+  const load=useCallback(async()=>{if(!brief?.id){setCounts({files:0,approvals:0});return;}const supabase=getSupabaseBrowserClient();if(!supabase)return;const [files,approvals]=await Promise.all([supabase.from("file_requests").select("id",{count:"exact",head:true}).eq("project_id",brief.id).eq("status","pending"),supabase.from("approvals").select("id",{count:"exact",head:true}).eq("project_id",brief.id).eq("status","pending")]);setCounts({files:files.count||0,approvals:approvals.count||0});},[brief?.id]);
+  useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`waiting-strip-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"file_requests",filter:`project_id=eq.${brief.id}`},load).on("postgres_changes",{event:"*",schema:"public",table:"approvals",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
+  const items=[counts.files>0&&{key:"files",label:`${counts.files} file ${counts.files===1?"request":"requests"} from MIlink`,to:"Assets",icon:Upload},counts.approvals>0&&{key:"approvals",label:`${counts.approvals} ${counts.approvals===1?"item":"items"} waiting for your approval`,to:"Approvals",icon:ShieldCheck}].filter(Boolean);
+  if(!items.length)return null;
+  return <section className="mi-waiting-strip" aria-label="Waiting for you"><b>Waiting for you</b>{items.map(({key,label,to,icon:Icon})=><button type="button" key={key} onClick={()=>go?.(to)}><Icon size={15}/>{label}<ChevronRight size={15}/></button>)}</section>;
+}
 function ProjectInsight({brief}){
   const [fileRequests,setFileRequests]=useState([]);const [approvals,setApprovals]=useState([]);
   const load=useCallback(async()=>{if(!brief?.id){setFileRequests([]);setApprovals([]);return;}const supabase=getSupabaseBrowserClient();if(!supabase)return;const [requestsResult,approvalsResult]=await Promise.all([supabase.from("file_requests").select("id,status").eq("project_id",brief.id).eq("status","pending"),supabase.from("approvals").select("id,status").eq("project_id",brief.id).eq("status","pending")]);if(!requestsResult.error)setFileRequests(requestsResult.data||[]);if(!approvalsResult.error)setApprovals(approvalsResult.data||[]);},[brief?.id]);
@@ -642,6 +650,7 @@ function ClientHome({brief,onBriefChange,open,message,go}){
   const projectDescription=active?descriptions[brief.status]||"Your MIlink project is moving forward.":"Answer a few clear questions. Save as you go, submit only when you are ready.";
 
   return <div className={styles.overview}>
+    {brief&&active&&<WaitingStrip brief={brief} go={go}/>}
     <section className={styles.overviewPrimary}>
       <section className={cx(styles.heroCard,active&&"mi-active-project-hero")}>
         <div className={styles.heroContent}>
@@ -654,7 +663,7 @@ function ClientHome({brief,onBriefChange,open,message,go}){
           <p>{active?next[1]:projectDescription}</p>
           {active?<div className={styles.heroActionGroup}>
             <button className={cx(styles.primaryButton,styles.heroActionPrimary)} onClick={()=>go?.(next[3])}>{next[2]}<ChevronRight size={17}/></button>
-            <button className={cx(styles.secondaryButton,styles.heroActionSecondary)} onClick={message}><MessageCircle size={16}/>Message MIlink team</button>
+            {next[3]!=="Messages"&&<button className={cx(styles.secondaryButton,styles.heroActionSecondary)} onClick={message}><MessageCircle size={16}/>Message MIlink team</button>}
           </div>:<div className={styles.heroActions}>
             <button className={cx(styles.primaryButton,styles.heroPrimaryButton)} onClick={open}>Start your project brief <ArrowRight className={styles.heroArrow} size={17}/></button>
             <span className={styles.heroTime}>⚡ Takes 5–8 mins</span>
@@ -806,7 +815,7 @@ function ClientApprovals({brief}) {
     setUserId(user.id);
     const {data,error}=await supabase.from("approvals").select("*").eq("project_id",brief.id).eq("client_id",user.id).order("created_at",{ascending:false});
     if(error){console.error("Could not load approvals",error);setNotice(error.message);}
-    else setApprovals(data||[]);
+    else setApprovals([...(data||[])].sort((a,b)=>(a.status==="pending"?0:1)-(b.status==="pending"?0:1)));
     setLoading(false);
   },[brief?.id]);
   useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`client-approvals-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"approvals",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);

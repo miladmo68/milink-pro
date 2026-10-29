@@ -53,7 +53,7 @@ main > aside nav button[title]:hover::after, main > aside nav button[title]:focu
 .mi-chat-day:before,.mi-chat-day:after { flex: 1; height: 1px; background: var(--line, #263247); content: ""; }.mi-chat-day span { white-space: nowrap; }
 .mi-chat-bubble-row { display: grid; width: fit-content; max-width: min(82%, 650px); gap: 5px; margin: 0 0 14px; }.mi-chat-bubble-row.is-mine { justify-self: end; }.mi-chat-bubble-row.is-theirs { justify-self: start; }
 .mi-chat-bubble { padding: 12px 14px; border: 1px solid var(--line, #263247); border-radius: 17px 17px 17px 5px; background: rgb(15 23 42 / .82); box-shadow: 0 8px 18px rgb(2 6 23 / .1); }
-.mi-chat-bubble-row.is-mine .mi-chat-bubble { border-color: rgb(34 211 238 / .32); border-radius: 17px 17px 5px 17px; background: rgb(6 182 212 / .15); color: #cffafe; }
+.mi-chat-bubble-row.is-mine .mi-chat-bubble { border-color: rgb(77 168 255 / .38); border-radius: 17px 17px 5px 17px; background: rgb(77 168 255 / .16); color: #e0efff; }
 .mi-chat-bubble p { margin: 0; white-space: pre-wrap; font-size: 13px; line-height: 1.55; }.mi-chat-bubble-row time { color: var(--muted, #94a3b8); font-size: 10px; }.mi-chat-bubble-row.is-mine time { text-align: right; }
 .mi-chat-file { display: flex; align-items: center; gap: 8px; min-width: 205px; margin-top: 9px; padding: 8px; border: 1px solid rgb(148 163 184 / .23); border-radius: 10px; color: inherit; text-decoration: none; }.mi-chat-file:hover { border-color: rgb(77 168 255 / .55); }.mi-chat-file>span { display: grid; gap: 2px; min-width: 0; }.mi-chat-file b { overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }.mi-chat-file small { color: var(--muted, #94a3b8); font-size: 10px; }.mi-chat-file.is-image { display: grid; min-width: 0; }.mi-chat-file img { width: min(230px, 100%); max-height: 170px; border-radius: 7px; object-fit: cover; }
 .mi-chat-composer { padding: 13px 16px 15px; border-top: 1px solid var(--line, #263247); background: rgb(2 6 23 / .08); }.mi-chat-composer textarea { box-sizing: border-box; display: block; width: 100%; min-height: 44px; max-height: 132px; padding: 11px 12px; resize: vertical; border: 1px solid var(--line, #263247); border-radius: 12px; outline: 0; background: rgb(2 6 23 / .24); color: var(--text, #f8fafc); font: 13px/1.45 inherit; }.mi-chat-composer textarea:focus { border-color: rgb(77 168 255 / .6); box-shadow: 0 0 0 3px rgb(77 168 255 / .1); }.mi-chat-composer>div:last-child { display: flex; align-items: center; gap: 10px; margin-top: 9px; }.mi-chat-composer>div:last-child small { margin-right: auto; color: var(--muted, #94a3b8); font-size: 10px; }
@@ -3465,3 +3465,17 @@ html[data-theme="light"] .hero-proof {
   section.mi-client-actions.mi-client-actions>*{min-width:0!important;min-height:44px!important;font-size:.84rem!important;justify-content:center;width:auto!important}
   section.mi-client-actions.mi-client-actions>:nth-child(3){grid-column:1/-1!important}
 }
+
+/* Overview: what is waiting for the client, above the hero */
+.mi-waiting-strip{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.7rem .9rem;margin-bottom:.9rem;border-radius:14px;border:1px solid rgb(245 158 11/.4);background:rgb(245 158 11/.1)}
+.mi-waiting-strip>b{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#f59e0b;margin-right:.3rem}
+.mi-waiting-strip button{display:inline-flex;align-items:center;gap:.4rem;min-height:38px;padding:0 .8rem;border-radius:999px;cursor:pointer;font-weight:600;font-size:.88rem;color:inherit;background:rgb(255 255 255/.06);border:1px solid rgb(245 158 11/.45)}
+.mi-waiting-strip button:hover{background:rgb(245 158 11/.18)}
+.mi-portal-light .mi-waiting-strip{background:#fffbeb;border-color:#fcd34d}.mi-portal-light .mi-waiting-strip>b{color:#b45309}.mi-portal-light .mi-waiting-strip button{background:#fff;border-color:#f59e0b;color:#7c2d12}
+
+/* Admin client page: the section header already names the block, so hide the repeated inner heading */
+.mi-onboarding-readiness.is-admin>header>div,.mi-live-timeline.is-admin>header>div{display:none!important}
+.mi-onboarding-readiness.is-admin>header,.mi-live-timeline.is-admin>header{display:flex!important;justify-content:flex-end!important;min-height:0;margin:0 0 .6rem!important;padding:0!important;border:0!important}
+/* Timeline entries: category pill and time never overlap */
+.mi-timeline-stream article>div>header{display:flex!important;align-items:center;gap:.6rem;flex-wrap:wrap}
+.mi-timeline-stream article>div>header>span{position:static!important;width:auto!important;height:auto!important;flex:0 0 auto;white-space:nowrap;padding:.15rem .65rem;border-radius:999px}
