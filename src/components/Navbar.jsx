@@ -28,18 +28,31 @@ export default function Navbar() {
       return;
     }
 
-    const sections = nav.map((n) => sectionIdFromHref(n.href)).filter(Boolean);
-    const observers = sections.map((id) => {
-      const el = document.getElementById(id);
-      if (!el) return null;
-      const obs = new IntersectionObserver(
-        ([e]) => { if (e.isIntersecting) setActive(`/#${id}`); },
-        { threshold: 0.3 }
-      );
-      obs.observe(el);
-      return obs;
-    });
-    return () => observers.forEach((o) => o?.disconnect());
+    // Scroll spy: the active link is the last section whose top has passed 40% of the viewport.
+    // Looked up on every frame so lazily mounted sections are found, and nothing is active above the first one.
+    const ids = nav.map((n) => sectionIdFromHref(n.href)).filter(Boolean);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.4;
+      let current = "";
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = `/#${id}`;
+      }
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      if (atBottom && ids.length) current = `/#${ids[ids.length - 1]}`;
+      setActive(current);
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [isHome, pathname]);
 
   useEffect(() => {

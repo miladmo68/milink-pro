@@ -422,7 +422,11 @@ function HeroStage({ scene, setScene, paused, reduced }) {
 
 export default function Hero() {
   const sectionRef = useRef(null);
-  const reduced = useReducedMotion();
+  // The server cannot know the motion preference, so the first client render matches it and
+  // reduced motion applies right after mount (otherwise React rejects the hydration and re-renders the page).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const reduced = useReducedMotion() && mounted;
   const [scene, setScene] = useState(0);
   const [inView, setInView] = useState(true);
   const [tabVisible, setTabVisible] = useState(true);
