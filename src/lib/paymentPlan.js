@@ -73,16 +73,14 @@ export function paymentTermsText(brief, formatMoney) {
 
 /**
  * What the client actually pays for an amount due (in cents), by method.
- * e-Transfer gets BUSINESS.eTransferDiscountPercent off; HST is added on the discounted amount for both
- * methods, but only when BUSINESS.hstNumber is set. `base` is the share of the project price this covers,
+ * Card adds BUSINESS.cardExtraPercent on top (shown as "HST" once BUSINESS.hstNumber is set, "Card fee"
+ * until then); e-Transfer pays the amount as is. `base` is the share of the project price this covers,
  * which is what is recorded in amount_paid_cents, so plans and balances stay in project-price terms.
  */
 export function priceForMethod(base, method) {
   const amount = Math.max(0, Math.round(Number(base) || 0));
-  const discountPercent = method === "e_transfer" ? Number(BUSINESS.eTransferDiscountPercent) || 0 : 0;
-  const discount = Math.round((amount * discountPercent) / 100);
-  const subtotal = amount - discount;
-  const taxRate = BUSINESS.hstNumber ? Number(BUSINESS.hstRatePercent) || 0 : 0;
-  const tax = Math.round((subtotal * taxRate) / 100);
-  return { base: amount, discountPercent, discount, subtotal, taxRate, tax, total: subtotal + tax };
+  const taxRate = method === "card" ? Number(BUSINESS.cardExtraPercent) || 0 : 0;
+  const tax = Math.round((amount * taxRate) / 100);
+  const taxLabel = `${BUSINESS.hstNumber ? "HST" : "Card fee"} (${taxRate}%)`;
+  return { base: amount, discountPercent: 0, discount: 0, subtotal: amount, taxRate, tax, taxLabel, total: amount + tax };
 }

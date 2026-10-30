@@ -123,7 +123,7 @@ export async function POST(request) {
       }, ...(price.tax > 0 ? [{
         price_data: {
           currency: "cad",
-          product_data: { name: `HST (${price.taxRate}%)` },
+          product_data: { name: price.taxLabel },
           unit_amount: price.tax,
         },
         quantity: 1,
