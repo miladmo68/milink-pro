@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
+import { isAdminAccount } from "../../../../config/admins.js";
+import { paymentSchedule } from "../../../../lib/paymentPlan.js";
 
 export const runtime = "nodejs";
 
@@ -28,10 +29,7 @@ async function getRequestUser(request) {
   return error || !data.user ? { error: "Your session has expired. Please sign in again." } : { user: data.user };
 }
 
-async function isAdmin(service, user) {
-  const { data } = await service.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  return ["admin", "super_admin"].includes(data?.role) || ADMIN_EMAILS.has(user.email?.toLowerCase());
-}
+const isAdmin = (service, user) => isAdminAccount(service, user);
 
 async function notify(service, rows) {
   if (!rows.length) return;
@@ -54,19 +52,20 @@ export async function POST(request) {
     const service = getServiceClient();
     const { data: brief, error: briefError } = await service
       .from("project_briefs")
-      .select("id, client_id, business_name, proposal_amount_cents, payment_status, payment_method, amount_paid_cents, e_transfer_submitted_at, e_transfer_confirmed_at")
+      .select("*")
       .eq("id", briefId)
       .maybeSingle();
     if (briefError || !brief) return json("Project payment details were not found.", 404);
 
     const admin = await isAdmin(service, auth.user);
-    const amount = Number(brief.proposal_amount_cents);
+    const schedule = paymentSchedule(brief);
+    const amount = schedule.dueNow;
     const projectName = brief.business_name || "Your website project";
 
     if (action === "submit") {
       if (admin || brief.client_id !== auth.user.id) return json("You do not have access to submit this payment notice.", 403);
-      if (!Number.isInteger(amount) || amount <= 0) return json("MiLink has not set a payable project amount yet.", 422);
-      if (["paid", "approved"].includes(brief.payment_status)) return json("This project payment has already been completed.", 409);
+      if (schedule.complete || ["paid", "approved"].includes(brief.payment_status)) return json("This project payment has already been completed.", 409);
+      if (!Number.isInteger(amount) || amount <= 0) return json("Nothing is due right now.", 422);
       if (brief.payment_status === "e_transfer_submitted") return NextResponse.json({ status: "e_transfer_submitted", alreadySubmitted: true });
 
       const { data: updated, error } = await service
@@ -74,7 +73,7 @@ export async function POST(request) {
         .update({ payment_status: "e_transfer_submitted", payment_method: "e_transfer", e_transfer_submitted_at: new Date().toISOString() })
         .eq("id", brief.id)
         .eq("client_id", auth.user.id)
-        .in("payment_status", ["not_requested", "pending_review", "rejected", "checkout_pending"])
+        .in("payment_status", ["not_requested", "pending_review", "rejected", "checkout_pending", "partially_paid"])
         .select("id, e_transfer_submitted_at")
         .maybeSingle();
       if (error) {
@@ -105,14 +104,17 @@ export async function POST(request) {
 
     const confirming = action === "confirm";
     if (confirming && (!Number.isInteger(amount) || amount <= 0)) {
-      return json("This project has no confirmed proposal amount to record.", 422);
+      return json("Nothing is due on this project right now, so there is no transfer to confirm.", 422);
     }
+    // The transfer covers what was due (all of it, the deposit or the balance) and adds to what was already paid.
+    const paidAfter = schedule.paid + amount;
+    const fullyPaid = paidAfter >= schedule.total;
     const { data: updated, error } = await service
       .from("project_briefs")
       .update(confirming ? {
-        payment_status: "paid",
+        payment_status: fullyPaid ? "paid" : "partially_paid",
         payment_method: "e_transfer",
-        amount_paid_cents: amount,
+        amount_paid_cents: paidAfter,
         e_transfer_confirmed_at: new Date().toISOString(),
       } : {
         payment_status: "rejected",
@@ -135,7 +137,7 @@ export async function POST(request) {
       sender_id: auth.user.id,
       title: confirming ? "e-Transfer payment confirmed" : "e-Transfer payment needs attention",
       message: confirming
-        ? "Your payment has been confirmed — thank you!"
+        ? (fullyPaid ? "Your payment has been confirmed. Thank you, the project is fully paid." : "Your deposit has been confirmed. Thank you, the balance is due when your site is ready for review.")
         : `We could not confirm the e-Transfer for ${projectName}. Please resend it or contact MiLink support.`,
       link: `/portal?tab=payments&project=${brief.id}`,
       type: "payment",

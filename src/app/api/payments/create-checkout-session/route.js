@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../../../config/admins.js";
+import { isAdminAccount } from "../../../../config/admins.js";
+import { paymentSchedule } from "../../../../lib/paymentPlan.js";
 
 export const runtime = "nodejs";
 
@@ -48,23 +49,22 @@ export async function POST(request) {
     const service = getServiceClient();
     const { data: brief, error: briefError } = await service
       .from("project_briefs")
-      .select("id, client_id, business_name, proposal_amount_cents, payment_status, stripe_customer_id")
+      .select("*")
       .eq("id", briefId)
       .maybeSingle();
 
     if (briefError || !brief) return json("Project payment details were not found.", 404);
 
-    const { data: requesterProfile } = await service
-      .from("profiles")
-      .select("role")
-      .eq("id", auth.user.id)
-      .maybeSingle();
-    const isAdmin = ["admin", "super_admin"].includes(requesterProfile?.role) || ADMIN_EMAILS.has(auth.user.email?.toLowerCase());
+    const isAdmin = await isAdminAccount(service, auth.user);
     if (brief.client_id !== auth.user.id && !isAdmin) return json("You do not have access to this project payment.", 403);
 
-    const amount = Number(brief.proposal_amount_cents);
-    if (!Number.isInteger(amount) || amount <= 0) return json("MiLink has not set a payable project amount yet.", 422);
-    if (["paid", "approved"].includes(brief.payment_status)) return json("This project payment has already been completed.", 409);
+    const schedule = paymentSchedule(brief);
+    if (!schedule.total) return json("MiLink has not set a payable project amount yet.", 422);
+    if (schedule.complete || ["paid", "approved"].includes(brief.payment_status)) return json("This project payment has already been completed.", 409);
+    // Charge only what is due now under the project's payment plan (all of it, a deposit, or the balance).
+    const amount = schedule.dueNow;
+    if (!Number.isInteger(amount) || amount <= 0) return json("Nothing is due right now. The next payment opens when your site is ready for review.", 422);
+    const partLabel = schedule.plan === "split" ? (schedule.paid > 0 ? "balance" : "deposit") : "project payment";
 
     const { data: reservation, error: reservationError } = await service.rpc("prepare_stripe_checkout", {
       p_project_brief_id: brief.id,
@@ -115,7 +115,7 @@ export async function POST(request) {
       line_items: [{
         price_data: {
           currency: "cad",
-          product_data: { name: `${projectName} — project payment` },
+          product_data: { name: `${projectName} — ${partLabel}` },
           unit_amount: amount,
         },
         quantity: 1,

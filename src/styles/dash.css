@@ -1046,3 +1046,12 @@ html.mi-portal-light:has(.d-app), html.mi-portal-light:has(.d-app) body { backgr
 .d-main { padding-bottom: calc(64px + env(safe-area-inset-bottom) + 20px); }
 .d-toast { bottom: calc(64px + env(safe-area-inset-bottom) + 14px); }
 @media (min-width: 900px) { .d-main { padding-bottom: 48px; } .d-toast { bottom: 28px; } }
+.d-plan-options { padding: 0; }
+.d-plan-options .d-option { min-height: 46px; padding: 6px 8px; }
+.d-plan-percent { max-width: 280px; }
+.d-schedule { list-style: none; margin: 0; padding: 0; display: grid; border: 1px solid var(--d-line); border-radius: 14px; overflow: hidden; }
+.d-schedule li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--d-line); }
+.d-schedule li:first-child { border-top: 0; }
+.d-schedule b { display: block; font-size: 15px; }
+.d-schedule small { display: block; color: var(--d-muted); font-size: 13px; }
+.d-schedule .d-num { font-weight: 700; font-size: 15px; }

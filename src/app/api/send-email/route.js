@@ -76,7 +76,9 @@ export async function POST(request) {
   } else if (event === "payment_confirmed") {
     if (!isAdmin) return NextResponse.json({ error:"Only administrators can confirm payments." }, { status:403 });
     const { data:brief } = await admin.from("project_briefs").select("id,business_name,amount_paid_cents,proposal_amount_cents,payment_status,profiles!project_briefs_client_id_fkey(email)").eq("id",resourceId).maybeSingle();
-    if (!brief || !["paid","approved"].includes(brief.payment_status)) return NextResponse.json({ error:"Payment is not confirmed." }, { status:409 });
+    if (!brief || !["paid","approved","partially_paid"].includes(brief.payment_status)) return NextResponse.json({ error:"Payment is not confirmed." }, { status:409 });
+    if (brief.payment_status === "partially_paid") { add(brief.profiles?.email, `Deposit received for ${brief.business_name || "your website"}`, { heading:"Thank you, your deposit arrived.", copy:`We received ${money(brief.amount_paid_cents)} of ${money(brief.proposal_amount_cents)} for ${brief.business_name || "your website"}. The balance is due when your site is ready for review.`, buttonLabel:"View payment", href:`${portal}?tab=payments`, metadata:[], senderName:"MiLink Team" }); }
+    else
     add(brief.profiles?.email, `Payment received for ${brief.business_name || "your website"}`, { heading:"Thank you, your payment arrived.", copy:`We received ${money(brief.amount_paid_cents || brief.proposal_amount_cents)} for ${brief.business_name || "your website"}. Your receipt is in your workspace.`, buttonLabel:"View receipt", href:`${portal}?tab=payments`, metadata:[], senderName:"MiLink Team" });
   } else return NextResponse.json({ error:"Unsupported email event." }, { status:400 });
   try {

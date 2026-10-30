@@ -2,10 +2,10 @@
 // A reminder goes out when something has waited too long, at most once every few days per item:
 // each send is recorded in email_outbox (template "action_required", payload.reminder = key).
 import { getAppUrl, renderEmailTemplate, renderPlainText, sendWithSmtp } from "./transactionalEmail";
+import { paymentSchedule } from "./paymentPlan.js";
 
 const DAY = 86400000;
 const money = (cents) => new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format((Number(cents) || 0) / 100);
-const PAY_DUE_STAGES = ["proposal_sent", "in_progress", "client_review", "completed"];
 
 export async function sendReminders({ supabase, adminEmails, now = new Date() }) {
   const portal = `${getAppUrl()}/portal`, adminUrl = `${getAppUrl()}/admin`;
@@ -28,7 +28,7 @@ export async function sendReminders({ supabase, adminEmails, now = new Date() })
     supabase.from("contracts").select("id,title,created_at,project_briefs(client_id,business_name)").eq("status", "pending").lte("created_at", older(3)),
     supabase.from("approvals").select("id,title,client_id,created_at,project_briefs(business_name)").eq("status", "pending").lte("created_at", older(3)),
     supabase.from("file_requests").select("id,title,client_id,created_at,project_briefs(business_name)").eq("status", "pending").lte("created_at", older(4)),
-    supabase.from("project_briefs").select("id,client_id,business_name,status,payment_status,proposal_amount_cents,updated_at"),
+    supabase.from("project_briefs").select("*"),
   ]);
 
   for (const item of contracts.data || []) toClient(item.project_briefs?.client_id, `contract:${item.id}`, `Reminder: your agreement is waiting`, { heading: "Your agreement is still waiting for you.", copy: `“${item.title}” for ${item.project_briefs?.business_name || "your website"} needs your signature before we can continue.`, buttonLabel: "Read and sign", href: `${portal}?tab=contracts` });
@@ -36,8 +36,9 @@ export async function sendReminders({ supabase, adminEmails, now = new Date() })
   for (const item of requests.data || []) toClient(item.client_id, `file:${item.id}`, `Reminder: we still need “${item.title}”`, { heading: "We still need a file from you.", copy: `To keep ${item.project_briefs?.business_name || "your website"} on schedule we need “${item.title}”. If you do not have it, reply with a note.`, buttonLabel: "Send the file", href: `${portal}?tab=assets` });
   for (const brief of briefs.data || []) {
     const waiting = new Date(brief.updated_at || 0).getTime() < now.getTime() - 5 * DAY;
-    if (waiting && Number(brief.proposal_amount_cents) > 0 && PAY_DUE_STAGES.includes(brief.status) && !["paid", "approved", "e_transfer_submitted", "pending_review"].includes(brief.payment_status)) {
-      toClient(brief.client_id, `payment:${brief.id}`, `Reminder: payment for ${brief.business_name || "your website"}`, { heading: "Your payment is still open.", copy: `${money(brief.proposal_amount_cents)} for ${brief.business_name || "your website"}. You can pay by card or Interac e-Transfer.`, buttonLabel: "Pay now", href: `${portal}?tab=payments` });
+    const due = paymentSchedule(brief).dueNow;
+    if (waiting && due > 0 && !["e_transfer_submitted", "pending_review", "checkout_pending"].includes(brief.payment_status)) {
+      toClient(brief.client_id, `payment:${brief.id}:${due}`, `Reminder: payment for ${brief.business_name || "your website"}`, { heading: "Your payment is still open.", copy: `${money(due)} for ${brief.business_name || "your website"}. You can pay by card or Interac e-Transfer.`, buttonLabel: "Pay now", href: `${portal}?tab=payments` });
     }
   }
   // The admin hears about briefs that have waited two days for a proposal.

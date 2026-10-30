@@ -9,6 +9,7 @@ import { computeProjectHealth } from "../../lib/projectHealth";
 import { notificationKind, resolveNotificationNavigation } from "../../lib/notificationNavigation";
 import { isAdminEmail } from "../../config/admins.js";
 import { BUSINESS } from "../../config/business.js";
+import { PAYMENT_PLANS, paymentSchedule, paymentTermsText } from "../../lib/paymentPlan.js";
 
 
 const clientNav=[["Overview",LayoutDashboard],["Project brief",FileText],["Assets",FolderKanban],["Messages",MessageCircle],["Approvals",ShieldCheck],["Contracts",FileSignature],["Handoff & Docs",FileArchive],["Payments",CircleDollarSign]];
@@ -34,7 +35,7 @@ const stageLabel=value=>stageLabels[value||"draft"]||title(value||"draft");
 const stageTone=value=>({draft:"is-plain",submitted:"is-brand",reviewing:"is-brand",proposal_sent:"is-wait",in_progress:"is-brand",client_review:"is-wait",completed:"is-go"}[value||"draft"]||"is-plain");
 const projectStages=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];
 const contactLabels={email:"Email",portal:"Messages here",whatsapp:"WhatsApp"};
-const paymentDue=brief=>{const order=["draft","submitted","reviewing","proposal_sent","in_progress","client_review","completed"];return Number(brief?.proposal_amount_cents)>0&&order.indexOf(brief?.status)>=3&&!["paid","approved","e_transfer_submitted","pending_review"].includes(brief?.payment_status);};
+const paymentDue=brief=>paymentSchedule(brief).dueNow>0&&!["e_transfer_submitted","pending_review"].includes(brief?.payment_status);
 // Opens a clean, printable page (receipt or signed agreement) so the client can save it as PDF.
 const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 function printDocument(heading,rows,body=""){const win=window.open("","_blank","noopener=no,width=820,height=960");if(!win)return false;win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(heading)}</title><style>body{font:15px/1.55 -apple-system,Segoe UI,Arial,sans-serif;color:#0d1728;max-width:720px;margin:48px auto;padding:0 24px}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0a5cff;padding-bottom:16px;margin-bottom:24px}h1{font-size:24px;margin:0}small{color:#5a6a80}table{width:100%;border-collapse:collapse;margin:16px 0}td{padding:10px 0;border-bottom:1px solid #e3e8f0;vertical-align:top}td:first-child{color:#5a6a80;width:38%}pre{white-space:pre-wrap;font:inherit;background:#f4f6fa;padding:16px;border-radius:8px}footer{margin-top:32px;color:#5a6a80;font-size:13px}@media print{body{margin:0}button{display:none}}</style></head><body><header><div><h1>${escapeHtml(heading)}</h1><small>${escapeHtml(BUSINESS.name)} · ${escapeHtml(BUSINESS.email)} · ${escapeHtml(BUSINESS.address.short)}</small></div><button onclick="window.print()">Save as PDF</button></header><table>${rows.map(([label,value])=>`<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join("")}</table>${body?`<pre>${escapeHtml(body)}</pre>`:""}<footer>Issued ${escapeHtml(new Date().toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"}))}</footer></body></html>`);win.document.close();return true;}
@@ -62,6 +63,7 @@ async function resolveMessageProjectContext(supabase,projectId){
   console.warn("Sending message without project context because the selected brief is unavailable.",{projectId,error:error?.message||null});
   return null;
 }
+async function stampContract(contractId){try{const s=getSupabaseBrowserClient();const {data:{session}}=await s.auth.getSession();if(!session?.access_token)return;await fetch("/api/contracts/stamp",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session.access_token}`},body:JSON.stringify({contractId})});}catch(error){console.warn("Could not record signature details",error);}}
 async function dispatchEmailEvent(event,resourceId){try{const s=getSupabaseBrowserClient();const {data:{session}}=await s.auth.getSession();if(!session?.access_token)return;const response=await fetch("/api/send-email",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session.access_token}`},body:JSON.stringify({event,resourceId})});if(!response.ok)console.warn("Email event was not delivered",event,await response.text());}catch(error){console.warn("Email dispatch is unavailable",error);}}
 async function updateETransfer(briefId,action){const supabase=getSupabaseBrowserClient();const {data:{session}}=await supabase.auth.getSession();if(!session?.access_token)throw new Error("Please sign in again before updating this payment.");const response=await fetch("/api/payments/e-transfer",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${session.access_token}`},body:JSON.stringify({briefId,action})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||"We could not update this e-Transfer payment.");return data;}
 
@@ -141,9 +143,11 @@ function useClientProjectsRealtime(setProjects,setLoading) {
 function ClientPayments({brief,onRefresh}) {
   const [loading,setLoading]=useState(false),[eTransferLoading,setETransferLoading]=useState(false),[notice,setNotice]=useState(null),[returnState,setReturnState]=useState(""),[copied,setCopied]=useState(false);
   useEffect(()=>{const payment=new URLSearchParams(window.location.search).get("payment");if(payment)setReturnState(payment);},[]);
-  const amount=Number(brief?.proposal_amount_cents);
-  const hasAmount=Number.isInteger(amount)&&amount>0;
-  const paid=brief?.payment_status==="paid"||brief?.payment_status==="approved";
+  const schedule=paymentSchedule(brief);
+  const amount=schedule.total;
+  const hasAmount=amount>0;
+  const dueNow=schedule.dueNow;
+  const paid=schedule.complete||brief?.payment_status==="paid"||brief?.payment_status==="approved";
   const stripePaid=brief?.payment_method==="stripe"&&brief?.payment_status==="paid";
   const eTransferSubmitted=brief?.payment_status==="e_transfer_submitted";
   const eTransferRejected=brief?.payment_status==="rejected"&&brief?.payment_method==="e_transfer";
@@ -167,16 +171,18 @@ function ClientPayments({brief,onRefresh}) {
   const paidOn=new Date((stripePaid?brief.stripe_paid_at:brief.e_transfer_confirmed_at)||brief.updated_at||Date.now()).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
   return <div className="d-page">
     <div className="d-page-head"><h2>Payment</h2><p>Pay by card through Stripe, or send an Interac e-Transfer.</p></div>
-    {returnState==="success"&&!paid&&<div className="d-notice is-go" role="status"><CheckCircle2 size={18}/><span>Payment received by Stripe. This page updates as soon as it is confirmed.</span></div>}
+    {returnState==="success"&&brief.payment_status==="checkout_pending"&&<div className="d-notice is-go" role="status"><CheckCircle2 size={18}/><span>Payment received by Stripe. This page updates as soon as it is confirmed.</span></div>}
     {returnState==="cancelled"&&<div className="d-notice" role="status"><span>Checkout was cancelled. No payment was made.</span></div>}
     <section className={cx("d-panel","d-amount",paid&&"is-paid")}>
-      <div><small>{paid?"Paid":"Amount due"}</small><b className="d-num">{hasAmount?formatCad(paid?(brief.amount_paid_cents||amount):amount):"Not set yet"}</b><p>{paid?`${stripePaid?"Card payment":"e-Transfer"} confirmed on ${paidOn}.`:hasAmount?`For ${brief.business_name||"your website project"}, in Canadian dollars.`:"MIlink sets the amount when your proposal is ready."}</p></div>
-      <span className="d-amount-side"><span className={cx("d-pill",paid?"is-go":eTransferSubmitted?"is-wait":"is-plain")}>{paid?"Paid":eTransferSubmitted?"Checking transfer":brief.payment_status==="checkout_pending"?"Checkout started":"Not paid"}</span>{paid&&<button type="button" className="d-btn is-sm" onClick={()=>printDocument("Payment receipt",[["Project",brief.business_name||"Website project"],["Amount paid",formatCad(brief.amount_paid_cents||amount)],["Method",stripePaid?"Card (Stripe)":"Interac e-Transfer"],["Date",paidOn],["Reference",brief.id.slice(0,8).toUpperCase()]])}><Download size={15}/>Receipt</button>}</span>
+      <div><small>{paid?"Paid":dueNow>0?"Due now":hasAmount?"Project total":"Amount due"}</small><b className="d-num">{hasAmount?formatCad(paid?(schedule.paid||amount):dueNow>0?dueNow:amount):"Not set yet"}</b><p>{paid?`${stripePaid?"Card payment":"e-Transfer"} confirmed on ${paidOn}.`:hasAmount?`For ${brief.business_name||"your website project"}, in Canadian dollars${schedule.paid?`. ${formatCad(schedule.paid)} paid so far`:""}.`:"MIlink sets the amount when your proposal is ready."}</p></div>
+      <span className="d-amount-side"><span className={cx("d-pill",paid?"is-go":eTransferSubmitted?"is-wait":"is-plain")}>{paid?"Paid":eTransferSubmitted?"Checking transfer":brief.payment_status==="checkout_pending"?"Checkout started":schedule.paid?"Partly paid":"Not paid"}</span>{schedule.paid>0&&<button type="button" className="d-btn is-sm" onClick={()=>printDocument("Payment receipt",[["Project",brief.business_name||"Website project"],["Amount paid",formatCad(schedule.paid)],["Project total",formatCad(amount)],["Method",stripePaid?"Card (Stripe)":"Interac e-Transfer"],["Date",paidOn],["Reference",brief.id.slice(0,8).toUpperCase()]])}><Download size={15}/>Receipt</button>}</span>
     </section>
-    {!paid&&hasAmount&&<div className="d-pay-options">
+    {hasAmount&&schedule.parts.length>1&&<section className="d-panel" aria-label="Payment schedule"><div className="d-panel-head"><div><h3>Payment schedule</h3><p>{formatCad(schedule.paid)} of {formatCad(amount)} paid.</p></div></div><div className="d-panel-body"><ul className="d-schedule">{schedule.parts.map(part=><li key={part.key}><span><b>{part.label}</b><small>{part.when}</small></span><span className="d-num">{formatCad(part.amount)}</span><span className={cx("d-pill",part.paid?"is-go":part.due?"is-wait":"is-plain")}>{part.paid?"Paid":part.due?"Due now":"Later"}</span></li>)}</ul></div></section>}
+    {!paid&&hasAmount&&dueNow===0&&!eTransferSubmitted&&<div className="d-notice" role="status"><CheckCircle2 size={18}/><span>{schedule.paid?"Thanks, your deposit is paid.":"Nothing to pay yet."} The {schedule.paid?"balance":"payment"} of {formatCad(schedule.next?.remaining||0)} opens when your site is ready for review.</span></div>}
+    {!paid&&hasAmount&&(dueNow>0||eTransferSubmitted)&&<div className="d-pay-options">
       <section className="d-panel d-pay-option">
         <div className="d-panel-head"><div><h3>Pay by card</h3><p>Secure Stripe checkout. MIlink never sees your card details.</p></div></div>
-        <div className="d-panel-body"><button type="button" className="d-btn is-primary is-block" disabled={loading||eTransferSubmitted} onClick={payNow}><CircleDollarSign size={17}/>{loading?"Opening checkout…":eTransferSubmitted?"Transfer being checked":`Pay ${formatCad(amount)}`}</button></div>
+        <div className="d-panel-body"><button type="button" className="d-btn is-primary is-block" disabled={loading||eTransferSubmitted} onClick={payNow}><CircleDollarSign size={17}/>{loading?"Opening checkout…":eTransferSubmitted?"Transfer being checked":`Pay ${formatCad(dueNow)}`}</button></div>
       </section>
       <section className="d-panel d-pay-option">
         <div className="d-panel-head"><div><h3>Interac e-Transfer</h3><p>Send to this email and put “{brief.business_name||"your business name"}” in the message.</p></div></div>
@@ -292,13 +298,13 @@ function ProjectsBoard({ briefs, onOpen }) {
 function AdminPayments({ briefs, refresh }) {
   const [notice,setNotice]=useState(null),[busy,setBusy]=useState("");
   const waiting=briefs.filter(brief=>["e_transfer_submitted","pending_review"].includes(brief.payment_status));
-  const history=briefs.filter(brief=>["paid","approved","rejected","checkout_pending"].includes(brief.payment_status)||brief.stripe_checkout_session_id).sort((a,b)=>new Date(b.stripe_paid_at||b.e_transfer_confirmed_at||b.updated_at||0)-new Date(a.stripe_paid_at||a.e_transfer_confirmed_at||a.updated_at||0));
-  const unpaid=briefs.filter(brief=>Number(brief.proposal_amount_cents)>0&&!["paid","approved","e_transfer_submitted","pending_review"].includes(brief.payment_status));
-  const received=history.filter(brief=>["paid","approved"].includes(brief.payment_status)).reduce((sum,brief)=>sum+Number(brief.amount_paid_cents||brief.proposal_amount_cents||0),0);
-  const outstanding=unpaid.reduce((sum,brief)=>sum+Number(brief.proposal_amount_cents||0),0);
+  const history=briefs.filter(brief=>["paid","approved","rejected","checkout_pending","partially_paid"].includes(brief.payment_status)||brief.stripe_checkout_session_id||Number(brief.amount_paid_cents)>0).sort((a,b)=>new Date(b.stripe_paid_at||b.e_transfer_confirmed_at||b.updated_at||0)-new Date(a.stripe_paid_at||a.e_transfer_confirmed_at||a.updated_at||0));
+  const unpaid=briefs.filter(brief=>{const schedule=paymentSchedule(brief);return schedule.total>0&&!schedule.complete&&!["paid","approved"].includes(brief.payment_status);});
+  const received=briefs.reduce((sum,brief)=>sum+(["paid","approved"].includes(brief.payment_status)&&!Number(brief.amount_paid_cents)?Number(brief.proposal_amount_cents||0):Number(brief.amount_paid_cents||0)),0);
+  const outstanding=unpaid.reduce((sum,brief)=>{const schedule=paymentSchedule(brief);return sum+schedule.total-schedule.paid;},0);
   const updateManual=async(brief,action)=>{setBusy(`${brief.id}-${action}`);setNotice(null);try{await updateETransfer(brief.id,action);if(action==="confirm")dispatchEmailEvent("payment_confirmed",brief.id);setNotice({tone:"go",text:action==="confirm"?"Marked as received. The client was notified.":"Marked as not received. The client was notified."});await refresh();}catch(error){setNotice({tone:"stop",text:error.message||"Could not update this payment."});}finally{setBusy("");}};
   const name=brief=>brief.business_name||brief.client?.full_name||brief.client?.email;
-  const statusOf=brief=>brief.payment_status==="paid"||brief.payment_status==="approved"?["Paid","is-go"]:brief.payment_status==="rejected"?["Not received","is-stop"]:brief.payment_status==="checkout_pending"?["Checkout started","is-wait"]:["Open","is-plain"];
+  const statusOf=brief=>brief.payment_status==="paid"||brief.payment_status==="approved"?["Paid","is-go"]:brief.payment_status==="partially_paid"||(Number(brief.amount_paid_cents)>0&&!paymentSchedule(brief).complete)?["Deposit paid","is-brand"]:brief.payment_status==="rejected"?["Not received","is-stop"]:brief.payment_status==="checkout_pending"?["Checkout started","is-wait"]:["Open","is-plain"];
   return <div className="d-page">
     <div className="d-page-head"><h2>Payments</h2><p>Card payments confirm themselves. Confirm e-Transfers only after you see the money in your bank.</p></div>
     <div className="d-stats">
@@ -309,7 +315,7 @@ function AdminPayments({ briefs, refresh }) {
     {notice&&<div className={cx("d-notice",`is-${notice.tone}`)} role="status">{notice.text}</div>}
     <section className="d-panel" aria-label="e-Transfers to check">
       <div className="d-panel-head"><div><h3>e-Transfers to check</h3><p>The client says they sent it.</p></div></div>
-      {waiting.length?<ul className="d-list">{waiting.map(brief=><li key={brief.id} className="d-queue-row"><span className="d-row-icon is-wait"><CircleDollarSign size={18}/></span><span className="d-row-main"><b>{name(brief)}</b><small>{formatCad(brief.proposal_amount_cents)} · marked sent {new Date(brief.e_transfer_submitted_at||brief.updated_at).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</small></span><span className="d-queue-actions"><button type="button" className="d-btn is-sm is-primary" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"confirm")}>{busy===`${brief.id}-confirm`?"Saving…":"Received"}</button><button type="button" className="d-btn is-sm" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"reject")}>{busy===`${brief.id}-reject`?"Saving…":"Not received"}</button></span></li>)}</ul>:<div className="d-empty"><CheckCircle2 size={22}/><b>Nothing to check</b><p>When a client marks an e-Transfer as sent, it shows up here.</p></div>}
+      {waiting.length?<ul className="d-list">{waiting.map(brief=><li key={brief.id} className="d-queue-row"><span className="d-row-icon is-wait"><CircleDollarSign size={18}/></span><span className="d-row-main"><b>{name(brief)}</b><small>{formatCad(paymentSchedule(brief).dueNow||brief.proposal_amount_cents)}{paymentSchedule(brief).plan==="split"?(paymentSchedule(brief).paid?" balance":" deposit"):""} · marked sent {new Date(brief.e_transfer_submitted_at||brief.updated_at).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</small></span><span className="d-queue-actions"><button type="button" className="d-btn is-sm is-primary" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"confirm")}>{busy===`${brief.id}-confirm`?"Saving…":"Received"}</button><button type="button" className="d-btn is-sm" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"reject")}>{busy===`${brief.id}-reject`?"Saving…":"Not received"}</button></span></li>)}</ul>:<div className="d-empty"><CheckCircle2 size={22}/><b>Nothing to check</b><p>When a client marks an e-Transfer as sent, it shows up here.</p></div>}
     </section>
     <section className="d-panel" aria-label="Payment history">
       <div className="d-panel-head"><div><h3>History</h3><p>Card and e-Transfer payments.</p></div></div>
@@ -464,7 +470,7 @@ function ClientFullView({record,initialProjectId,refresh,onBack,onNavigate}) {
 
 function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProject,refresh,onBack,onNavigate,onProjectDeleted}) {
   const [status,setStatus]=useState(brief?.status||"draft");
-  const [quote,setQuote]=useState({amount:"",days:"",summary:""});
+  const [quote,setQuote]=useState({amount:"",days:"",summary:"",plan:"full",percent:"50"});
   const [showQuote,setShowQuote]=useState(false);
   const [notice,setNotice]=useState(null);
   const [savingStage,setSavingStage]=useState(false);
@@ -477,8 +483,8 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
   useEffect(()=>{if(!brief?.id||typeof window==="undefined")return;let pending=null;try{pending=JSON.parse(window.sessionStorage.getItem("milink-admin-project-focus")||"null")}catch{}if(!pending||pending.projectId!==brief.id)return;window.sessionStorage.removeItem("milink-admin-project-focus");reveal(pending.focus);},[brief?.id]);
   useEffect(()=>{setStatus(brief?.status||"draft");},[brief?.id,brief?.status]);
   const saveStatus=async()=>{if(!brief||status===brief.status)return;setSavingStage(true);const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status}).eq("id",brief.id);setSavingStage(false);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:`Stage changed to “${stageLabel(status)}”. The client was notified.`});dispatchEmailEvent("status_updated",brief.id);refresh();};
-  const openQuote=()=>{setQuote({amount:brief?.proposal_amount_cents?String(brief.proposal_amount_cents/100):"",days:brief?.proposal_delivery_days?String(brief.proposal_delivery_days):"",summary:brief?.proposal_summary||""});setShowQuote(true);};
-  const proposal=async()=>{if(!brief)return;const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status:"proposal_sent",proposal_amount_cents:Math.round(Number(quote.amount||0)*100),proposal_delivery_days:Number(quote.days)||null,proposal_summary:quote.summary}).eq("id",brief.id);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:"Proposal sent. Next: add the agreement in the Contract tab."});dispatchEmailEvent("proposal_sent",brief.id);setShowQuote(false);refresh();};
+  const openQuote=()=>{setQuote({amount:brief?.proposal_amount_cents?String(brief.proposal_amount_cents/100):"",days:brief?.proposal_delivery_days?String(brief.proposal_delivery_days):"",summary:brief?.proposal_summary||"",plan:brief?.payment_plan||"full",percent:String(brief?.deposit_percent||50)});setShowQuote(true);};
+  const proposal=async()=>{if(!brief)return;const {error}=await getSupabaseBrowserClient().from("project_briefs").update({status:"proposal_sent",proposal_amount_cents:Math.round(Number(quote.amount||0)*100),proposal_delivery_days:Number(quote.days)||null,proposal_summary:quote.summary,...(quote.plan!=="full"||brief.payment_plan?{payment_plan:quote.plan,deposit_percent:Number(quote.percent)||50}:{})}).eq("id",brief.id);if(error){setNotice({tone:"stop",text:error.message});return;}setNotice({tone:"go",text:"Proposal sent. Next: add the agreement in the Contract tab."});dispatchEmailEvent("proposal_sent",brief.id);setShowQuote(false);refresh();};
   const openChat=()=>{if(typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",record.id);onNavigate("Messages");};
   const phoneDigits=String(record.phone||"").replace(/\D/g,"");
   const whatsapp=phoneDigits.length>=10?`https://wa.me/${phoneDigits.length===10?`1${phoneDigits}`:phoneDigits}?text=${encodeURIComponent(`Hi ${record.full_name?.split(" ")[0]||""}, this is MIlink about your website.`)}`:"";
@@ -507,7 +513,7 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
       {tab==="brief"&&<BriefFacts brief={brief}/>}
       {tab==="work"&&<div className="d-stack"><OnboardingReadiness brief={brief} admin onChange={()=>refresh()}/><LiveProgressTimeline brief={brief} admin onChange={()=>refresh()}/><div id="mi-project-approvals"><AdminApprovals brief={brief} client={record}/></div></div>}
       {tab==="files"&&<div className="d-stack"><div id="mi-request-file"><AdminFileRequest client={record} brief={brief}/></div><div id="mi-project-assets"><AdminAssetHub client={record} brief={brief}/></div></div>}
-      {tab==="contract"&&<div id="mi-project-contracts"><AdminContracts brief={brief}/></div>}
+      {tab==="contract"&&<div className="d-stack"><PaymentPlanPanel brief={brief} onChange={()=>refresh()}/><div id="mi-project-contracts"><AdminContracts brief={brief}/></div></div>}
       {tab==="handoff"&&<AdminHandoffSpecs brief={brief} onChange={()=>refresh()}/>}
       {tab==="activity"&&<div id="mi-project-activity"><AdminActivityLog brief={brief}/></div>}
     </>}
@@ -517,6 +523,17 @@ function ClientFullViewInner({record,brief,projects,activeProjectId,onSelectProj
     </section>
     {showQuote&&<ProposalModal brief={brief} quote={quote} setQuote={setQuote} onClose={()=>setShowQuote(false)} onSubmit={proposal}/>}
   </div>;
+}
+
+function PaymentPlanPicker({plan,percent,total,onChange,disabled=false,legend="How the client pays"}){
+  const pct=Number(percent)||50;
+  const deposit=Math.round((total*pct)/100);
+  const preview=!total?"":plan==="split"?`${formatCad(deposit)} to start, ${formatCad(total-deposit)} when the site is ready for review.`:plan==="on_launch"?`${formatCad(total)} when the site is ready for review.`:`${formatCad(total)} before work starts.`;
+  return <fieldset className="d-choice" disabled={disabled}><legend>{legend}</legend>
+    <div className="d-options d-plan-options" role="radiogroup" aria-label="How the client pays">{PAYMENT_PLANS.map(([value,label])=><button type="button" role="radio" key={value} aria-checked={plan===value} className="d-option" onClick={()=>onChange({plan:value})}><span className="d-radio" aria-hidden="true"/><span><b>{label}</b></span></button>)}</div>
+    {plan==="split"&&<label className="d-field d-plan-percent"><span>Deposit</span><select value={String(pct)} onChange={event=>onChange({percent:event.target.value})}>{[30,40,50,60].map(value=><option key={value} value={value}>{value}% now, {100-value}% at launch</option>)}</select></label>}
+    {preview&&<small>{preview}</small>}
+  </fieldset>;
 }
 
 function ProposalModal({quote,setQuote,onClose,onSubmit,brief}) {
@@ -530,6 +547,7 @@ function ProposalModal({quote,setQuote,onClose,onSubmit,brief}) {
         <label className="d-field"><span>Price in CAD <em aria-hidden="true">*</em></span><input type="number" min="0" inputMode="decimal" value={quote.amount} onChange={event=>setQuote(current=>({...current,amount:event.target.value}))} placeholder="e.g. 1899"/></label>
         <label className="d-field"><span>Delivery in days</span><input type="number" min="0" inputMode="numeric" value={quote.days} onChange={event=>setQuote(current=>({...current,days:event.target.value}))} placeholder="e.g. 21"/></label>
       </div>
+      <PaymentPlanPicker plan={quote.plan} percent={quote.percent} total={Math.round(Number(quote.amount||0)*100)} onChange={next=>setQuote(current=>({...current,...next}))}/>
       <label className="d-field"><span>What is included</span><textarea rows={4} value={quote.summary} onChange={event=>setQuote(current=>({...current,summary:event.target.value}))} placeholder="Pages, features and anything not included."/></label>
     </div>
     <footer className="d-modal-foot"><button type="button" className="d-btn" onClick={onClose}>Cancel</button><button type="button" className="d-btn is-primary" disabled={!valid||sending} onClick={async()=>{setSending(true);await onSubmit();setSending(false);}}>{sending?"Sending…":"Send proposal"}</button></footer>
@@ -846,7 +864,7 @@ function NotificationPopover({notes,unread,now,onNavigate,onDismiss,onMarkAll,on
 function notificationLabel(value="") { return value.trim().toLowerCase()==="new project message" ? "New message" : value; }
 
 function WaitingStrip({brief,go,todos}){
-  const rows=[...todos.contracts.map(item=>({key:`c-${item.id}`,icon:FileSignature,title:item.title,detail:"Ready for your signature",action:"Sign",to:"Contracts"})),...(paymentDue(brief)?[{key:"pay",icon:CircleDollarSign,title:`Payment of ${formatCad(brief.proposal_amount_cents)}`,detail:"Pay by card or Interac e-Transfer",action:"Pay",to:"Payments"}]:[]),...todos.approvals.map(item=>({key:`a-${item.id}`,icon:ShieldCheck,title:item.title,detail:"Waiting for your approval",action:"Review",to:"Approvals"})),...todos.files.map(item=>({key:`f-${item.id}`,icon:Upload,title:item.title,detail:"MIlink asked for this file",action:"Upload",to:"Assets"}))];
+  const rows=[...todos.contracts.map(item=>({key:`c-${item.id}`,icon:FileSignature,title:item.title,detail:"Ready for your signature",action:"Sign",to:"Contracts"})),...(paymentDue(brief)?[{key:"pay",icon:CircleDollarSign,title:`Payment of ${formatCad(paymentSchedule(brief).dueNow)}`,detail:"Pay by card or Interac e-Transfer",action:"Pay",to:"Payments"}]:[]),...todos.approvals.map(item=>({key:`a-${item.id}`,icon:ShieldCheck,title:item.title,detail:"Waiting for your approval",action:"Review",to:"Approvals"})),...todos.files.map(item=>({key:`f-${item.id}`,icon:Upload,title:item.title,detail:"MIlink asked for this file",action:"Upload",to:"Assets"}))];
   if(!rows.length)return null;
   return <section className="d-panel d-waiting" aria-label="Waiting for you">
     <div className="d-panel-head"><div><h3>Waiting for you</h3><p>{rows.length===1?"One thing needs your input to keep the project moving.":`${rows.length} things need your input to keep the project moving.`}</p></div></div>
@@ -1115,7 +1133,7 @@ function ClientContracts({brief}) {
   const [contracts,setContracts]=useState([]),[loading,setLoading]=useState(true),[notice,setNotice]=useState(null),[signers,setSigners]=useState({}),[declines,setDeclines]=useState({}),[openDecline,setOpenDecline]=useState(""),[busy,setBusy]=useState("");
   const load=useCallback(async()=>{if(!brief?.id){setContracts([]);setLoading(false);return;}const supabase=getSupabaseBrowserClient();if(!supabase){setLoading(false);return;}const {data,error}=await supabase.from("contracts").select("*").eq("project_id",brief.id).order("created_at",{ascending:false});if(error){console.error("Could not load contracts",error);setNotice({tone:"stop",text:error.message});}else setContracts(data||[]);setLoading(false);},[brief?.id]);
   useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`client-contracts-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"contracts",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
-  const decide=async(contract,status)=>{const signer=(signers[contract.id]||"").trim(),reason=(declines[contract.id]||"").trim();if(status==="signed"&&signer.length<3){setNotice({tone:"wait",text:"Type your full name to sign."});return;}if(status==="declined"&&!reason){setNotice({tone:"wait",text:"Tell us briefly what you would like changed."});return;}setBusy(contract.id);setNotice(null);const payload=status==="signed"?{status,signer_name:signer,signer_signature:signer}:{status,decline_reason:reason};const {data,error}=await getSupabaseBrowserClient().from("contracts").update(payload).eq("id",contract.id).eq("project_id",brief.id).select().single();setBusy("");if(error){setNotice({tone:"stop",text:error.message});return;}setContracts(current=>current.map(item=>item.id===contract.id?data:item));dispatchEmailEvent("contract_decided",contract.id);setOpenDecline("");setNotice({tone:"go",text:status==="signed"?"Signed. MIlink has been notified and will start work.":"Your note was sent to MIlink. We will follow up with an updated agreement."});};
+  const decide=async(contract,status)=>{const signer=(signers[contract.id]||"").trim(),reason=(declines[contract.id]||"").trim();if(status==="signed"&&signer.length<3){setNotice({tone:"wait",text:"Type your full name to sign."});return;}if(status==="declined"&&!reason){setNotice({tone:"wait",text:"Tell us briefly what you would like changed."});return;}setBusy(contract.id);setNotice(null);const payload=status==="signed"?{status,signer_name:signer,signer_signature:signer}:{status,decline_reason:reason};const {data,error}=await getSupabaseBrowserClient().from("contracts").update(payload).eq("id",contract.id).eq("project_id",brief.id).select().single();setBusy("");if(error){setNotice({tone:"stop",text:error.message});return;}setContracts(current=>current.map(item=>item.id===contract.id?data:item));dispatchEmailEvent("contract_decided",contract.id);if(status==="signed")stampContract(contract.id);setOpenDecline("");setNotice({tone:"go",text:status==="signed"?"Signed. MIlink has been notified and will start work.":"Your note was sent to MIlink. We will follow up with an updated agreement."});};
   const proposalAmount=Number(brief?.proposal_amount_cents||0);
   return <div className="d-page">
     <div className="d-page-head"><h2>Proposal and agreement</h2><p>Read the scope and price, then sign with your typed name. Ask in Messages if anything is unclear.</p></div>
@@ -1126,10 +1144,27 @@ function ClientContracts({brief}) {
       <div className="d-contract-body">{contract.body}</div>
       {contract.status==="pending"&&openDecline!==contract.id&&<div className="d-fields"><label className="d-field"><span>Type your full name to sign</span><input value={signers[contract.id]||""} onChange={event=>setSigners(current=>({...current,[contract.id]:event.target.value}))} placeholder="Your full name" autoComplete="name"/><small>Your typed name is your electronic signature for this agreement.</small></label><div className="d-btn-row"><button type="button" className="d-btn is-primary" disabled={busy===contract.id||(signers[contract.id]||"").trim().length<3} onClick={()=>decide(contract,"signed")}><FileSignature size={17}/>{busy===contract.id?"Signing…":"Sign agreement"}</button><button type="button" className="d-btn" onClick={()=>setOpenDecline(contract.id)}>Request changes</button></div></div>}
       {contract.status==="pending"&&openDecline===contract.id&&<div className="d-fields"><label className="d-field"><span>What would you like changed?</span><textarea rows={3} value={declines[contract.id]||""} onChange={event=>setDeclines(current=>({...current,[contract.id]:event.target.value}))} placeholder="For example the payment schedule or a page you do not need." autoFocus/></label><div className="d-btn-row"><button type="button" className="d-btn is-primary" disabled={busy===contract.id} onClick={()=>decide(contract,"declined")}>{busy===contract.id?"Sending…":"Send to MIlink"}</button><button type="button" className="d-btn" onClick={()=>setOpenDecline("")}>Cancel</button></div></div>}
-      {contract.status==="signed"&&<div className="d-btn-row d-signed-row"><p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}</p><button type="button" className="d-btn is-sm" onClick={()=>printDocument(contract.title,[["Project",brief?.business_name||"Website project"],["Signed by",contract.signer_name],["Signed on",contractDate(contract.signed_at)],["Agreement reference",contract.id.slice(0,8).toUpperCase()]],contract.body)}><Download size={15}/>Signed copy</button></div>}
+      {contract.status==="signed"&&<div className="d-btn-row d-signed-row"><p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}</p><button type="button" className="d-btn is-sm" onClick={()=>printDocument(contract.title,[["Project",brief?.business_name||"Website project"],["Signed by",contract.signer_name],["Signed on",contractDate(contract.signed_at)],...(contract.ip_address?[["Signed from IP",String(contract.ip_address)]]:[]),["Agreement reference",contract.id.slice(0,8).toUpperCase()]],contract.body)}><Download size={15}/>Signed copy</button></div>}
       {contract.status==="declined"&&<div className="d-quote"><b>You asked for changes</b><p>{contract.decline_reason||"Changes requested."}</p></div>}
     </article>)}</div>}
   </div>;
+}
+
+function PaymentPlanPanel({brief,onChange}){
+  const schedule=paymentSchedule(brief);
+  const [plan,setPlan]=useState(schedule.plan),[percent,setPercent]=useState(String(schedule.percent)),[busy,setBusy]=useState(false),[notice,setNotice]=useState(null);
+  useEffect(()=>{setPlan(paymentSchedule(brief).plan);setPercent(String(paymentSchedule(brief).percent));},[brief?.id,brief?.payment_plan,brief?.deposit_percent]);
+  const locked=schedule.paid>0;
+  const dirty=plan!==schedule.plan||Number(percent)!==schedule.percent;
+  const save=async()=>{setBusy(true);setNotice(null);const {error}=await getSupabaseBrowserClient().from("project_briefs").update({payment_plan:plan,deposit_percent:Number(percent)||50}).eq("id",brief.id);setBusy(false);if(error){setNotice({tone:"stop",text:/payment_plan|deposit_percent/.test(error.message)?"Payment plans need the database update first (supabase/payment_plans_v1.sql).":error.message});return;}setNotice({tone:"go",text:"Saved. The client sees the new schedule on their Payment page."});onChange?.();};
+  return <section className="d-panel" aria-label="How the client pays">
+    <div className="d-panel-head"><div><h3>How the client pays</h3><p>{schedule.total?`${formatCad(schedule.total)} in total${schedule.paid?`, ${formatCad(schedule.paid)} paid so far`:""}.`:"Send the proposal first to set the price."}</p></div></div>
+    <div className="d-panel-body d-fields">
+      {schedule.total>0&&<ul className="d-schedule">{schedule.parts.map(part=><li key={part.key}><span><b>{part.label}</b><small>{part.when}</small></span><span className="d-num">{formatCad(part.amount)}</span><span className={cx("d-pill",part.paid?"is-go":part.due?"is-wait":"is-plain")}>{part.paid?"Paid":part.due?"Due now":"Later"}</span></li>)}</ul>}
+      {locked?<p className="d-muted-text" style={{margin:0}}>The plan cannot change after a payment has been made.</p>:<><PaymentPlanPicker legend="Change the plan" plan={plan} percent={percent} total={schedule.total} onChange={next=>{if(next.plan)setPlan(next.plan);if(next.percent)setPercent(next.percent);}}/><div className="d-btn-row"><button type="button" className="d-btn is-primary" disabled={!dirty||busy} onClick={save}>{busy?"Saving…":"Save plan"}</button></div></>}
+      {notice&&<div className={cx("d-notice",`is-${notice.tone}`)} role="status">{notice.text}</div>}
+    </div>
+  </section>;
 }
 
 function AdminContracts({brief}) {
@@ -1137,7 +1172,7 @@ function AdminContracts({brief}) {
   const load=useCallback(async()=>{if(!brief?.id){setContracts([]);setLoading(false);return;}const {data,error}=await getSupabaseBrowserClient().from("contracts").select("*").eq("project_id",brief.id).order("created_at",{ascending:false});if(error){console.error("Could not load contracts",error);setNotice({tone:"stop",text:error.message});}else setContracts(data||[]);setLoading(false);},[brief?.id]);
   useEffect(()=>{load();if(!brief?.id)return undefined;const supabase=getSupabaseBrowserClient();if(!supabase)return undefined;const channel=supabase.channel(`admin-contracts-${brief.id}`).on("postgres_changes",{event:"*",schema:"public",table:"contracts",filter:`project_id=eq.${brief.id}`},load).subscribe();return()=>supabase.removeChannel(channel);},[brief?.id,load]);
   // Start the agreement from the proposal so the scope, price and timing match what the client saw.
-  const startDraft=()=>{const lines=[brief?.proposal_summary&&`Scope: ${brief.proposal_summary}`,brief?.proposal_amount_cents&&`Price: ${formatCad(brief.proposal_amount_cents)}`,brief?.proposal_delivery_days&&`Delivery: ${brief.proposal_delivery_days} days`].filter(Boolean);setDraft({title:`Website agreement for ${brief?.business_name||"your project"}`,body:lines.length?`${lines.join("\n")}\n\n`:""});setOpen(true);};
+  const startDraft=()=>{const lines=[brief?.proposal_summary&&`Scope: ${brief.proposal_summary}`,brief?.proposal_amount_cents&&`Price: ${formatCad(brief.proposal_amount_cents)}`,brief?.proposal_delivery_days&&`Delivery: ${brief.proposal_delivery_days} days`,paymentTermsText(brief,formatCad)].filter(Boolean);setDraft({title:`Website agreement for ${brief?.business_name||"your project"}`,body:lines.length?`${lines.join("\n")}\n\n`:""});setOpen(true);};
   const create=async()=>{
     if(!draft.title.trim()||!draft.body.trim()){setNotice({tone:"wait",text:"Add a title and the agreement text."});return;}
     setSaving(true);setNotice(null);
@@ -1158,7 +1193,7 @@ function AdminContracts({brief}) {
     {notice&&<div className="d-panel-body"><div className={cx("d-notice",`is-${notice.tone}`)} role="status">{notice.text}</div></div>}
     {loading?<Loading label="Loading…" compact/>:contracts.length?<ul className="d-list">{contracts.map(contract=><li key={contract.id} className="d-request-row">
       <div className="d-request-top"><span className="d-row-main"><b>{contract.title}</b><small>Sent {contractDate(contract.created_at)}</small></span><ContractBadge status={contract.status}/></div>
-      {contract.status==="signed"&&<p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}</p>}
+      {contract.status==="signed"&&<p className="d-outcome is-go"><CheckCircle2 size={16}/>Signed by {contract.signer_name} on {contractDate(contract.signed_at)}{contract.ip_address?` from ${contract.ip_address}`:""}</p>}
       {contract.status==="declined"&&<div className="d-quote"><b>Client asked for changes</b><p>{contract.decline_reason||"No reason given."}</p></div>}
       <details className="d-details"><summary>Show agreement text</summary><div className="d-contract-body">{contract.body}</div></details>
     </li>)}</ul>:<div className="d-empty"><FileSignature size={22}/><b>No agreement yet</b><p>{brief?.proposal_amount_cents?"New agreement starts from the proposal you sent.":"Send the proposal first, then the agreement."}</p></div>}
@@ -1397,7 +1432,7 @@ function useProjectTodos(brief){
 function nextStepFor(brief,todos){
   const status=brief?.status||"draft";
   if(todos.contracts.length)return ["Sign your agreement","Read the scope and terms, then sign with your typed name.","Read and sign","Contracts"];
-  if(paymentDue(brief))return ["Your payment is due",`${formatCad(brief.proposal_amount_cents)} for ${brief.business_name||"your website"}. Pay by card or Interac e-Transfer.`,"Pay now","Payments"];
+  if(paymentDue(brief)){const schedule=paymentSchedule(brief);const what=schedule.plan==="split"?(schedule.paid>0?"Your balance is due":"Your deposit is due"):"Your payment is due";return [what,`${formatCad(schedule.dueNow)} for ${brief.business_name||"your website"}. Pay by card or Interac e-Transfer.`,"Pay now","Payments"];}
   if(todos.approvals.length)return [todos.approvals.length===1?`“${todos.approvals[0].title}” is ready for you`:`${todos.approvals.length} items are ready for you`,"Take a look, then approve or tell us what to change.","Review now","Approvals"];
   if(todos.files.length)return [todos.files.length===1?`We need “${todos.files[0].title}”`:`We need ${todos.files.length} files from you`,"Send them when you can, or leave a note if you do not have them yet.","Send files","Assets"];
   return nextSteps[status]||nextSteps.in_progress;
