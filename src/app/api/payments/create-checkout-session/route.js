@@ -132,6 +132,10 @@ export async function POST(request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Stripe Checkout session error:", error);
+    // Name the kind of setup problem (never the key itself) so MiLink can fix it from the error text.
+    if (error?.type === "StripeAuthenticationError") return json("Card payments are not set up correctly yet (the Stripe secret key is not valid). Please use e-Transfer for now.", 503);
+    if (error?.type === "StripePermissionError") return json("Card payments are not set up correctly yet (the Stripe key is missing a permission). Please use e-Transfer for now.", 503);
+    if (error?.type === "StripeInvalidRequestError") return json(`Stripe could not start checkout: ${String(error.message || "").slice(0, 160)}`, 500);
     return json("We could not start secure checkout. Please try again or use e-Transfer.", 500);
   }
 }
