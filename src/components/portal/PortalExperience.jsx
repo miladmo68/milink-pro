@@ -756,7 +756,7 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
     {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>go("Profile")}><UserRound size={18}/>Profile and settings</button>}
     <button type="button" role="menuitem" className="d-menu-item" onClick={toggleTheme}>{light?<Moon size={18}/>:<Sun size={18}/>}{light?"Dark theme":"Light theme"}</button>
     {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>{setAccount(false);setHelp(true);}}><HelpCircle size={18}/>How this works</button>}
-    <a role="menuitem" className="d-menu-item" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support"><MessageCircle size={18}/>Email support</a>
+    {!admin&&<a role="menuitem" className="d-menu-item" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support"><MessageCircle size={18}/>Email support</a>}
     <div className="d-menu-sep"/>
     <button type="button" role="menuitem" className="d-menu-item is-danger" onClick={onSignOut}><LogOut size={18}/>Sign out</button>
   </div>;

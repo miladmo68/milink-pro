@@ -3148,3 +3148,8 @@ html[data-theme="light"] .hero-proof {
 @media (max-width: 480px) {
   .marketing-site section[id] h2 { font-size: 26px; line-height: 1.12; }
 }
+
+/* Work on phones: title, summary and tags centred above the centred buttons */
+.work-card-meta { text-align: center; }
+.work-card-meta p { margin-left: auto; margin-right: auto; max-width: 36ch; }
+.work-card-meta .work-tags { justify-content: center; }
