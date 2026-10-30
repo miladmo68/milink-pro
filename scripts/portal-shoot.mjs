@@ -40,6 +40,8 @@ const ev = async (expression) => (await send("Runtime.evaluate", { expression, r
 await send("Emulation.setDeviceMetricsOverride", { width: +w, height: +h, deviceScaleFactor: 1, mobile: mobile === "1" });
 if (mobile === "1") await send("Emulation.setTouchEmulationEnabled", { enabled: true });
 await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable");
+// GRANT=notifications lets a test turn on phone notifications without a permission prompt.
+if (process.env.GRANT) await send("Browser.grantPermissions", { origin: base, permissions: process.env.GRANT.split(",") });
 
 const shot = async (name) => writeFileSync(join(outDir, `${name}.png`), Buffer.from((await send("Page.captureScreenshot", { format: "png" })).data, "base64"));
 const loginPath = role === "admin" ? "/admin" : "/portal";

@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, Building2, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, Download, Eye, FileArchive, FileImage, FileSignature, FileText, FolderKanban, HeartPulse, HelpCircle, LayoutDashboard, LockKeyhole, LogOut, Menu, MessageCircle, Moon, Palette, Plus, RefreshCw, Save, Search, Send, ShieldCheck, Sparkles, Sun, Target, Trash2, Upload, UserRound, Users, X } from "lucide-react";
+import { Bell, Building2, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDollarSign, Download, Eye, FileArchive, FileImage, FileSignature, FileText, FolderKanban, HeartPulse, HelpCircle, LayoutDashboard, LockKeyhole, LogOut, Menu, MessageCircle, Moon, Palette, Plus, RefreshCw, Save, Search, Send, ShieldCheck, Sparkles, Sun, Target, Trash2, Upload, UserRound, Users, X, BarChart3 } from "lucide-react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 import { computeProjectHealth } from "../../lib/projectHealth";
 import { notificationKind, resolveNotificationNavigation } from "../../lib/notificationNavigation";
@@ -13,7 +13,7 @@ import { PAYMENT_PLANS, paymentSchedule, paymentTermsText } from "../../lib/paym
 
 
 const clientNav=[["Overview",LayoutDashboard],["Project brief",FileText],["Assets",FolderKanban],["Messages",MessageCircle],["Approvals",ShieldCheck],["Contracts",FileSignature],["Handoff & Docs",FileArchive],["Payments",CircleDollarSign]];
-const adminNav=[["Action Center",LayoutDashboard],["Clients",Users],["Projects",FolderKanban],["Messages",MessageCircle],["Payments",CircleDollarSign]];
+const adminNav=[["Action Center",LayoutDashboard],["Clients",Users],["Projects",FolderKanban],["Messages",MessageCircle],["Payments",CircleDollarSign],["Insights",BarChart3]];
 const steps=[["About you",Building2],["Your website",Target],["Look & files",Palette],["Timing & send",CalendarDays]];
 const goals=["Generate leads","Sell online","Accept bookings","Build trust","Show my work","Grow an audience"], features=["Contact form","Online store","Booking system","Multilingual","SEO foundation","Google Maps","Blog","Analytics"], pages=["Home","About","Services","Portfolio","Testimonials","Contact","FAQ","Blog"];
 const initial={business_name:"",industry:"",current_website:"",business_description:"",main_goals:[],site_type:"multi_page",page_structure:["Home","Contact"],custom_pages:[],required_features:[],design_style:"Minimal",brand_colors:[],reference_sites:[],domain_status:"not_sure",hosting_status:"not_sure",budget_range:"Not sure yet",target_launch_date:"",additional_notes:"",status:"draft"};
@@ -203,7 +203,7 @@ function ClientPayments({brief,onRefresh}) {
   </div>;
 }
 
-export function AdminExperience({onSignOut}){const [section,setSection]=useState("Action Center"),[toast,setToast]=useState("");const syncAdminLocation=useCallback((next,projectId)=>{if(typeof window==="undefined")return;const tabs={"Action Center":"action-center",Clients:"clients",Projects:"projects",Messages:"messages",Payments:"payments"};const url=new URL(window.location.href);url.pathname="/admin";url.searchParams.set("tab",tabs[next]||"action-center");if(projectId)url.searchParams.set("project",projectId);else url.searchParams.delete("project");window.history.pushState({},"",`${url.pathname}${url.search}`);},[]);const navigateAdmin=useCallback((next,projectId)=>{setSection(next);syncAdminLocation(next,projectId);},[syncAdminLocation]);useEffect(()=>{if(typeof window==="undefined")return;const target=new URLSearchParams(window.location.search).get("tab")?.toLowerCase();const tabs={"action-center":"Action Center",action_center:"Action Center",clients:"Clients",projects:"Projects",messages:"Messages",payments:"Payments"};if(tabs[target])setSection(tabs[target]);},[]);useEffect(()=>{let timer;const openClients=event=>{setSection("Clients");setToast(event.detail||"Client deleted successfully.");if(typeof window!=="undefined")window.history.replaceState({},"","/admin?tab=clients");window.clearTimeout(timer);timer=window.setTimeout(()=>setToast(""),4200);};window.addEventListener("milink:client-deleted",openClients);window.addEventListener("milink:admin-toast",openClients);return()=>{window.removeEventListener("milink:client-deleted",openClients);window.removeEventListener("milink:admin-toast",openClients);window.clearTimeout(timer);};},[]);const handleNotificationNavigate=useCallback(target=>{navigateAdmin(target.section,target.projectId);if(target.projectId&&typeof window!=="undefined")window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-project",{detail:{projectId:target.projectId,clientId:target.clientId}})),0);},[navigateAdmin]);return <Shell mode="admin" section={section} setSection={navigateAdmin} onNotificationNavigate={handleNotificationNavigate} onSignOut={onSignOut}><AdminWorkspace currentTab={section} onNavigate={navigateAdmin}/>{toast&&<div className="d-toast" role="status"><CheckCircle2 size={17}/>{toast}</div>}</Shell>}
+export function AdminExperience({onSignOut}){const [section,setSection]=useState("Action Center"),[toast,setToast]=useState("");const syncAdminLocation=useCallback((next,projectId)=>{if(typeof window==="undefined")return;const tabs={"Action Center":"action-center",Clients:"clients",Projects:"projects",Messages:"messages",Payments:"payments",Insights:"insights"};const url=new URL(window.location.href);url.pathname="/admin";url.searchParams.set("tab",tabs[next]||"action-center");if(projectId)url.searchParams.set("project",projectId);else url.searchParams.delete("project");window.history.pushState({},"",`${url.pathname}${url.search}`);},[]);const navigateAdmin=useCallback((next,projectId)=>{setSection(next);syncAdminLocation(next,projectId);},[syncAdminLocation]);useEffect(()=>{if(typeof window==="undefined")return;const target=new URLSearchParams(window.location.search).get("tab")?.toLowerCase();const tabs={"action-center":"Action Center",action_center:"Action Center",clients:"Clients",projects:"Projects",messages:"Messages",payments:"Payments",insights:"Insights"};if(tabs[target])setSection(tabs[target]);},[]);useEffect(()=>{let timer;const openClients=event=>{setSection("Clients");setToast(event.detail||"Client deleted successfully.");if(typeof window!=="undefined")window.history.replaceState({},"","/admin?tab=clients");window.clearTimeout(timer);timer=window.setTimeout(()=>setToast(""),4200);};window.addEventListener("milink:client-deleted",openClients);window.addEventListener("milink:admin-toast",openClients);return()=>{window.removeEventListener("milink:client-deleted",openClients);window.removeEventListener("milink:admin-toast",openClients);window.clearTimeout(timer);};},[]);const handleNotificationNavigate=useCallback(target=>{navigateAdmin(target.section,target.projectId);if(target.projectId&&typeof window!=="undefined")window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-project",{detail:{projectId:target.projectId,clientId:target.clientId}})),0);},[navigateAdmin]);return <Shell mode="admin" section={section} setSection={navigateAdmin} onNotificationNavigate={handleNotificationNavigate} onSignOut={onSignOut}><AdminWorkspace currentTab={section} onNavigate={navigateAdmin}/>{toast&&<div className="d-toast" role="status"><CheckCircle2 size={17}/>{toast}</div>}</Shell>}
 
 function AdminWorkspace({ currentTab, onNavigate }) {
   const [clients, setClients] = useState([]); const [selected, setSelected] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const [query, setQuery] = useState(""); const failedRef = useRef(false); const loadedRef = useRef(false); const openedUrlProjectRef = useRef("");
@@ -279,6 +279,7 @@ function AdminWorkspace({ currentTab, onNavigate }) {
   if (loading) return <Loading label="Loading your workspace…"/>;
   if (error) return <Empty icon={ShieldCheck} title="Could not load the workspace" copy={error} action={<button type="button" className="d-btn is-primary" onClick={() => { failedRef.current = false; fetchClients(); }}>Try again</button>}/>;
   if (currentTab === "Messages") return <AdminMessages onOpenClient={(clientId)=>{onNavigate("Projects");window.setTimeout(()=>window.dispatchEvent(new CustomEvent("milink:open-client",{detail:{clientId}})),0);}}/>;
+  if (currentTab === "Insights") return <AdminInsights/>;
   if (currentTab === "Payments") return <AdminPayments briefs={briefs} refresh={fetchClients}/>;
   if (currentTab === "Projects") return selected ? <ClientFullView record={selected} initialProjectId={selected._openProjectId} refresh={fetchClients} onBack={()=>setSelected(null)} onNavigate={onNavigate}/> : <ProjectsBoard briefs={briefs} onOpen={(client,brief) => { setSelected({...client,_openProjectId:brief.id}); }} />;
   if (currentTab === "Action Center") return <ActionCenter clients={clients} briefs={briefs} submitted={submitted} noBrief={noBrief} refresh={fetchClients} onNavigate={onNavigate} onOpenProject={(brief)=>{setSelected({...brief.client,_openProjectId:brief.id});onNavigate("Projects",brief.id);}}/>;
@@ -302,15 +303,19 @@ function ProjectsBoard({ briefs, onOpen }) {
 }
 
 function AdminPayments({ briefs, refresh }) {
-  const [notice,setNotice]=useState(null),[busy,setBusy]=useState("");
+  const [notice,setNotice]=useState(null),[busy,setBusy]=useState(""),[sort,setSort]=useState({key:"date",dir:-1});
+  const desktop=useIsDesktop();
+  const planShort={full:"Up front",split:"Deposit",on_launch:"At launch"};
+  const lastPaid=brief=>brief.stripe_paid_at||brief.e_transfer_confirmed_at||null;
+  const sortBy=key=>setSort(current=>({key,dir:current.key===key?-current.dir:(key==="name"?1:-1)}));
   const waiting=briefs.filter(brief=>["e_transfer_submitted","pending_review"].includes(brief.payment_status));
-  const history=briefs.filter(brief=>["paid","approved","rejected","checkout_pending","partially_paid"].includes(brief.payment_status)||brief.stripe_checkout_session_id||Number(brief.amount_paid_cents)>0).sort((a,b)=>new Date(b.stripe_paid_at||b.e_transfer_confirmed_at||b.updated_at||0)-new Date(a.stripe_paid_at||a.e_transfer_confirmed_at||a.updated_at||0));
   const unpaid=briefs.filter(brief=>{const schedule=paymentSchedule(brief);return schedule.total>0&&!schedule.complete&&!["paid","approved"].includes(brief.payment_status);});
   const received=briefs.reduce((sum,brief)=>sum+(["paid","approved"].includes(brief.payment_status)&&!Number(brief.amount_paid_cents)?Number(brief.proposal_amount_cents||0):Number(brief.amount_paid_cents||0)),0);
   const outstanding=unpaid.reduce((sum,brief)=>{const schedule=paymentSchedule(brief);return sum+schedule.total-schedule.paid;},0);
   const updateManual=async(brief,action)=>{setBusy(`${brief.id}-${action}`);setNotice(null);try{await updateETransfer(brief.id,action);if(action==="confirm")dispatchEmailEvent("payment_confirmed",brief.id);setNotice({tone:"go",text:action==="confirm"?"Marked as received. The client was notified.":"Marked as not received. The client was notified."});await refresh();}catch(error){setNotice({tone:"stop",text:error.message||"Could not update this payment."});}finally{setBusy("");}};
   const name=brief=>brief.business_name||brief.client?.full_name||brief.client?.email;
-  const statusOf=brief=>brief.payment_status==="paid"||brief.payment_status==="approved"?["Paid","is-go"]:brief.payment_status==="partially_paid"||(Number(brief.amount_paid_cents)>0&&!paymentSchedule(brief).complete)?["Deposit paid","is-brand"]:brief.payment_status==="rejected"?["Not received","is-stop"]:brief.payment_status==="checkout_pending"?["Checkout started","is-wait"]:["Open","is-plain"];
+  const priced=briefs.filter(brief=>paymentSchedule(brief).total>0).sort((a,b)=>{const value=brief=>sort.key==="name"?(brief.business_name||"").toLowerCase():sort.key==="paid"?paymentSchedule(brief).paid:sort.key==="total"?paymentSchedule(brief).total:new Date(lastPaid(brief)||brief.updated_at||0).getTime();const x=value(a),y=value(b);return (x<y?-1:x>y?1:0)*sort.dir;});
+  const statusOf=brief=>brief.payment_status==="paid"||brief.payment_status==="approved"?["Paid","is-go"]:brief.payment_status==="partially_paid"||(Number(brief.amount_paid_cents)>0&&!paymentSchedule(brief).complete)?["Deposit paid","is-brand"]:brief.payment_status==="rejected"?["Not received","is-stop"]:brief.payment_status==="checkout_pending"?["Checkout started","is-wait"]:["e_transfer_submitted","pending_review"].includes(brief.payment_status)?["To check","is-wait"]:["Not paid","is-plain"];
   return <div className="d-page">
     <div className="d-page-head"><h2>Payments</h2><p>Card payments confirm themselves. Confirm e-Transfers only after you see the money in your bank.</p></div>
     <div className="d-stats">
@@ -324,8 +329,18 @@ function AdminPayments({ briefs, refresh }) {
       {waiting.length?<ul className="d-list">{waiting.map(brief=><li key={brief.id} className="d-queue-row"><span className="d-row-icon is-wait"><CircleDollarSign size={18}/></span><span className="d-row-main"><b>{name(brief)}</b><small>{formatCad(paymentSchedule(brief).dueNow||brief.proposal_amount_cents)}{paymentSchedule(brief).plan==="split"?(paymentSchedule(brief).paid?" balance":" deposit"):""} · marked sent {new Date(brief.e_transfer_submitted_at||brief.updated_at).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</small></span><span className="d-queue-actions"><button type="button" className="d-btn is-sm" onClick={async()=>{if(!(await openPaymentProof(brief.id)))setNotice({tone:"wait",text:`${name(brief)} did not attach a proof. Check your bank for the transfer.`});}}>View proof</button><button type="button" className="d-btn is-sm is-primary" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"confirm")}>{busy===`${brief.id}-confirm`?"Saving…":"Received"}</button><button type="button" className="d-btn is-sm" disabled={Boolean(busy)} onClick={()=>updateManual(brief,"reject")}>{busy===`${brief.id}-reject`?"Saving…":"Not received"}</button></span></li>)}</ul>:<div className="d-empty"><CheckCircle2 size={22}/><b>Nothing to check</b><p>When a client marks an e-Transfer as sent, it shows up here.</p></div>}
     </section>
     <section className="d-panel" aria-label="Payment history">
-      <div className="d-panel-head"><div><h3>History</h3><p>Card and e-Transfer payments.</p></div></div>
-      {history.length?<ul className="d-list">{history.map(brief=>{const [label,tone]=statusOf(brief);const stripe=brief.payment_method==="stripe"||brief.stripe_checkout_session_id;return <li key={brief.id} className="d-row"><span className={cx("d-row-icon",tone==="is-go"&&"is-go")}><CircleDollarSign size={18}/></span><span className="d-row-main"><b>{name(brief)}</b><small>{formatCad(brief.amount_paid_cents||brief.proposal_amount_cents)} · {stripe?"Card (Stripe)":"e-Transfer"} · {new Date(brief.stripe_paid_at||brief.e_transfer_confirmed_at||brief.updated_at||Date.now()).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</small></span><span className={cx("d-pill",tone)}>{label}</span></li>;})}</ul>:<div className="d-empty"><CircleDollarSign size={22}/><b>No payments yet</b><p>Payments appear here once clients pay.</p></div>}
+      <div className="d-panel-head"><div><h3>All payments</h3><p>Every project with a price, what is paid and what is still open.</p></div></div>
+      {priced.length===0?<div className="d-empty"><CircleDollarSign size={22}/><b>No priced projects yet</b><p>Projects appear here once you send a proposal.</p></div>
+      :desktop?<div className="d-table-wrap"><table className="d-table"><thead><tr>{[["name","Project"],[null,"Plan"],["paid","Paid"],["total","Total"],[null,"Method"],["date","Last payment"],[null,"Status"]].map(([key,label])=><th key={label} scope="col" aria-sort={key&&sort.key===key?(sort.dir===1?"ascending":"descending"):undefined}>{key?<button type="button" onClick={()=>sortBy(key)}>{label}{sort.key===key&&<ChevronDown size={14} className={sort.dir===1?"is-up":""}/>}</button>:label}</th>)}</tr></thead><tbody>{priced.map(brief=>{const schedule=paymentSchedule(brief);const [label,tone]=statusOf(brief);const stripe=brief.payment_method==="stripe";const last=lastPaid(brief);return <tr key={brief.id} className="is-static">
+        <td><span className="d-cell-person"><span className="d-avatar is-square">{initials(name(brief))}</span><span><b>{name(brief)}</b><small>{brief.client?.full_name||brief.client?.email}</small></span></span></td>
+        <td>{planShort[schedule.plan]}{schedule.plan==="split"?` ${schedule.percent}%`:""}</td>
+        <td className="d-num"><b className="d-cell-strong">{formatCad(schedule.paid)}</b></td>
+        <td className="d-num">{formatCad(schedule.total)}</td>
+        <td>{schedule.paid?(stripe?"Card":"e-Transfer"):"—"}</td>
+        <td className="d-num">{last?new Date(last).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"—"}</td>
+        <td><span className={cx("d-pill",tone)}>{label}</span></td>
+      </tr>;})}</tbody></table></div>
+      :<ul className="d-list">{priced.map(brief=>{const schedule=paymentSchedule(brief);const [label,tone]=statusOf(brief);return <li key={brief.id} className="d-row"><span className={cx("d-row-icon",tone==="is-go"&&"is-go")}><CircleDollarSign size={18}/></span><span className="d-row-main"><b>{name(brief)}</b><small>{formatCad(schedule.paid)} of {formatCad(schedule.total)} · {planShort[schedule.plan]}</small></span><span className={cx("d-pill",tone)}>{label}</span></li>;})}</ul>}
     </section>
   </div>;
 }
@@ -747,6 +762,17 @@ function Sheet({open,onClose,label,children}){
   </>}</AnimatePresence>;
 }
 
+// Phone/desktop notifications for this device. iPhone needs the workspace added to the Home Screen first.
+const urlBase64ToUint8Array=base64=>{const padding="=".repeat((4-base64.length%4)%4);const raw=atob((base64+padding).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from([...raw].map(char=>char.charCodeAt(0)));};
+function usePushNotifications(user){
+  const [state,setState]=useState("checking");
+  const supported=typeof window!=="undefined"&&"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window&&Boolean(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+  const iosNeedsInstall=typeof window!=="undefined"&&/iPhone|iPad|iPod/.test(navigator.userAgent)&&!window.matchMedia("(display-mode: standalone)").matches&&!navigator.standalone;
+  useEffect(()=>{if(!user)return;if(iosNeedsInstall){setState("install");return;}if(!supported){setState("unsupported");return;}if(Notification.permission==="denied"){setState("blocked");return;}navigator.serviceWorker.getRegistration("/sw.js").then(async registration=>{const subscription=await registration?.pushManager.getSubscription();setState(subscription?"on":"off");}).catch(()=>setState("off"));},[user?.id,supported,iosNeedsInstall]);
+  const enable=useCallback(async()=>{if(!user||!supported)return;setState("working");try{const registration=await navigator.serviceWorker.register("/sw.js");await navigator.serviceWorker.ready;const permission=await Notification.requestPermission();if(permission!=="granted"){setState(permission==="denied"?"blocked":"off");return;}const subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY)});const json=subscription.toJSON();const {error}=await getSupabaseBrowserClient().from("push_subscriptions").upsert({user_id:user.id,endpoint:json.endpoint,p256dh:json.keys.p256dh,auth:json.keys.auth,user_agent:navigator.userAgent.slice(0,200)},{onConflict:"endpoint"});if(error)throw error;setState("on");}catch(error){console.warn("Could not turn on notifications",error);setState("error");}},[user,supported]);
+  const disable=useCallback(async()=>{setState("working");try{const registration=await navigator.serviceWorker.getRegistration("/sw.js");const subscription=await registration?.pushManager.getSubscription();if(subscription){await getSupabaseBrowserClient().from("push_subscriptions").delete().eq("endpoint",subscription.endpoint);await subscription.unsubscribe();}setState("off");}catch{setState("on");}},[]);
+  return {state,enable,disable};
+}
 function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,projectSwitcher,navItems,context,children}) {
   const admin=mode==="admin",nav=admin?adminNav:(navItems||clientNav),desktop=useIsDesktop();
   const [collapsed,setCollapsed]=useState(false),[light,setLight]=useState(false),[account,setAccount]=useState(false),[bell,setBell]=useState(false),[more,setMore]=useState(false),[notes,setNotes]=useState([]),[notificationUser,setNotificationUser]=useState(null),[notificationClock,setNotificationClock]=useState(Date.now()),[unreadMessages,setUnreadMessages]=useState(0),[commandOpen,setCommandOpen]=useState(false);
@@ -770,6 +796,8 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
   const dismiss=async id=>{const previous=notes;setNotes(current=>current.filter(note=>note.id!==id));const {error}=await getSupabaseBrowserClient().from("notifications").delete().eq("id",id);if(error){console.error("Could not dismiss notification",error);setNotes(previous);}};
   const markAll=async()=>{if(!notificationUser)return;setNotes(current=>current.map(note=>({...note,is_read:true})));const {error}=await getSupabaseBrowserClient().from("notifications").update({is_read:true}).eq("recipient_id",notificationUser.id).eq("is_read",false);if(error)console.error("Could not mark notifications read",error);};
   const clearAll=async()=>{if(!notificationUser)return;const previous=notes;setNotes([]);const {error}=await getSupabaseBrowserClient().from("notifications").delete().eq("recipient_id",notificationUser.id);if(error){console.error("Could not clear notifications",error);setNotes(previous);}};
+  const push=usePushNotifications(notificationUser);
+  const pushLabel={on:"Phone notifications: on",off:"Turn on phone notifications",working:"Turning on…",blocked:"Notifications blocked in browser settings",install:"Add to Home Screen to get notifications",unsupported:"Notifications not available here",error:"Could not turn on notifications. Try again",checking:"Phone notifications"}[push.state];
   const go=next=>{setSection(next);setMore(false);setAccount(false);if(typeof window!=="undefined")window.scrollTo({top:0});};
   const navigateNotification=async note=>{await markRead(note);const target=resolveNotificationNavigation(note,{admin});if(admin&&target.kind==="message"&&target.clientId&&typeof window!=="undefined")window.sessionStorage.setItem("milink-message-client",target.clientId);if(onNotificationNavigate)onNotificationNavigate(target);else setSection(target.section);setBell(false);setMore(false);};
   const badgeFor=key=>key==="Messages"&&unreadMessages>0?Math.min(unreadMessages,99):0;
@@ -779,6 +807,7 @@ function Shell({mode,section,setSection,onNotificationNavigate,onSignOut,project
     <div className="d-menu-head"><span className="d-avatar">{accountInitials}</span><span><b>{accountName}</b><small>{notificationUser?.email||accountRole}</small></span></div>
     {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>go("Profile")}><UserRound size={18}/>Profile and settings</button>}
     <button type="button" role="menuitem" className="d-menu-item" onClick={toggleTheme}>{light?<Moon size={18}/>:<Sun size={18}/>}{light?"Dark theme":"Light theme"}</button>
+    {push.state!=="unsupported"&&<button type="button" role="menuitem" className="d-menu-item" disabled={["working","blocked","install","checking"].includes(push.state)} onClick={()=>push.state==="on"?push.disable():push.enable()} aria-pressed={push.state==="on"}><Bell size={18}/>{pushLabel}{push.state==="on"&&<span className="d-menu-end">Turn off</span>}</button>}
     {!admin&&<button type="button" role="menuitem" className="d-menu-item" onClick={()=>{setAccount(false);setHelp(true);}}><HelpCircle size={18}/>How this works</button>}
     {!admin&&<a role="menuitem" className="d-menu-item" href="mailto:info@milink.ca?subject=MIlink%20workspace%20support"><MessageCircle size={18}/>Email support</a>}
     <div className="d-menu-sep"/>
@@ -1445,5 +1474,50 @@ function nextStepFor(brief,todos){
 }
 
 function noteDay(value,now){const date=new Date(value),today=new Date(now);today.setHours(0,0,0,0);const diff=(today-new Date(date).setHours(0,0,0,0))/86400000;return diff<=0?"Today":diff===1?"Yesterday":"Earlier";}
+function AdminInsights(){
+  const [range,setRange]=useState(30),[events,setEvents]=useState(null),[error,setError]=useState(""),[hover,setHover]=useState(null);
+  useEffect(()=>{let active=true;setEvents(null);setError("");(async()=>{const since=new Date(Date.now()-range*86400000);since.setHours(0,0,0,0);const rows=[];for(let from=0;from<50000;from+=1000){const {data,error:loadError}=await getSupabaseBrowserClient().from("site_events").select("kind,path,referrer_host,visit_id,device,country,created_at").gte("created_at",since.toISOString()).order("created_at",{ascending:true}).range(from,from+999);if(loadError){if(active)setError(/site_events/.test(loadError.message)?"Visit counting needs the database update first (supabase/site_analytics_v1.sql).":loadError.message);return;}rows.push(...(data||[]));if(!data||data.length<1000)break;}if(active)setEvents(rows);})();return()=>{active=false;};},[range]);
+  if(error)return <div className="d-page"><div className="d-page-head"><h2>Insights</h2></div><Empty icon={BarChart3} title="Not set up yet" copy={error}/></div>;
+  if(!events)return <Loading label="Loading insights…"/>;
+  const views=events.filter(event=>event.kind==="pageview");
+  const visits=new Set(views.map(event=>event.visit_id).filter(Boolean));
+  const count=kind=>events.filter(event=>event.kind===kind).length;
+  const contacts=count("contact_submit"),whatsapp=count("whatsapp_click"),signups=count("portal_signup");
+  const rate=visits.size?Math.round(((contacts+whatsapp)/visits.size)*1000)/10:0;
+  const days=[];for(let i=range-1;i>=0;i--){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()-i);days.push(day);}
+  const dayKey=value=>{const d=new Date(value);return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;};
+  const perDay=new Map(days.map(day=>[dayKey(day),new Set()]));
+  views.forEach(event=>perDay.get(dayKey(event.created_at))?.add(event.visit_id||event.created_at));
+  const series=days.map(day=>({day,value:perDay.get(dayKey(day)).size}));
+  const peak=Math.max(1,...series.map(point=>point.value));
+  const top=(list,key,fallback)=>{const map=new Map();list.forEach(event=>{const value=event[key]||fallback;map.set(value,(map.get(value)||0)+1);});return [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6);};
+  const pageNames={"/":"Home","/services":"Services","/work":"Work","/pricing":"Pricing","/contact":"Contact","/testimonials":"Testimonials"};
+  const ranked=(title,rows,label=value=>value)=>{const max=Math.max(1,...rows.map(([,n])=>n));return <section className="d-panel" aria-label={title}><div className="d-panel-head"><div><h3>{title}</h3></div></div>{rows.length?<ul className="d-ranked">{rows.map(([name,n])=><li key={name}><span className="d-ranked-label">{label(name)}</span><span className="d-ranked-bar" aria-hidden="true"><i style={{width:`${(n/max)*100}%`}}/></span><span className="d-num">{n}</span></li>)}</ul>:<p className="d-board-empty">No data yet.</p>}</section>;};
+  const fmtDay=day=>day.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  return <div className="d-page">
+    <div className="d-page-head-row"><div className="d-page-head"><h2>Insights</h2><p>Visits to milink.ca. Anonymous, no cookies; bots and your dashboard are not counted.</p></div>
+      <div className="d-segment" role="tablist" aria-label="Period">{[[7,"7 days"],[30,"30 days"],[90,"90 days"]].map(([value,label])=><button type="button" role="tab" key={value} aria-selected={range===value} onClick={()=>setRange(value)}>{label}</button>)}</div></div>
+    <div className="d-stats is-four">
+      <div className="d-panel d-stat"><small>Visitors</small><b className="d-num">{visits.size}</b><span>{views.length} page views</span></div>
+      <div className="d-panel d-stat"><small>Contact forms</small><b className="d-num">{contacts}</b><span>Sent from the site</span></div>
+      <div className="d-panel d-stat"><small>WhatsApp taps</small><b className="d-num">{whatsapp}</b><span>{signups} portal sign-up{signups===1?"":"s"}</span></div>
+      <div className="d-panel d-stat"><small>Visitors who got in touch</small><b className="d-num">{rate}%</b><span>Forms and WhatsApp</span></div>
+    </div>
+    <section className="d-panel" aria-label="Visitors per day">
+      <div className="d-panel-head"><div><h3>Visitors per day</h3><p>{hover?`${fmtDay(hover.day)}: ${hover.value} visitor${hover.value===1?"":"s"}`:`Busiest day: ${peak} visitor${peak===1?"":"s"}`}</p></div></div>
+      <div className="d-panel-body"><div className="d-chart" role="img" aria-label={`Visitors per day over the last ${range} days`} onMouseLeave={()=>setHover(null)}>
+        <div className="d-chart-grid" aria-hidden="true"><span>{peak}</span><span>{Math.round(peak/2)}</span><span>0</span></div>
+        <div className="d-chart-bars" style={{gridTemplateColumns:`repeat(${series.length},minmax(0,1fr))`}}>{series.map(point=><button type="button" key={point.day.toISOString()} className={cx("d-chart-col",hover?.day===point.day&&"is-active")} onMouseEnter={()=>setHover(point)} onFocus={()=>setHover(point)} onBlur={()=>setHover(null)} aria-label={`${fmtDay(point.day)}: ${point.value} visitors`}><i style={{height:`${point.value?Math.max(3,(point.value/peak)*100):0}%`}}/></button>)}</div>
+        <div className="d-chart-axis" aria-hidden="true"><span>{fmtDay(days[0])}</span><span>{fmtDay(days[Math.floor(days.length/2)])}</span><span>Today</span></div>
+      </div></div>
+    </section>
+    <div className="d-insight-grid">
+      {ranked("Top pages",top(views,"path","/"),value=>pageNames[value]||value)}
+      {ranked("Where visitors come from",top(views,"referrer_host","Direct or search app"))}
+      {ranked("Devices",top(views,"device","unknown"),value=>value[0].toUpperCase()+value.slice(1))}
+      {ranked("Countries",top(views,"country","Unknown"))}
+    </div>
+  </div>;
+}
 function Empty({icon:Icon,title:heading,copy,action}){return <section className="d-panel d-empty"><Icon size={26}/><b>{heading}</b><p>{copy}</p>{action}</section>}
 function Loading({label,compact}){if(compact)return <div className="d-skeleton-list" role="status" aria-label={label}>{[0,1,2].map(i=><div className="d-skeleton-row" key={i}><i className="d-sk is-icon"/><span><i className="d-sk" style={{width:`${62-i*12}%`}}/><i className="d-sk is-thin" style={{width:`${40-i*6}%`}}/></span></div>)}</div>;return <div className="d-page" role="status" aria-label={label}><div className="d-panel d-skeleton-hero"><i className="d-sk is-thin" style={{width:"22%"}}/><i className="d-sk is-title" style={{width:"58%"}}/><i className="d-sk" style={{width:"44%"}}/><i className="d-sk is-btn"/></div><div className="d-panel"><div className="d-skeleton-list">{[0,1].map(i=><div className="d-skeleton-row" key={i}><i className="d-sk is-icon"/><span><i className="d-sk" style={{width:"55%"}}/><i className="d-sk is-thin" style={{width:"35%"}}/></span></div>)}</div></div></div>}

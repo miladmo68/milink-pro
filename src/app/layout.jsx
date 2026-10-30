@@ -2,6 +2,7 @@ import { Bricolage_Grotesque, Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { pricing, services } from "../data/content.js";
 import { BUSINESS } from "../config/business.js";
+import SiteAnalytics from "../components/SiteAnalytics";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -236,6 +237,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="font-sans antialiased">
         {children}
+        <SiteAnalytics />
       </body>
     </html>
   );

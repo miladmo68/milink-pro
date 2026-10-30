@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getAppUrl, renderEmailTemplate, renderPlainText, sendWithSmtp } from "../../../lib/transactionalEmail";
 import { normalizeNotificationEmailMode } from "../../../lib/notificationDigest";
 import { paymentSchedule } from "../../../lib/paymentPlan.js";
+import { sendPush } from "../../../lib/push.js";
 import { ADMIN_EMAILS, isAdminAccount } from "../../../config/admins.js";
 
 export const runtime = "nodejs";
@@ -11,6 +12,22 @@ const ADMIN_ALERT_EMAILS = [...ADMIN_EMAILS, "milinkagency@gmail.com"];
 const adminRecipients = () => (process.env.TO_EMAIL || ADMIN_ALERT_EMAILS.join(",")).split(",").map((email) => email.trim()).filter(Boolean);
 const money = (cents) => new Intl.NumberFormat("en-CA", { style:"currency", currency:"CAD" }).format((Number(cents) || 0) / 100);
 const statusTitle = (value = "") => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+async function pushToRecipients(admin, emails) {
+  if (!emails.length) return;
+  const adminSet = new Set(adminRecipients().map((email) => email.toLowerCase()));
+  const toAdmins = emails.filter((email) => adminSet.has(email.to.trim().toLowerCase()));
+  const toOthers = emails.filter((email) => !adminSet.has(email.to.trim().toLowerCase()));
+  if (toAdmins.length) {
+    const { data: admins } = await admin.from("profiles").select("id").in("role", ["admin", "super_admin"]);
+    const first = toAdmins[0].push;
+    await sendPush(admin, (admins || []).map((row) => row.id), { ...first, url: first.url?.replace(/\/admin(\?|$)/, "/admin$1") || "/admin", tag: first.title });
+  }
+  for (const email of toOthers) {
+    const { data: profile } = await admin.from("profiles").select("id").ilike("email", email.to.trim()).maybeSingle();
+    if (profile) await sendPush(admin, [profile.id], { ...email.push, tag: email.push.title });
+  }
+}
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({})); const event = body.event; const resourceId = body.resourceId;
@@ -26,7 +43,7 @@ export async function POST(request) {
   const isAdmin = trusted || await isAdminAccount(admin, actor);
   const portal = `${getAppUrl()}/portal`, portalMessages = `${portal}?tab=messages`, adminUrl = `${getAppUrl()}/admin`;
   const emails = [];
-  const add = (to, subject, details) => { if (to) emails.push({ to, subject, html:renderEmailTemplate(details), text:renderPlainText(details) }); };
+  const add = (to, subject, details) => { if (to) emails.push({ to, subject, html:renderEmailTemplate(details), text:renderPlainText(details), push:{ title:subject.replace(/^[^\w]+\s*/, ""), body:details.copy, url:details.href } }); };
 
   if (event === "welcome") {
     const targetId = resourceId || actor?.id; if (!targetId || (!trusted && targetId !== actor.id)) return NextResponse.json({ error:"Invalid welcome recipient." }, { status:403 });
@@ -90,6 +107,8 @@ export async function POST(request) {
     else
     add(brief.profiles?.email, `Payment received for ${brief.business_name || "your website"}`, { heading:"Thank you, your payment arrived.", copy:`We received ${money(brief.amount_paid_cents || brief.proposal_amount_cents)} for ${brief.business_name || "your website"}. Your receipt is in your workspace.`, buttonLabel:"View receipt", href:`${portal}?tab=payments`, metadata:[], senderName:"MiLink Team" });
   } else return NextResponse.json({ error:"Unsupported email event." }, { status:400 });
+  // Phone/desktop notifications go to the same people, regardless of their email setting (they chose to turn them on).
+  try { await pushToRecipients(admin, emails); } catch (pushError) { console.warn("Push dispatch failed", pushError); }
   try {
     const uniqueRecipients = [...new Set(emails.map((email) => email.to.trim().toLowerCase()))];
     const { data:profiles, error:preferenceError } = uniqueRecipients.length ? await admin.from("profiles").select("email,notification_email_mode").in("email", uniqueRecipients) : { data:[] };

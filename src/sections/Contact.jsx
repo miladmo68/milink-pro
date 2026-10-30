@@ -7,6 +7,7 @@ import Field from "../components/ui/Field.jsx";
 import { BUSINESS, mapsUrl, whatsappLinks } from "../config/business.js";
 import { openWhatsApp } from "../lib/whatsapp.js";
 import { MAP } from "../data/mapDots.js";
+import { track } from "../lib/track";
 
 const PACKAGE_OPTIONS = ["Essential", "Professional", "E-commerce & Custom"];
 const PROJECT_TYPES = ["Business website", "Online store", "Redesign", "SEO & speed", "Branding", "Not sure yet"];
@@ -184,6 +185,7 @@ export default function Contact() {
         return;
       }
       setSentTo({ name: form.name.trim().split(" ")[0], email: form.email.trim() });
+      track("contact_submit");
       setForm(EMPTY_FORM);
       setProjectType("");
       setStatus({ state: "idle", message: "" });

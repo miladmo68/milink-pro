@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
 import { ADMIN_EMAIL_SET as ADMIN_EMAILS } from "../../config/admins.js";
+import { track } from "../../lib/track";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined" && window.location.origin) return window.location.origin;
@@ -43,6 +44,7 @@ export default function SecureAccess({ area = "client", initialNotice = "" }) {
       return;
     }
     if (mode === "create") {
+      track("portal_signup");
       // With email confirmation enabled, Supabase returns no session. Keep the
       // account out of the workspace until the email link has been opened.
       if (!result.data.session || result.data.user?.identities?.some((identity) => identity.identity_data?.email === normalized)) setVerificationSent(true);
