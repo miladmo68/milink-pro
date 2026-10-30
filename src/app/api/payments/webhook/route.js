@@ -37,7 +37,8 @@ export async function POST(request) {
   try {
     const session = event.data.object;
     const briefId = session.metadata?.project_brief_id || session.client_reference_id;
-    const amount = Number(session.amount_total);
+    // base_cents is the share of the project price this payment covers (amount_total may include HST).
+    const amount = Number(session.metadata?.base_cents) > 0 ? Number(session.metadata.base_cents) : Number(session.amount_total);
     const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id || null;
     const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id || null;
 

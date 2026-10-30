@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { isAdminAccount } from "../../../../config/admins.js";
-import { paymentSchedule } from "../../../../lib/paymentPlan.js";
+import { paymentSchedule, priceForMethod } from "../../../../lib/paymentPlan.js";
 
 export const runtime = "nodejs";
 
@@ -64,6 +64,7 @@ export async function POST(request) {
     // Charge only what is due now under the project's payment plan (all of it, a deposit, or the balance).
     const amount = schedule.dueNow;
     if (!Number.isInteger(amount) || amount <= 0) return json("Nothing is due right now. The next payment opens when your site is ready for review.", 422);
+    const price = priceForMethod(amount, "card");
     const partLabel = schedule.plan === "split" ? (schedule.paid > 0 ? "balance" : "deposit") : "project payment";
 
     const { data: reservation, error: reservationError } = await service.rpc("prepare_stripe_checkout", {
@@ -109,17 +110,24 @@ export async function POST(request) {
       mode: "payment",
       customer: customerId,
       client_reference_id: brief.id,
-      metadata: { project_brief_id: brief.id, client_id: brief.client_id },
+      metadata: { project_brief_id: brief.id, client_id: brief.client_id, base_cents: String(amount) },
       success_url: `${origin}/portal?tab=payments&payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/portal?tab=payments&payment=cancelled`,
       line_items: [{
         price_data: {
           currency: "cad",
           product_data: { name: `${projectName} — ${partLabel}` },
-          unit_amount: amount,
+          unit_amount: price.subtotal,
         },
         quantity: 1,
-      }],
+      }, ...(price.tax > 0 ? [{
+        price_data: {
+          currency: "cad",
+          product_data: { name: `HST (${price.taxRate}%)` },
+          unit_amount: price.tax,
+        },
+        quantity: 1,
+      }] : [])],
     }, { idempotencyKey: `milink-checkout-${brief.id}-${checkoutAttempt.checkout_attempt_key}` });
 
     const { error: updateError } = await service

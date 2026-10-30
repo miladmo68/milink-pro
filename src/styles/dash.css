@@ -1078,3 +1078,9 @@ html.mi-portal-light:has(.d-app), html.mi-portal-light:has(.d-app) body { backgr
 .d-ranked-bar { height: 8px; border-radius: 4px; background: var(--d-raised); overflow: hidden; }
 .d-ranked-bar i { display: block; height: 100%; border-radius: 4px; background: var(--d-brand); }
 .d-ranked .d-num { text-align: right; color: var(--d-text-2); }
+.d-price-lines { margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--d-raised); display: grid; gap: 6px; font-size: 14px; }
+.d-price-lines > div { display: flex; justify-content: space-between; gap: 12px; color: var(--d-text-2); }
+.d-price-lines dt, .d-price-lines dd { margin: 0; }
+.d-price-lines .is-go { color: var(--d-go); }
+.d-price-lines .is-total { padding-top: 6px; border-top: 1px solid var(--d-line); color: var(--d-text); font-weight: 700; font-size: 15px; }
+.d-save-pill { margin-left: 8px; vertical-align: middle; }

@@ -9,6 +9,13 @@ export const BUSINESS = {
   email: "info@milink.ca",
   // Where clients send Interac e-Transfers (shown on the portal Payments page).
   eTransferEmail: "miladmo68@gmail.com",
+  // Discount for paying by Interac e-Transfer instead of card (offsets the card processing fee). 0 turns it off.
+  eTransferDiscountPercent: 2,
+  // HST. Leave hstNumber empty while not registered: no tax is charged or shown.
+  // When registered, put the number here (e.g. "123456789 RT0001"); 13% (Ontario) is then added to both
+  // payment methods and printed on receipts.
+  hstNumber: "",
+  hstRatePercent: 13,
   phone: {
     display: "+1 (437) 600-3139",
     tel: "+14376003139",

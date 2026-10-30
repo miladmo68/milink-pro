@@ -1,3 +1,5 @@
+import { BUSINESS } from "../config/business.js";
+
 // How a project is paid, chosen by the admin when sending the proposal.
 // Used by the client Payment page, the admin pages, the reminders and the payment API routes,
 // so the amount the client sees is exactly the amount Stripe and the e-Transfer check use.
@@ -67,4 +69,20 @@ export function paymentTermsText(brief, formatMoney) {
   if (plan === "split") return `Payment: ${percent}% (${formatMoney(Math.round((total * percent) / 100))}) to start, ${100 - percent}% (${formatMoney(total - Math.round((total * percent) / 100))}) when the site is ready for review.`;
   if (plan === "on_launch") return `Payment: the full amount (${formatMoney(total)}) when the site is ready for review.`;
   return `Payment: the full amount (${formatMoney(total)}) before work starts.`;
+}
+
+/**
+ * What the client actually pays for an amount due (in cents), by method.
+ * e-Transfer gets BUSINESS.eTransferDiscountPercent off; HST is added on the discounted amount for both
+ * methods, but only when BUSINESS.hstNumber is set. `base` is the share of the project price this covers,
+ * which is what is recorded in amount_paid_cents, so plans and balances stay in project-price terms.
+ */
+export function priceForMethod(base, method) {
+  const amount = Math.max(0, Math.round(Number(base) || 0));
+  const discountPercent = method === "e_transfer" ? Number(BUSINESS.eTransferDiscountPercent) || 0 : 0;
+  const discount = Math.round((amount * discountPercent) / 100);
+  const subtotal = amount - discount;
+  const taxRate = BUSINESS.hstNumber ? Number(BUSINESS.hstRatePercent) || 0 : 0;
+  const tax = Math.round((subtotal * taxRate) / 100);
+  return { base: amount, discountPercent, discount, subtotal, taxRate, tax, total: subtotal + tax };
 }
