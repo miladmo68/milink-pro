@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getAppUrl, renderEmailTemplate, renderPlainText, sendWithSmtp } from "../../../lib/transactionalEmail";
 import { normalizeNotificationEmailMode } from "../../../lib/notificationDigest";
+import { paymentSchedule } from "../../../lib/paymentPlan.js";
 import { ADMIN_EMAILS, isAdminAccount } from "../../../config/admins.js";
 
 export const runtime = "nodejs";
@@ -73,6 +74,14 @@ export async function POST(request) {
     if (!item || (!trusted && item.project_briefs?.client_id !== actor.id && !isAdmin)) return NextResponse.json({ error:"Not allowed." }, { status:403 });
     const signed = item.status === "signed";
     adminRecipients().forEach(email => add(email, `${signed ? "Agreement signed" : "Agreement changes requested"}: ${item.project_briefs?.business_name || item.title}`, { heading: signed ? "An agreement was signed." : "A client asked to change an agreement.", copy: signed ? `${item.signer_name} signed “${item.title}”.` : `The client asked for changes to “${item.title}”.`, buttonLabel:"Open admin", href:adminUrl, eyebrow:"MiLink Operations", metadata: signed ? [] : [["Note", item.decline_reason || "No note"]] }));
+  } else if (event === "etransfer_sent") {
+    const { data:brief } = await admin.from("project_briefs").select("*,profiles!project_briefs_client_id_fkey(email,full_name)").eq("id",resourceId).maybeSingle();
+    if (!brief || (!trusted && brief.client_id !== actor.id)) return NextResponse.json({ error:"Not allowed." }, { status:403 });
+    if (brief.payment_status !== "e_transfer_submitted") return NextResponse.json({ error:"No e-Transfer is waiting." }, { status:409 });
+    const { data:proof } = await admin.from("project_files").select("file_name,description").eq("brief_id",brief.id).eq("file_kind","receipt").order("created_at",{ ascending:false }).limit(1);
+    const due = paymentSchedule(brief).dueNow;
+    const reference = String(body.reference || "").slice(0,120);
+    adminRecipients().forEach(email => add(email, `e-Transfer sent: ${brief.business_name || "client project"} (${money(due)})`, { heading:"A client says they sent an e-Transfer.", copy:`${brief.profiles?.full_name || brief.profiles?.email || "The client"} marked ${money(due)} as sent for ${brief.business_name || "their project"}. Check your bank, then confirm it in Payments.`, buttonLabel:"Open Payments", href:`${adminUrl}?tab=payments`, eyebrow:"MiLink Operations", metadata:[["Amount", money(due)],["Reference", reference || "Not given"],["Proof", proof?.[0]?.file_name || "No file attached"]] }));
   } else if (event === "payment_confirmed") {
     if (!isAdmin) return NextResponse.json({ error:"Only administrators can confirm payments." }, { status:403 });
     const { data:brief } = await admin.from("project_briefs").select("id,business_name,amount_paid_cents,proposal_amount_cents,payment_status,profiles!project_briefs_client_id_fkey(email)").eq("id",resourceId).maybeSingle();
