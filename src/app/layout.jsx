@@ -1,28 +1,30 @@
-import { Bricolage_Grotesque, Syne, DM_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { pricing, services } from "../data/content.js";
 import { BUSINESS } from "../config/business.js";
 import SiteAnalytics from "../components/SiteAnalytics";
 
-const syne = Syne({
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
+// The fonts ship with the site (src/app/fonts, the same Google Fonts files, latin subset) so a build never
+// depends on reaching Google Fonts: a failed download there used to stop the whole Vercel build.
+const syne = localFont({
+  src: "./fonts/syne-latin.woff2",
+  weight: "400 800",
   variable: "--font-syne",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
+const dmSans = localFont({
+  src: "./fonts/dm-sans-latin.woff2",
+  weight: "300 500",
   variable: "--font-dm-sans",
   display: "swap",
 });
 
 // Used only by the reference-matched Services card headings. Exposing the
 // variable does not alter the site's established global typography.
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const bricolage = localFont({
+  src: "./fonts/bricolage-grotesque-latin.woff2",
+  weight: "400 700",
   variable: "--font-bricolage",
   display: "swap",
   // Only the Services card titles use it, so it must not compete with the
