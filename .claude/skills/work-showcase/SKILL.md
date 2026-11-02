@@ -43,6 +43,7 @@ The Work section (`src/sections/Work.jsx`) renders every entry of `work` in `src
 
 - Budget: roughly 300-500 KB per capture. Never commit raw PNGs.
 - Cookie banners or chat widgets get captured; if one dominates, re-capture later or crop.
-- Scroll-pinned sections (a `position: sticky` child in a tall track) show up as a tall empty band; collapse them with `CAPTURE_PREP='<js>'` (see the Zarsa Gold example in `PROJECT_CONTEXT.md`, 2026-11-02).
-- Captures cap at 7000px (desktop) and 9000px (mobile); long pages are intentionally truncated.
+- **Always look at the whole capture** (split it into segments and Read each) before installing it: check that it reaches the footer and has no empty bands.
+- Scroll-pinned sections, scroll-driven horizontal tracks and floating CTAs need `CAPTURE_PREP='<js>'`; maps and other on-screen-only embeds need `CAPTURE_PATCH='<selector>'` (Zarsa Gold example in `PROJECT_CONTEXT.md`, 2026-11-02).
+- The examples cap captures at 7000px (desktop) and 9000px (mobile). If that cuts off the end of the page, raise the cap (e.g. `30000`): the owner wants the full page down to the footer.
 - Never claim results (rankings, revenue, "50+ projects") in a project summary unless the owner confirms them.
