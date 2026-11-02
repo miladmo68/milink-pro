@@ -727,6 +727,7 @@ Client: `src/sections/Contact.jsx` (project-type chips, name, email, message; ph
 
 ## 13. Change log
 
+- **2026-11-02 — Zarsa Gold captures re-shot** (owner request): new `zarsa-gold-desktop.jpg` (now 1200x5834, page grew) and `zarsa-gold-mobile.jpg` from `https://zarsa.ca/`; the Hero/Process cover was left as is. The site's scroll-pinned "Sketched → cast, finished" section (`.reveal`, 2340px track) left a tall empty band in the capture, so `scripts/capture-site.mjs` now accepts a `CAPTURE_PREP` JS expression run just before the shot. For Zarsa use: `CAPTURE_PREP='document.querySelectorAll(".reveal").forEach(r=>{r.style.setProperty("height","auto","important");const s=r.querySelector(".reveal__stick");if(s)s.style.setProperty("position","relative","important")})'` (the section then shows its opening frame).
 - **2026-10-30 — CSP enforced** (section 12, item 39).
 - **2026-10-29 — Dashboard v2:** client portal and admin rebuilt on one design system (`src/styles/dash.css`, `d-` classes, mobile first, dark and light); old CSS layers and dead files removed; admin API routes accept role-based admins; brief autosave bug fixed. Local and uncommitted (section 5.0 and section 12 item 25).
 - **2026-10-27 — Hero v3:** Live Build stage synced to the cycling headline word, Blueprint Horizon WebGL backdrop (`HeroBackdrop.jsx`), proof row of real clients, viewport-fit layout. Pushed to `main`.

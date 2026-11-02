@@ -137,7 +137,7 @@ export const work = [
     tags: ["Web design", "E-commerce", "Jewelry"],
     tint: [255, 189, 92],
     liveUrl: "https://zarsa.ca/",
-    shots: { desktop: shot("zarsa-gold", "desktop", 1200, 3660), mobile: shot("zarsa-gold", "mobile", 390, 9000) },
+    shots: { desktop: shot("zarsa-gold", "desktop", 1200, 5834), mobile: shot("zarsa-gold", "mobile", 390, 9000) },
   },
   {
     id: "p5",

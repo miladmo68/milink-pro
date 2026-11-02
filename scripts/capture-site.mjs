@@ -6,6 +6,7 @@
 //
 // It scrolls the page first so scroll-triggered reveals fire, then captures the
 // whole page. Set CHROME_PATH if Chrome is not at the macOS default location.
+// Set CAPTURE_PREP to a JS expression to adjust the page right before capturing.
 import { spawn } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -55,6 +56,9 @@ for (let y = 0; y < total; y += Math.round(+h * 0.6)) {
 await sleep(900);
 await evaluate("window.scrollTo(0, 0)");
 await sleep(1400);
+// Optional site-specific JS run just before the capture, e.g. to collapse a
+// scroll-pinned section that would otherwise show as a tall empty band.
+if (process.env.CAPTURE_PREP) { await evaluate(process.env.CAPTURE_PREP); await sleep(900); }
 
 const height = Math.min(+cap, (await evaluate("Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)")) || +h);
 const shot = await send("Page.captureScreenshot", {

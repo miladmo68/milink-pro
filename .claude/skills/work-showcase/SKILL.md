@@ -43,5 +43,6 @@ The Work section (`src/sections/Work.jsx`) renders every entry of `work` in `src
 
 - Budget: roughly 300-500 KB per capture. Never commit raw PNGs.
 - Cookie banners or chat widgets get captured; if one dominates, re-capture later or crop.
+- Scroll-pinned sections (a `position: sticky` child in a tall track) show up as a tall empty band; collapse them with `CAPTURE_PREP='<js>'` (see the Zarsa Gold example in `PROJECT_CONTEXT.md`, 2026-11-02).
 - Captures cap at 7000px (desktop) and 9000px (mobile); long pages are intentionally truncated.
 - Never claim results (rankings, revenue, "50+ projects") in a project summary unless the owner confirms them.
