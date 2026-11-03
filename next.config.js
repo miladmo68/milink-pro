@@ -1,3 +1,4 @@
+import { SERVICE_SLUGS } from "./src/data/serviceDetails.js";
 /** @type {import('next').NextConfig} */
 
 // Security headers for every route (HSTS is already sent by Vercel). All are enforced. The
@@ -35,6 +36,14 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Old short service URLs (/services/web etc.) moved to descriptive slugs on 2026-11-03.
+  async redirects() {
+    return Object.entries(SERVICE_SLUGS).map(([id, slug]) => ({
+      source: `/services/${id}`,
+      destination: `/services/${slug}`,
+      permanent: true,
+    }));
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
