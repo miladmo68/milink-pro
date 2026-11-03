@@ -19,6 +19,16 @@ const WhatsAppGlyph = ({ size = 18 }) => (
 );
 
 const LINKS = [...nav, { label: "Client Portal", href: "/portal" }];
+// Quiet SEO links to the service pages (owner-approved 2026-11-03).
+const SERVICE_LINKS = [
+  { label: "Web Design Toronto", href: "/web-design-toronto" },
+  { label: "Web Design", href: "/services/web-design" },
+  { label: "E-commerce", href: "/services/ecommerce-development" },
+  { label: "SEO", href: "/services/seo-services" },
+  { label: "Maintenance", href: "/services/website-maintenance" },
+  { label: "Branding", href: "/services/branding" },
+  { label: "UI/UX", href: "/services/ui-ux-design" },
+];
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -92,6 +102,12 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          <ul className="mk-footer-services" aria-label="Services">
+            {SERVICE_LINKS.map((item) => (
+              <li key={item.href}><a href={item.href}>{item.label}</a></li>
+            ))}
+          </ul>
 
           <p className="mk-footer-bottom">
             © {year} {BUSINESS.name}

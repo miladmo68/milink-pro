@@ -3153,3 +3153,60 @@ html[data-theme="light"] .hero-proof {
 .work-card-meta { text-align: center; }
 .work-card-meta p { margin-left: auto; margin-right: auto; max-width: 36ch; }
 .work-card-meta .work-tags { justify-content: center; }
+
+/* ===== SEO pages (/services/<slug>, /web-design-toronto), added 2026-11-03 =====
+   Scoped `.sp-*`. Uses the site's tokens only; no new fonts, images or JS. */
+.sp-wrap { max-width: 68rem; margin-inline: auto; padding: 2.5rem 1.25rem 5rem; }
+.sp-hero { position: relative; isolation: isolate; text-align: center; padding: 3.5rem 0 2.5rem; }
+.sp-hero__glow { position: absolute; z-index: -1; inset: -10% 10% auto; height: 70%; pointer-events: none; background: radial-gradient(closest-side, rgb(var(--brand) / .22), transparent); filter: blur(30px); }
+.sp-hero__title { font-family: var(--font-syne), system-ui, sans-serif; font-weight: 800; letter-spacing: -.03em; line-height: 1.04; font-size: clamp(1.8rem, 7.4vw, 3.9rem); max-width: 22ch; overflow-wrap: break-word; margin: 1.1rem auto 1.2rem; color: var(--text-primary); }
+.sp-hero__intro { max-width: 46rem; margin: 0 auto; font-size: clamp(1.02rem, 1.6vw, 1.2rem); line-height: 1.65; color: var(--text-secondary); }
+.sp-hero__sub { max-width: 42rem; margin: 1rem auto 0; font-size: .98rem; line-height: 1.7; color: var(--text-muted); }
+.sp-hero__ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: 2rem; }
+.sp-section { margin-top: 4.5rem; }
+.sp-section__head { text-align: center; margin-bottom: 1.8rem; }
+.sp-kicker { display: block; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--brand-soft, var(--brand))); margin-bottom: .55rem; }
+.sp-h2 { font-family: var(--font-syne), system-ui, sans-serif; font-weight: 800; letter-spacing: -.025em; line-height: 1.12; font-size: clamp(1.6rem, 3.2vw, 2.4rem); color: var(--text-primary); }
+.sp-cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); list-style: none; margin: 0; padding: 0; }
+.sp-card, .sp-check, .sp-step, .sp-faq, .sp-cta { border: 1px solid var(--surface-border); background: var(--surface-card); border-radius: 22px; }
+html[data-theme="dark"] :is(.sp-card, .sp-check, .sp-step, .sp-faq, .sp-cta) { border-color: rgb(255 255 255 / .09); box-shadow: inset 0 1px 0 rgb(255 255 255 / .05), 0 30px 70px -50px rgb(0 0 0 / .8); }
+.sp-card { padding: 1.4rem 1.4rem 1.5rem; transition: transform .3s ease, border-color .3s ease; }
+.sp-card:hover { transform: translateY(-3px); border-color: rgb(var(--brand) / .45); }
+.sp-card__n { font-family: var(--font-syne), system-ui, sans-serif; font-weight: 800; font-size: 1.05rem; color: rgb(var(--brand)); }
+.sp-card p { margin-top: .6rem; line-height: 1.6; color: var(--text-secondary); }
+.sp-check { list-style: none; margin: 0; padding: 1.6rem; display: grid; gap: .95rem 2rem; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); }
+.sp-check li { display: flex; gap: .7rem; align-items: flex-start; line-height: 1.55; color: var(--text-secondary); }
+.sp-check svg { flex: none; margin-top: .15rem; padding: 3px; width: 24px; height: 24px; border-radius: 999px; color: rgb(var(--brand)); background: rgb(var(--brand) / .12); }
+.sp-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); counter-reset: none; }
+.sp-step { position: relative; padding: 1.5rem 1.4rem; }
+.sp-step__n { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; font-family: var(--font-syne), system-ui, sans-serif; font-weight: 800; color: #fff; background: linear-gradient(135deg, rgb(var(--brand)), rgb(var(--brand) / .65)); box-shadow: 0 10px 24px -10px rgb(var(--brand) / .8); }
+.sp-step h3 { margin-top: 1rem; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
+.sp-step p { margin-top: .4rem; line-height: 1.6; color: var(--text-secondary); }
+.sp-faq { max-width: 52rem; margin-inline: auto; overflow: hidden; }
+.sp-faq__item + .sp-faq__item { border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent); }
+.sp-faq__item summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.5rem; }
+.sp-faq__item summary::-webkit-details-marker { display: none; }
+.sp-faq__item h3 { font-weight: 600; font-size: 1.04rem; color: var(--text-primary); }
+.sp-faq__icon { position: relative; flex: none; width: 28px; height: 28px; border-radius: 999px; background: rgb(var(--brand) / .12); }
+.sp-faq__icon::before, .sp-faq__icon::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; margin: -1px 0 0 -6px; border-radius: 2px; background: rgb(var(--brand)); transition: transform .3s ease; }
+.sp-faq__icon::after { transform: rotate(90deg); }
+.sp-faq__item[open] .sp-faq__icon::after { transform: rotate(0deg); }
+.sp-faq__item[open] { background: rgb(var(--brand) / .05); box-shadow: inset 3px 0 0 rgb(var(--brand)); }
+.sp-faq__item p { padding: 0 1.5rem 1.3rem; line-height: 1.7; color: var(--text-secondary); }
+.sp-pills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; }
+.sp-pills a { display: inline-block; padding: .6rem 1.1rem; border-radius: 999px; font-size: .92rem; font-weight: 600; color: var(--text-secondary); border: 1px solid var(--surface-border); background: var(--surface-card); transition: color .25s ease, border-color .25s ease; }
+.sp-pills a:hover { color: var(--text-primary); border-color: rgb(var(--brand) / .5); }
+.sp-cta { position: relative; isolation: isolate; overflow: hidden; margin-top: 5rem; padding: 3rem 1.5rem; text-align: center; }
+.sp-cta p { max-width: 38rem; margin: .9rem auto 0; line-height: 1.65; color: var(--text-secondary); }
+.sp-work { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.sp-work a { display: block; height: 100%; padding: 1.3rem 1.4rem; border-radius: 22px; border: 1px solid var(--surface-border); background: var(--surface-card); transition: transform .3s ease, border-color .3s ease; }
+html[data-theme="dark"] .sp-work a { border-color: rgb(255 255 255 / .09); }
+.sp-work a:hover { transform: translateY(-3px); border-color: rgb(var(--brand) / .45); }
+.sp-work b { display: block; font-size: 1.05rem; color: var(--text-primary); }
+.sp-work span { display: block; margin-top: .35rem; font-size: .92rem; line-height: 1.55; color: var(--text-secondary); }
+.sp-work em { display: block; margin-top: .7rem; font-style: normal; font-size: .82rem; font-weight: 600; color: rgb(var(--brand)); }
+@media (prefers-reduced-motion: reduce) { .sp-card, .sp-work a { transition: none; } .sp-card:hover, .sp-work a:hover { transform: none; } }
+/* Footer: one quiet row of service links (SEO internal links), same look as the footer nav. */
+.mk-footer-services { display: flex; flex-wrap: wrap; justify-content: center; gap: .3rem 1.1rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
+.mk-footer-services a { font-size: 12.5px; color: var(--text-muted); transition: color .25s ease; }
+.mk-footer-services a:hover { color: var(--text-primary); }
