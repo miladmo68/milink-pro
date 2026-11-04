@@ -769,3 +769,4 @@ Skills live in `.claude/skills/<name>/SKILL.md` and are loaded automatically by 
 8. **Update this file in the same change** (feature entry, shared-piece table if it changed, change-log line). The owner expects it to stay complete so any future session can resume from it.
 9. Public-site work uses the shared pieces in section 9 and the matching skill from `.claude/skills/`. Push to `main` only when the owner asks; no feature branches unless requested.
 10. Never ship invented social proof (testimonials, ratings, logos, project counts, results).
+- 2026-11-04: Added Instagram highlight story images (`public/social/hl-*.jpg`: Start here, Reviews, FAQ) as temporary public media for Metricool scheduling. Robots-disallowed; remove after publishing. Review quotes are verbatim excerpts of the client-approved `testimonials`.
