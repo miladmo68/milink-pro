@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Syne;src:url(syne-latin.woff2) format("woff2");font-weight:400 800}
+@font-face{font-family:DM;src:url(dm-sans-latin.woff2) format("woff2");font-weight:300 800}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#070d1c}
+#bg{position:absolute;inset:0;background:
+ radial-gradient(900px 700px at 85% 10%,rgba(0,98,255,.35),transparent 60%),
+ radial-gradient(800px 800px at 0% 95%,rgba(201,162,92,.22),transparent 60%),#070d1c}
+#grain{position:absolute;inset:0;opacity:.06;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:6px 6px}
+.hook{position:absolute;left:70px;right:70px;top:300px;font-family:Syne;font-weight:800;color:#fff;font-size:76px;line-height:1.02;letter-spacing:-1.5px}
+.hook em{font-style:normal;background:linear-gradient(90deg,#f3d48c,#c9a25c);-webkit-background-clip:text;color:transparent}
+.tag{position:absolute;left:72px;top:250px;font-family:DM;font-weight:600;font-size:28px;letter-spacing:4px;color:#8cc4ff;text-transform:uppercase}
+#phone{position:absolute;left:50%;top:650px;width:820px;height:1340px;transform-origin:50% 0;border-radius:96px;padding:22px;
+ background:linear-gradient(145deg,#2a3346,#0c1220);box-shadow:0 60px 120px rgba(0,0,0,.6),inset 0 0 0 3px rgba(255,255,255,.12)}
+#screen{width:100%;height:100%;border-radius:76px;overflow:hidden;position:relative;background:#000}
+#screen iframe{position:absolute;left:0;top:0;width:390px;height:651px;border:0;transform:scale(1.9897);transform-origin:0 0}
+#island{position:absolute;left:50%;top:20px;width:190px;height:52px;margin-left:-95px;background:#000;border-radius:30px;z-index:3}
+.chip{position:absolute;font-family:DM;font-weight:700;font-size:34px;color:#0b1429;background:#fff;border-radius:999px;padding:18px 32px;box-shadow:0 20px 40px rgba(0,0,0,.35);white-space:nowrap}
+.chip b{color:#0062ff}
+#outro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;opacity:0}
+#outro img{width:420px}
+#outro h2{font-family:Syne;font-weight:800;color:#fff;font-size:84px;text-align:center;line-height:1.02;letter-spacing:-1.5px}
+#outro p{font-family:DM;font-weight:600;color:#8cc4ff;font-size:40px}
+#outro .cta{font-family:DM;font-weight:700;font-size:38px;color:#fff;background:#0062ff;border-radius:999px;padding:24px 54px}
+#foot{display:none;position:absolute;bottom:40px;left:0;right:0;text-align:center;font-family:DM;font-weight:600;font-size:30px;color:rgba(255,255,255,.7);letter-spacing:2px}
+</style></head><body>
+<div id="bg"></div><div id="grain"></div>
+<div id="main">
+ <div class="tag" id="tag">Client work · Toronto</div>
+ <div class="hook" id="hook">We built a jewelry store that feels like a <em>boutique.</em></div>
+ <div id="phone"><div id="screen"><div id="island"></div><iframe id="site" src="/index.html"></iframe></div></div>
+ <div class="chip" id="c1" style="left:40px;top:960px">✦ <b>Custom</b> design</div>
+ <div class="chip" id="c2" style="right:40px;top:1200px">📱 <b>Mobile</b>-first</div>
+ <div class="chip" id="c3" style="left:60px;top:1440px">📍 Made in <b>Toronto</b></div>
+</div>
+<div id="foot">WEBSITE BY MILINK · MILINK.CA</div>
+<div id="outro">
+ <img src="Logo-Blue.png" alt="">
+ <h2>Want a site<br>like this?</h2>
+ <p>Web design for GTA businesses</p>
+ <div class="cta">DM us · milink.ca</div>
+</div>
+<script>
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const easeOut=x=>1-Math.pow(1-x,3);
+const $=id=>document.getElementById(id);
+window.setT=function(t){
+  // hook in 0-0.8s
+  const h=easeOut(clamp(t/0.8));
+  $('hook').style.opacity=h; $('hook').style.transform=`translateY(${(1-h)*40}px)`;
+  $('tag').style.opacity=easeOut(clamp((t-0.2)/0.6));
+  const p=easeOut(clamp((t-0.3)/1.0));
+  // phone rises in, then shrinks away for outro
+  const o=ease(clamp((t-13.0)/0.9));
+  $('phone').style.transform=`translateX(-50%) translateY(${(1-p)*300+o*200}px) scale(${0.8-o*0.2})`;
+  $('main').style.opacity=1-o;
+  $('foot').style.opacity=1-o;
+  // scroll the site 2.4s -> 12.6s
+  const win=$('site').contentWindow;
+  try{
+    const max=win.document.documentElement.scrollHeight-win.innerHeight;
+    const s=ease(clamp((t-2.4)/10.2));
+    win.scrollTo(0,Math.round(s*Math.min(max,6200)));
+  }catch(e){}
+  // chips pop at 3.5, 6, 8.5 and leave together at 12.4
+  [['c1',3.5],['c2',6.0],['c3',8.5]].forEach(([id,at])=>{
+    const a=easeOut(clamp((t-at)/0.45)), z=easeOut(clamp((t-12.2)/0.4));
+    const el=$(id); el.style.opacity=a*(1-z); el.style.transform=`scale(${0.7+0.3*a})`;
+  });
+  const q=easeOut(clamp((t-13.6)/0.8));
+  $('outro').style.opacity=q; $('outro').style.transform=`translateY(${(1-q)*40}px)`;
+};
+window.setT(0);
+</script></body></html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Syne;src:url(syne-latin.woff2);font-weight:400 800}
+@font-face{font-family:DM;src:url(dm-sans-latin.woff2);font-weight:300 800}
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;font-family:DM;color:#fff;background:#060c18;position:relative}
+.bg{position:absolute;inset:0;background:
+ radial-gradient(900px 700px at 85% 8%,rgba(0,96,255,.45),transparent 60%),
+ radial-gradient(800px 700px at 0% 100%,rgba(0,96,255,.28),transparent 60%),#060c18}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 75%)}
+.logo{position:absolute;top:110px;left:90px;height:58px}
+.tag{position:absolute;top:118px;right:90px;font-size:26px;letter-spacing:5px;font-weight:700;color:#8fb5ff;border:2px solid rgba(143,181,255,.4);padding:12px 24px;border-radius:999px}
+.k{font-size:30px;letter-spacing:7px;font-weight:700;color:#5c9bff}
+.h{font-family:Syne;font-weight:800;letter-spacing:-2px;line-height:1.02}
+.h b{color:#3f8bff;font-weight:800}
+.p{font-size:40px;line-height:1.4;color:#c9d6ee}
+.abs{position:absolute;left:90px;right:90px}
+.cta{display:inline-flex;align-items:center;gap:18px;background:#0060FF;color:#fff;font-weight:800;font-size:40px;padding:30px 56px;border-radius:999px;box-shadow:0 20px 60px rgba(0,96,255,.55)}
+.ghost{display:inline-block;font-size:30px;color:#8fb5ff;font-weight:600;letter-spacing:2px}
+.foot{position:absolute;bottom:120px;left:90px;right:90px;display:flex;justify-content:space-between;font-size:26px;letter-spacing:4px;color:#7d8fb3;font-weight:600}
+/* devices */
+.laptop{position:absolute;filter:drop-shadow(0 50px 70px rgba(0,0,0,.6))}
+.laptop .scr{position:relative;background:#0b0d12;border-radius:26px 26px 6px 6px;padding:16px 16px 22px;border:2px solid #2b3040}
+.laptop .view{position:relative;overflow:hidden;border-radius:8px;background:#fff;aspect-ratio:16/10}
+.laptop .view img{display:block;width:100%}
+.laptop .base{height:26px;margin:0 -60px;background:linear-gradient(180deg,#d9dde6,#9aa1b2);border-radius:0 0 30px 30px;position:relative}
+.laptop .base:before{content:"";position:absolute;left:50%;top:0;width:160px;height:10px;margin-left:-80px;background:#8a90a0;border-radius:0 0 12px 12px}
+.phone{position:absolute;border-radius:58px;background:#0b0d12;padding:14px;border:2px solid #343a4c;filter:drop-shadow(0 50px 60px rgba(0,0,0,.6))}
+.phone .view{border-radius:46px;overflow:hidden;width:100%;height:100%;background:#fff}
+.phone .view img{display:block;width:100%}
+.phone .isl{position:absolute;top:26px;left:50%;width:110px;height:32px;margin-left:-55px;background:#000;border-radius:20px;z-index:3}
+.glass{background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);border-radius:36px;backdrop-filter:blur(10px)}
+.stars{color:#ffc93c;font-size:52px;letter-spacing:8px}
+.q{font-family:Syne;font-weight:700;font-size:50px;line-height:1.25;letter-spacing:-.5px}
+.num{font-family:Syne;font-weight:800;color:#3f8bff}
+/* cover */
+.cov{width:1080px;height:1080px;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 42%,#0a4bd6 0%,#06285f 45%,#060c18 80%)}
+.cov .ring{position:absolute;left:50%;top:50%;width:760px;height:760px;margin:-380px 0 0 -380px;border-radius:50%;border:6px solid rgba(143,181,255,.55);box-shadow:0 0 80px rgba(0,96,255,.6),inset 0 0 80px rgba(0,96,255,.4)}
+.cov svg{position:absolute;left:50%;top:50%;width:380px;height:380px;margin:-190px 0 0 -190px;stroke:#fff;fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 24px rgba(120,170,255,.8))}
+.cov img{position:absolute;left:50%;top:50%;width:600px;margin:-163px 0 0 -300px;filter:brightness(0) invert(1) drop-shadow(0 0 24px rgba(120,170,255,.8))}
+</style></head><body><div id="root"></div>
+<script>
+const Q=new URLSearchParams(location.search), k=Q.get('k')||'cover-start';
+const R=document.getElementById('root');
+const I={
+work:'<svg viewBox="0 0 64 64"><rect x="8" y="12" width="48" height="32" rx="3"/><path d="M8 20h48M14 16h.01M19 16h.01M24 16h.01M4 52h56l-4-8H8z"/><path d="M16 28h14M16 34h10M38 26h10v12H38z"/></svg>',
+reviews:'<svg viewBox="0 0 64 64"><path d="M32 8l7 15 16 2-12 11 3 16-14-8-14 8 3-16L9 25l16-2z"/></svg>',
+pricing:'<svg viewBox="0 0 64 64"><path d="M34 8H54v20L30 52a4 4 0 01-6 0L12 40a4 4 0 010-6z"/><circle cx="45" cy="17" r="4"/><path d="M27 27l-6 6M24 36h8"/></svg>',
+services:'<svg viewBox="0 0 64 64"><path d="M32 8L6 21l26 13 26-13z"/><path d="M6 32l26 13 26-13M6 43l26 13 26-13"/></svg>',
+faq:'<svg viewBox="0 0 64 64"><path d="M10 12h44a4 4 0 014 4v26a4 4 0 01-4 4H28l-12 10V46h-6a4 4 0 01-4-4V16a4 4 0 014-4z"/><path d="M26 24a6 6 0 1110 5c-2 1-4 2-4 5M32 39h.01"/></svg>',
+offers:'<svg viewBox="0 0 64 64"><rect x="8" y="24" width="48" height="32" rx="3"/><path d="M4 16h56v8H4zM32 16v40M32 16c-4-10-16-10-14-2 1 3 8 2 14 2zM32 16c4-10 16-10 14-2-1 3-8 2-14 2z"/></svg>'
+};
+function cover(name){document.body.style.width='1080px';document.body.style.height='1080px';
+ R.innerHTML=`<div class="cov"><div class="ring"></div>${name==='start'?'<img src="Logo-Blue.png">':I[name]}</div>`}
+const shell=(tag,inner)=>{document.body.style.width='1080px';document.body.style.height='1920px';
+ R.innerHTML=`<div class="bg"></div><div class="grid"></div><img class="logo" src="Logo-White.png"><div class="tag">${tag}</div>${inner}<div class="foot"><span>MILINK.CA</span><span>TORONTO · GTA</span></div>`};
+const lap=(img,x,y,w,t='')=>`<div class="laptop" style="left:${x}px;top:${y}px;width:${w}px;${t}"><div class="scr"><div class="view"><img src="${img}"></div></div><div class="base"></div></div>`;
+const ph=(img,x,y,w,h,t='')=>`<div class="phone" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${t}"><div class="isl"></div><div class="view"><img src="${img}"></div></div>`;
+
+const REV=[
+ ['fair-construction','Fair Construction','Construction & Building','“We needed a website that looked as professional as the work we do, and Milink nailed it.”'],
+ ['kind-steps','Kind Steps','Therapy & Behavioral Services','“They created a warm, welcoming website that truly reflects who we are and what we do.”'],
+ ['intershine','Intershine','Professional Cleaning Services','“We wanted something fresh, modern, and easy for our customers to use, and Milink absolutely delivered.”'],
+ ['zarsa-gold','Zarsa Gold','Jewelry & E-Commerce','“We wanted an elegant online store that would really let our jewelry shine, and that\'s exactly what they created.”'],
+ ['sky-contracting','Sky Contracting Inc.','Renovation & Contracting','“Milink understood exactly what we wanted from day one.”'],
+ ['tarahan-choob','Tarahan Choob','Cabinetry & Interior Design','“They built a beautiful, minimal website that lets our projects speak for themselves.”'],
+ ['peg-studio','PEG Studio','Custom Furniture & Interior Design','“Every detail was carefully considered, and the result exceeded our expectations.”'],
+];
+const FAQ=[
+ ['How much does a website cost?','Our Essential one-page website starts from <b>$399 CAD</b>. Multi-page sites start from <b>$699</b>. Online stores and custom builds get a clear quote.'],
+ ['How long does it take?','It depends on size and how ready your content is. You get a <b>clear timeline</b> before we start building, so there are no surprises.'],
+ ['Is SEO included?','Yes. Every site ships with <b>SEO-friendly foundations</b>: clean structure, fast loading, mobile-first and on-page setup.'],
+ ['Can you redesign my current site?','Yes. We review what you have and tell you honestly whether it needs a <b>redesign, a rebuild</b> or just targeted fixes.'],
+ ['Only Toronto businesses?','We\'re based in the <b>GTA</b> and work mostly with Toronto businesses, but the whole process can run <b>remotely</b> too.'],
+];
+const S={
+'start-1':()=>shell('START HERE',`
+ <div class="abs" style="top:300px"><div class="k">HI, WE'RE MILINK 👋</div>
+ <div class="h" style="font-size:118px;margin-top:30px">Websites that <b>win</b> clients.</div>
+ <p class="p" style="margin-top:34px">A Toronto web design studio for small businesses across the GTA.</p></div>
+ ${lap('fair-construction-desktop.jpg',60,1010,760,'transform:perspective(1600px) rotateY(12deg) rotateX(4deg)')}
+ ${ph('zarsa-gold-mobile.jpg',740,960,280,580,'transform:rotate(5deg)')}
+ <div class="abs" style="top:1620px"><span class="ghost">TAP → TO SEE HOW WE WORK</span></div>`),
+'start-2':()=>shell('START HERE',`
+ <div class="abs" style="top:300px"><div class="k">WHAT WE BUILD</div><div class="h" style="font-size:100px;margin-top:26px">Everything your site needs, <b>in one place.</b></div></div>
+ <div class="abs" style="top:830px;display:grid;grid-template-columns:1fr 1fr;gap:28px">
+ ${[['🖥️','Web design'],['🛒','Online stores'],['🔎','SEO'],['🎨','Branding'],['📱','UI / UX'],['🛠️','Care plans']].map(([e,t])=>`<div class="glass" style="padding:44px 40px;font-size:44px;font-weight:700;display:flex;gap:22px;align-items:center"><span style="font-size:56px">${e}</span>${t}</div>`).join('')}
+ </div>`),
+'start-3':()=>shell('START HERE',`
+ <div class="abs" style="top:300px"><div class="k">HOW IT WORKS</div><div class="h" style="font-size:104px;margin-top:26px">From idea to <b>launch</b> in 4 steps.</div></div>
+ <div class="abs" style="top:820px;display:flex;flex-direction:column;gap:26px">
+ ${[['Free call','We learn your business and goals.'],['Design','Pages designed around your goals.'],['Build','Fast, mobile-first and SEO-ready.'],['Launch','We go live and stay on hand after.']].map(([t,d],i)=>`<div class="glass" style="padding:40px 44px;display:flex;gap:40px;align-items:center"><div class="num" style="font-size:90px;min-width:120px">0${i+1}</div><div><div style="font-size:48px;font-weight:800">${t}</div><div style="font-size:34px;color:#b9c8e6;margin-top:6px">${d}</div></div></div>`).join('')}
+ </div>`),
+'start-4':()=>shell('START HERE',`
+ ${ph('kind-steps-mobile.jpg',150,330,330,690,'transform:rotate(-7deg)')}
+ ${ph('peg-studio-mobile.jpg',600,300,330,690,'transform:rotate(6deg)')}
+ <div class="abs" style="top:1130px;text-align:center"><div class="h" style="font-size:96px">Your site <b>could be next.</b></div>
+ <p class="p" style="margin-top:28px">Packages from $399 CAD. Free website check for GTA businesses.</p>
+ <div style="margin-top:56px"><span class="cta">DM us “START” →</span></div></div>`),
+'faq':(n)=>{const [q,a]=FAQ[n-1];shell('FAQ',`
+ <div class="abs" style="top:330px"><div class="k">QUESTION ${n} / ${FAQ.length}</div></div>
+ <div class="abs glass" style="top:450px;padding:60px 56px;border-radius:44px 44px 44px 8px"><div class="h" style="font-size:86px">${q}</div></div>
+ <div class="abs" style="top:960px;left:180px;padding:56px;border-radius:44px 44px 8px 44px;background:#0060FF;box-shadow:0 30px 80px rgba(0,96,255,.5)"><p style="font-size:46px;line-height:1.4;font-weight:500">${a.replace(/<b>/g,'<b style="font-weight:800">')}</p></div>
+ <div class="abs" style="top:1640px"><span class="ghost">MORE QUESTIONS? DM US →</span></div>`)},
+'review':(n)=>{const [slug,name,role,q]=REV[n-1];shell('REVIEWS',`
+ <div class="abs" style="top:290px"><div class="k">CLIENT REVIEW · ${n}/${REV.length}</div></div>
+ ${lap(slug+'-desktop.jpg',110,420,860,'transform:perspective(1800px) rotateX(6deg)')}
+ <div class="abs glass" style="top:1020px;padding:56px 54px">
+ <div style="font-family:Syne;font-size:150px;line-height:.6;color:#3f8bff;height:60px">“</div>
+ <div class="q" style="margin-top:26px">${q}</div>
+ <div style="margin-top:36px;display:flex;align-items:center;gap:22px"><div style="width:70px;height:70px;border-radius:50%;background:#0060FF;display:grid;place-items:center;font-family:Syne;font-weight:800;font-size:34px">${name[0]}</div><div><div style="font-size:38px;font-weight:800">${name}</div><div style="font-size:30px;color:#9fb3d9">${role}</div></div></div>
+ </div>`)},
+'card':(name,title,sub)=>{shell(title.toUpperCase(),`
+ <div class="abs" style="top:250px;text-align:center"><div class="k">MILINK · HIGHLIGHTS</div><div class="h" style="font-size:120px;margin-top:20px">${title}</div></div>
+ <div style="position:absolute;left:160px;top:580px;width:760px;height:760px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 42%,#0a4bd6 0%,#06285f 55%,#060c18 100%);box-shadow:0 0 120px rgba(0,96,255,.55)">
+  <div style="position:absolute;inset:40px;border-radius:50%;border:6px solid rgba(143,181,255,.55);box-shadow:inset 0 0 80px rgba(0,96,255,.4)"></div>
+  ${name==='start'?'<img src="Logo-White.png" style="position:absolute;left:50%;top:50%;width:520px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 24px rgba(120,170,255,.8))">':I[name].replace('<svg','<svg style="position:absolute;left:50%;top:50%;width:340px;height:340px;transform:translate(-50%,-50%);stroke:#fff;fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 24px rgba(120,170,255,.8))"')}
+ </div>
+ <div class="abs" style="top:1460px;text-align:center"><p class="p">${sub}</p></div>`)},
+'work':(n)=>{const W=[
+ ['fair-construction','Fair Construction','Construction company site with project showcases.',['Web design','Development','Construction'],'255,200,70','fairconstructions.ca'],
+ ['kind-steps','Kind Steps','Therapy & behavioral services site designed for families.',['Web design','Development','Healthcare'],'150,112,255','kindsteps.ca'],
+ ['intershine','Intershine','Cleaning services website with a modern, clear layout.',['Web design','Development','Local services'],'45,190,190',''],
+ ['zarsa-gold','Zarsa Gold','Jewelry e-commerce site built for elegance and trust.',['Web design','E-commerce','Jewelry'],'255,189,92','zarsa.ca'],
+ ['sky-contracting','Sky Contracting Inc','Renovation & cabinetry site highlighting services.',['Web design','Development','Contracting'],'66,138,240','skyinc.ca'],
+ ['tarahan-choob','Tarahan Choob','Cabinetry & office furniture design/build studio.',['Web design','Persian · RTL','Furniture'],'214,150,60',''],
+ ['peg-studio','PEG Studio','Interior design studio site with a calm, editorial layout.',['Web design','Development','Interior design'],'64,176,154','']][n-1];
+ const [slug,name,sum,tags,c,dom]=W;
+ shell('OUR WORK',`
+ <div style="position:absolute;inset:0;background:radial-gradient(900px 800px at 80% 35%,rgba(${c},.38),transparent 62%),radial-gradient(700px 600px at 10% 90%,rgba(${c},.18),transparent 60%)"></div>
+ <div class="abs" style="top:250px"><div class="k" style="color:rgb(${c})">PROJECT 0${n} / 07</div>
+ <div class="h" style="font-size:${name.length>16?80:name.length>14?92:110}px;margin-top:18px">${name}</div>
+ <p class="p" style="margin-top:20px;font-size:36px">${sum}</p></div>
+ ${lap(slug+'-desktop.jpg',40,700,820,'transform:perspective(1800px) rotateY(10deg) rotateX(3deg)')}
+ <div class="phone" style="left:690px;top:640px;width:320px;height:660px;transform:rotate(5deg)"><div class="isl"></div><div class="view"><img src="${slug}-mobile.jpg"></div></div>
+ <div class="phone" style="left:560px;top:960px;width:240px;height:490px;transform:rotate(-6deg)"><div class="isl" style="width:80px;margin-left:-40px;height:24px"></div><div class="view" style="position:relative"><img src="${slug}-mobile.jpg" style="position:absolute;top:-${Math.round(236*2.6)}px"></div></div>
+ <div class="abs" style="top:1560px;display:flex;gap:16px;flex-wrap:wrap">${tags.map(t=>`<span style="font-size:30px;font-weight:700;padding:14px 28px;border-radius:999px;border:2px solid rgba(${c},.6);color:#fff;background:rgba(${c},.14)">${t}</span>`).join('')}</div>
+ <div class="abs" style="top:1680px;display:flex;align-items:center;gap:18px;font-size:34px;font-weight:700;color:#cfe0ff">${dom?`<span style="width:16px;height:16px;border-radius:50%;background:#2ee59d;box-shadow:0 0 16px #2ee59d"></span>Live at ${dom}`:'Designed &amp; built by Milink'}</div>`)},
+};
+if(k.startsWith('cover-'))cover(k.slice(6));
+else if(k.startsWith('card-')){const C={start:['Start here','Who we are and how we work →'],work:['Our work','Websites we built for GTA businesses →'],reviews:['Reviews','What our clients say →'],pricing:['Pricing','Our website packages →'],services:['Services','Everything we can build for you →'],faq:['FAQ','Answers to the questions we get most →']};const n=k.slice(5);S.card(n,...C[n]);}
+else if(k.startsWith('work-'))S.work(+k.slice(5));
+else if(k.startsWith('faq-'))S.faq(+k.slice(4));
+else if(k.startsWith('review-'))S.review(+k.slice(7));
+else S[k]();
+</script></body></html>

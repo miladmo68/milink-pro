@@ -771,3 +771,4 @@ Skills live in `.claude/skills/<name>/SKILL.md` and are loaded automatically by 
 10. Never ship invented social proof (testimonials, ratings, logos, project counts, results).
 - 2026-11-04: Added Instagram highlight story images (`public/social/hl-*.jpg`: Start here, Reviews, FAQ) as temporary public media for Metricool scheduling. Robots-disallowed; remove after publishing. Review quotes are verbatim excerpts of the client-approved `testimonials`.
 - 2026-11-04: Temporary social media (highlight title cards, "7 websites" Reel + cover) hosted in `public/social/` for Metricool and removed after it copied them. Profile photo on @milink.ca updated (logo ~72% of the circle, approved by owner).
+- 2026-11-05: Added `social-kit/` (outside `public/`, not part of the site build): Instagram templates, fonts, logos and render scripts used for the weekly @milink.ca content package. Owner asked for a weekly Saturday package.
