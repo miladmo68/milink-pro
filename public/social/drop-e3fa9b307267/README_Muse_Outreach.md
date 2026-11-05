@@ -9,10 +9,10 @@ Goal: offer GTA businesses with a broken or weak website a **free CHECK** (a sho
    Milad Mohammadi
    Milink · Web design for Toronto & GTA businesses
    milink.ca · +1 (437) 600-3139
-   [Milink mailing address]
+   155 Beecroft Rd, North York, ON M2N 7C6
    If you'd rather not hear from us, just reply "no thanks" and we won't contact you again.
    ```
-   The mailing address line is **mandatory** for emails. If you do not have Milink's mailing address, ask Milad once before the first email. Until you have it, send **only the Instagram/Facebook DMs**.
+   The mailing address line is **mandatory** on every email (Milad confirmed this address on Nov 5, 2026). If Milad gives you a unit number, add it in front (e.g. "Unit 1234, 155 Beecroft Rd...").
 3. Only email addresses the business **published itself** (on its own website, Google profile, Instagram bio, or its own directory listing). Never guess an address (like info@theirdomain.com), never buy lists, never use a personal address you found somewhere else.
 4. **Max 5 new messages per day**, weekdays, 9 AM–4 PM Toronto time. Send each email individually (no CC/BCC groups, no mail-merge).
 5. **One follow-up only**, 5 business days later, if there is no reply (text below). Then stop.
