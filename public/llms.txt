@@ -33,6 +33,12 @@ Contact: info@milink.ca · +1 (437) 600-3139 · https://milink.ca/contact · Ins
 - Portfolio page: https://milink.ca/work
 - Client testimonials: https://milink.ca/testimonials
 
+## Guides
+
+- [How much does a website cost in Toronto?](https://milink.ca/guides/website-cost-toronto)
+- [How long does it take to build a website?](https://milink.ca/guides/how-long-to-build-a-website)
+- [Wix or a custom website?](https://milink.ca/guides/wix-vs-custom-website)
+
 ## Optional
 
 - [Sitemap](https://milink.ca/sitemap.xml)

@@ -1,4 +1,5 @@
 import { serviceDetails } from "../data/serviceDetails.js";
+import { guides, GUIDES_UPDATED } from "../data/guides.js";
 
 // Date the content of each route last changed. Update it when you edit that page
 // (a sitemap date that changes on every request teaches Google to ignore it).
@@ -34,5 +35,12 @@ export function getSitemapEntries() {
     priority: 0.75,
   }));
 
-  return [...staticEntries, ...serviceEntries];
+  const guideEntries = guides.map((g) => ({
+    url: `${BASE_URL}/guides/${g.slug}`,
+    lastModified: new Date(GUIDES_UPDATED),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticEntries, ...serviceEntries, ...guideEntries];
 }

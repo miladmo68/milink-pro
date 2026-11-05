@@ -4,6 +4,7 @@ import { SeoHero, SeoSection, SeoChecklist, SeoFaq, SeoLinks, SeoCta } from "../
 import { work, pricing } from "../../data/content.js";
 import { serviceDetails } from "../../data/serviceDetails.js";
 import { BASE_URL } from "../../config/site.js";
+import { guides } from "../../data/guides.js";
 
 const URL_ = `${BASE_URL}/web-design-toronto`;
 const DESCRIPTION =
@@ -102,6 +103,10 @@ export default function WebDesignTorontoPage() {
 
         <SeoSection eyebrow="FAQ" title="Questions Toronto business owners ask">
           <SeoFaq faqs={FAQS} />
+        </SeoSection>
+
+        <SeoSection eyebrow="Guides" title="Helpful guides before you hire">
+          <SeoLinks links={guides.map((g) => ({ href: `/guides/${g.slug}`, label: g.nav }))} />
         </SeoSection>
 
         <SeoCta text="Tell us about your business and we'll recommend the right package for your budget." />
