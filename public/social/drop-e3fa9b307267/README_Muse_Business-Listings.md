@@ -36,7 +36,7 @@ Goal: put Milink on the free directories that Google and AI assistants read, wit
 Do not stretch, recolour, crop or add effects to the logo. After uploading, check the round/square preview: the whole "M" must be visible.
 
 ## Social links (add on every listing that has the fields)
-Website `https://milink.ca` · Instagram `https://instagram.com/milink.ca` · WhatsApp `https://wa.me/14376003139` · Telegram **(ask Milad for the exact link)** · LinkedIn (after step 1). Never use Milad's personal Instagram.
+Website `https://milink.ca` · Instagram `https://instagram.com/milink.ca` · WhatsApp `https://wa.me/14376003139` · Telegram `https://t.me/milinkca` · LinkedIn (after step 1). Never use Milad's personal Instagram.
 
 ## The 7 listings (do them in this order)
 
@@ -62,10 +62,11 @@ Website `https://milink.ca` · Instagram `https://instagram.com/milink.ca` · Wh
 - **Away message**: ask Milad for his hours first, then: "Thanks for your message! We're away right now and will reply during business hours. Meanwhile you can see our work and prices at milink.ca"
 - **Quick replies**: `/price` → "Our packages start at $399 CAD for a one-page website and $699 CAD for up to five pages. Online stores are quoted per project. Details: milink.ca/pricing" · `/work` → "Here are some of the websites we've built: milink.ca/work"
 
-**Telegram** (ask Milad which account/channel is the business one; never his personal account):
-- Photo: `logos/avatar-white-on-blue_1000x1000.png` · Name: **Milink | Web Design Toronto**
+**Telegram** (`@milinkca`, the account already named "Milink" on +1 437 600 3139):
+- Name stays **Milink**. Username stays **@milinkca**.
+- Profile photo: it currently uses a 3D "M" image. Only switch to `logos/avatar-white-on-blue_1000x1000.png` if Milad says yes (so every platform shows the same logo).
 - Bio (max 70 chars): `Custom websites for Toronto & GTA businesses · milink.ca`
-- Channel description (if it's a channel): the **short description** + `Instagram: @milink.ca · WhatsApp: wa.me/14376003139`
+- Do not change anything else (privacy settings, devices, other accounts).
 
 **Instagram** is already set up: do not change the photo, name or bio. Only check the link in bio is `milink.ca`.
 
