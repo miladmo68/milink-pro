@@ -11,6 +11,30 @@ Goal: put Milink on the free directories that Google and AI assistants read, wit
 6. Never accept paid add-ons, never buy reviews, never write reviews yourself.
 7. Fill in `progress.csv` as you go (date, site, status, login email, profile URL, notes).
 
+## Which image goes where (all in `images/`)
+
+| Where | Field | File |
+|---|---|---|
+| LinkedIn company page | Logo | `logos/logo-blue-on-white_400x400.png` |
+| LinkedIn company page | Cover / banner | `covers/linkedin-cover_1128x191.jpg` (if it looks soft, use `linkedin-cover_2256x382_retina.jpg`) |
+| Bing Places | Logo / cover | `logos/logo-blue-on-white_1000x1000.png` · `covers/google-business-cover_1024x576.jpg` |
+| Apple Business Connect | Logo / cover photo | `logos/logo-blue-on-white_1000x1000.png` · `covers/google-business-cover_1024x576.jpg` |
+| Yellow Pages | Logo / photos | `logos/logo-blue-on-white_400x400.png` · the 7 files in `portfolio/` |
+| Clutch | Logo / portfolio items | `logos/logo-blue-on-white_400x400.png` · one `portfolio/` image per project |
+| DesignRush | Logo / cover / portfolio | `logos/logo-blue-on-white_400x400.png` · `covers/directory-banner_1200x630.jpg` · `portfolio/` |
+| Digital Main Street | Logo | `logos/logo-blue-on-white_400x400.png` |
+| WhatsApp Business | Profile photo | `logos/avatar-white-on-blue_1000x1000.png` |
+| Telegram | Profile / channel photo | `logos/avatar-white-on-blue_1000x1000.png` |
+| Facebook page (only if Milad asks) | Profile / cover | `logos/avatar-white-on-blue_1000x1000.png` · `covers/facebook-cover_1640x624.jpg` |
+| X / Twitter (only if Milad asks) | Header | `covers/x-twitter-header_1500x500.jpg` |
+| Any site asking for a dark-background logo | — | `logos/logo-mark-white_transparent_1000.png` |
+| Any site asking for a transparent logo | — | `logos/logo-mark-blue_transparent_1000.png` |
+
+Do not stretch, recolour, crop or add effects to the logo. After uploading, check the round/square preview: the whole "M" must be visible.
+
+## Social links (add on every listing that has the fields)
+Website `https://milink.ca` · Instagram `https://instagram.com/milink.ca` · WhatsApp `https://wa.me/14376003139` · Telegram **(ask Milad for the exact link)** · LinkedIn (after step 1). Never use Milad's personal Instagram.
+
 ## The 7 listings (do them in this order)
 
 | # | Site | Where to start | Time | Notes |
@@ -22,6 +46,25 @@ Goal: put Milink on the free directories that Google and AI assistants read, wit
 | 5 | **Clutch** | clutch.co → *Get Listed* → free profile | 30 min | Service lines: Web Design 50%, E-Commerce Development 20%, SEO 10%, Branding 10%, UI/UX 10%. Min. project size: **$1,000 or less** (lowest option). Hourly rate: lowest option ("< $25/hr" or "$25–$49/hr") — **ask Milad which one**. Portfolio: add the 7 projects from the copy file with their screenshot. Clutch will ask about "reviews": Clutch reviews are written by clients through Clutch's own phone/form process. Do **not** send these yet; Milad decides later which clients to ask. |
 | 6 | **DesignRush** | designrush.com → *Get Listed* / *Agency sign up* → free profile | 20 min | Same services, same descriptions, same 7 portfolio items. Decline any paid "featured" placement. |
 | 7 | **Digital Main Street (Ontario)** | digitalmainstreet.ca → look for *Vendor / Service Provider / Digital Service Squad partner* sign-up | 10 min | Digital Main Street mainly helps small Ontario businesses go digital; they list approved vendors. Check whether there is a **free** vendor/partner application. If there is, apply with the copy file. If it only offers paid membership or there is no vendor sign-up, skip it and write "no free vendor listing" in progress.csv. |
+
+## Bonus: make our own chat profiles match (15 min)
+
+**WhatsApp Business** (on Milad's business phone, +1 437 600 3139) → Settings → Business tools → Business profile:
+- Photo: `logos/avatar-white-on-blue_1000x1000.png` · Name: **Milink**
+- Category: *Professional services* · Description: the **tagline** from `listing-copy.txt`
+- Address: leave empty (service-area business) · Hours: ask Milad
+- Email: the business email · Websites: `https://milink.ca` and `https://instagram.com/milink.ca`
+- Business tools → **Greeting message** (on, "everyone not in address book"):
+  "Hi! Thanks for contacting Milink 👋 Tell us a little about your business and what you need (new website, online store, redesign or SEO), and we'll reply as soon as we can. You can also see our work at milink.ca/work"
+- **Away message**: ask Milad for his hours first, then: "Thanks for your message! We're away right now and will reply during business hours. Meanwhile you can see our work and prices at milink.ca"
+- **Quick replies**: `/price` → "Our packages start at $399 CAD for a one-page website and $699 CAD for up to five pages. Online stores are quoted per project. Details: milink.ca/pricing" · `/work` → "Here are some of the websites we've built: milink.ca/work"
+
+**Telegram** (ask Milad which account/channel is the business one; never his personal account):
+- Photo: `logos/avatar-white-on-blue_1000x1000.png` · Name: **Milink | Web Design Toronto**
+- Bio (max 70 chars): `Custom websites for Toronto & GTA businesses · milink.ca`
+- Channel description (if it's a channel): the **short description** + `Instagram: @milink.ca · WhatsApp: wa.me/14376003139`
+
+**Instagram** is already set up: do not change the photo, name or bio. Only check the link in bio is `milink.ca`.
 
 ## After each listing
 - Open the public profile in a private browser window and check: name, phone, website, area and description match the copy file exactly.
