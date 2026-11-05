@@ -3,7 +3,10 @@
 Goal: put Milink on the free directories that Google and AI assistants read, with **exactly the same name, phone, website and area everywhere**. Copy every field from `listing-copy.txt` (in this folder). Do not type anything from memory, and do not invent anything (no years in business, no team size, no awards, no "50+ projects", no ratings). If a form *requires* something not in the copy file, leave the listing unfinished and add it to the "Questions for Milad" list at the bottom of `progress.csv`.
 
 ## Rules (read first)
-1. **Use the business email for every account. Never use Milad's personal Gmail.** Ask Milad which business email to use before you start, and use that same email for all 7 sites.
+1. **Two emails, two jobs:**
+   - **Login / account email (hidden):** `miladmo68@gmail.com`. Use it to create every account (it is never shown publicly). Verification codes go there: ask Milad for them.
+   - **Public email (shown on the listing):** `info@milink.ca`. Put this in every visible "Email" / "Contact email" field.
+   - If a site has only one email field and it is shown publicly, use `info@milink.ca`.
 2. Free plans only. If a site asks for a card, a paid "boost", "featured", "premium" or "sponsored" upgrade, close that screen and choose the free option. If there is no free option, skip the site and note it.
 3. **Address:** Milink is a *service-area business* (no public storefront). Wherever possible choose "I deliver services to customers / hide my address", and set the service area to **Toronto, Markham, Mississauga, Vaughan, Richmond Hill (Greater Toronto Area), Ontario**. If a site will not save without a street address, stop and ask Milad; do not make one up.
 4. Logo and photos: use the files in `images/` only (logo square, cover, and the 7 portfolio screenshots).
@@ -53,7 +56,7 @@ Website `https://milink.ca` · Instagram `https://instagram.com/milink.ca` · Wh
 - Photo: `logos/avatar-white-on-blue_1000x1000.png` · Name: **Milink**
 - Category: *Professional services* · Description: the **tagline** from `listing-copy.txt`
 - Address: leave empty (service-area business) · Hours: ask Milad
-- Email: the business email · Websites: `https://milink.ca` and `https://instagram.com/milink.ca`
+- Email: `info@milink.ca` · Websites: `https://milink.ca` and `https://instagram.com/milink.ca`
 - Business tools → **Greeting message** (on, "everyone not in address book"):
   "Hi! Thanks for contacting Milink 👋 Tell us a little about your business and what you need (new website, online store, redesign or SEO), and we'll reply as soon as we can. You can also see our work at milink.ca/work"
 - **Away message**: ask Milad for his hours first, then: "Thanks for your message! We're away right now and will reply during business hours. Meanwhile you can see our work and prices at milink.ca"
