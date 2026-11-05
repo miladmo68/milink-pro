@@ -1,0 +1,38 @@
+# Milink
+
+> Milink (Milink Digital Agency) is a web design and development studio based in the Greater Toronto Area, Ontario, Canada. It designs and builds custom, mobile-friendly websites and online stores for small and local businesses in Toronto and the GTA, and works remotely with businesses outside the GTA.
+
+Contact: info@milink.ca · +1 (437) 600-3139 · https://milink.ca/contact · Instagram @milink.ca
+
+## Services
+
+- [Web design & development](https://milink.ca/services/web-design): custom business websites, built mobile-first, with on-page SEO.
+- [E-commerce development](https://milink.ca/services/ecommerce-development): Shopify and WordPress/WooCommerce stores, product pages, checkout and payments.
+- [SEO services](https://milink.ca/services/seo-services): technical fixes, page titles, descriptions, headings, structured data and sitemaps.
+- [Website maintenance](https://milink.ca/services/website-maintenance): updates, fixes and ongoing support.
+- [Branding](https://milink.ca/services/branding): brand identity for small businesses.
+- [UI/UX design](https://milink.ca/services/ui-ux-design): interface and user-experience design.
+- [Web design in Toronto](https://milink.ca/web-design-toronto): the Toronto/GTA service page.
+
+## Pricing (CAD)
+
+- Essential: from $399. A custom one-page website with an enquiry form, mobile-friendly layout, essential on-page SEO and one refinement round. Client supplies final text, logo and imagery.
+- Professional: from $699. Up to five custom pages (services, work, contact), calls to action, essential SEO across core pages, one refinement round.
+- E-commerce & Custom: custom quote. Shopify or WooCommerce store, checkout and payments, optional booking, integrations or multilingual support.
+- Details: https://milink.ca/pricing
+
+## Work (live client websites)
+
+- [Fair Construction](https://fairconstructions.ca/): construction and building
+- [Kind Steps](https://kindsteps.ca/): therapy and behavioural services
+- [Intershine](https://intershine-ca.vercel.app/): professional cleaning services
+- [Zarsa Gold](https://zarsa.ca/): jewellery online store
+- [Sky Contracting Inc.](https://skyinc.ca): renovation and contracting
+- [Tarahan Choob](https://woodline-ir.vercel.app/): cabinetry and interior design
+- [PEG Studio](https://peg-studio-ten.vercel.app/): custom furniture and interior design
+- Portfolio page: https://milink.ca/work
+- Client testimonials: https://milink.ca/testimonials
+
+## Optional
+
+- [Sitemap](https://milink.ca/sitemap.xml)
