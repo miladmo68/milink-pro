@@ -1,0 +1,17 @@
+Same company. New website. 🔁
+
+Techfahm is a managed IT partner for businesses across the GTA, Hamilton and Waterloo. Their old site was a 2023 WordPress template, with a stock-photo hero and an icon grid. It did the job, but it didn't show what they actually do.
+
+What we changed:
+→ Hand-coded Next.js instead of a theme
+→ A live network map in the hero instead of a stock photo
+→ Designed phone-first
+→ Six services, six dedicated pages Google can find
+→ "Book a free consultation" on every page
+
+Swipe for the before and after 👉
+Now live at techfahm.com
+
+Want your site next? DM us "CHECK" for a free website review.
+
+#TorontoWebDesign #WebDesignToronto #GTABusiness #WebsiteRedesign #BeforeAndAfter #NextJS #ITServices #SmallBusinessToronto #WebDesigner #Milink

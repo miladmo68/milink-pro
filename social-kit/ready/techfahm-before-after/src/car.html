@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Brico;src:url(bricolage-grotesque-latin.woff2) format('woff2');font-weight:200 800}
+@font-face{font-family:DM;src:url(dm-sans-latin.woff2) format('woff2');font-weight:100 1000}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1350px;overflow:hidden}
+body{background:#F2EEE7;color:#0E1220;font-family:DM,sans-serif;position:relative}
+.grain{position:absolute;inset:0;background:
+ radial-gradient(1200px 700px at 110% -10%,rgba(229,40,60,.10),transparent 60%),
+ radial-gradient(900px 600px at -20% 110%,rgba(14,18,32,.08),transparent 60%);pointer-events:none}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(14,18,32,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(14,18,32,.05) 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(#000,transparent 85%)}
+.top{position:absolute;z-index:20;left:64px;right:64px;top:56px;display:flex;justify-content:space-between;align-items:center;font:600 22px DM;letter-spacing:.14em;text-transform:uppercase;color:#5b6070}
+.top img{height:46px}
+.pg{font-variant-numeric:tabular-nums}
+h1,h2{font-family:Brico;font-weight:700;letter-spacing:-.035em;line-height:.95}
+.tag{display:inline-flex;align-items:center;gap:12px;font:700 22px DM;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;border-radius:999px}
+.tag.b{background:#d9d4cb;color:#4a4f5c}
+.tag.a{background:#E5283C;color:#fff}
+.dot{width:10px;height:10px;border-radius:50%;background:currentColor}
+.shot{position:absolute;overflow:hidden;border-radius:18px;box-shadow:0 40px 80px -30px rgba(14,18,32,.45),0 0 0 1px rgba(14,18,32,.08);background:#fff}
+.browser{position:absolute;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 50px 90px -30px rgba(14,18,32,.5),0 0 0 1px rgba(14,18,32,.1)}
+.browser .bar{height:46px;background:#e9e5de;display:flex;align-items:center;gap:9px;padding:0 18px}
+.browser .bar i{width:13px;height:13px;border-radius:50%;background:#c9c3b9;display:block}
+.browser .bar .url{margin-left:18px;flex:1;height:28px;border-radius:8px;background:#fff;font:500 16px DM;color:#6b7080;display:flex;align-items:center;padding:0 14px}
+.browser.dark .bar{background:#141a2b}.browser.dark .bar i{background:#2c3550}.browser.dark .bar .url{background:#0b1020;color:#9aa3b8}
+.browser .view{position:relative;overflow:hidden}
+.browser .view img{width:100%;display:block}
+.phone{position:absolute;border-radius:58px;background:#0b0d14;padding:14px;box-shadow:0 50px 90px -30px rgba(14,18,32,.6),inset 0 0 0 2px #2a2f3d}
+.phone .scr{border-radius:46px;overflow:hidden;width:100%;height:100%;position:relative;background:#0b1020}
+.phone .scr img{width:100%;display:block}
+.phone .isl{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:3}
+.foot{position:absolute;left:64px;right:64px;bottom:52px;display:flex;justify-content:space-between;align-items:center;font:600 22px DM;color:#5b6070}
+.swipe{display:flex;align-items:center;gap:12px}
+.swipe b{display:inline-block;width:60px;height:3px;background:#0E1220;position:relative}
+.swipe b:after{content:'';position:absolute;right:-2px;top:-6px;border:7.5px solid transparent;border-left:11px solid #0E1220;border-right:0}
+.note{position:absolute;font:600 22px DM;color:#0E1220;background:#fff;border-radius:14px;padding:14px 20px;box-shadow:0 20px 40px -20px rgba(14,18,32,.4);display:flex;gap:12px;align-items:center}
+.note .n{font:800 18px DM;background:#0E1220;color:#fff;border-radius:50%;width:32px;height:32px;display:grid;place-items:center}
+.red{color:#E5283C}
+.slide{display:none;position:absolute;inset:0}
+</style></head><body>
+<div class="grain"></div><div class="grid"></div>
+<div class="top"><img src="Logo-Blue.png"><span class="pg" id="pg"></span></div>
+
+<!-- 1 COVER -->
+<div class="slide" id="s1">
+  <div style="position:absolute;left:64px;top:150px">
+    <div class="tag a"><span class="dot"></span>Website redesign</div>
+    <h1 style="font-size:132px;margin-top:30px">Same company.<br><span class="red">New website.</span></h1>
+    <p style="font:500 32px/1.35 DM;color:#4a4f5c;margin-top:28px;width:820px">Techfahm, a GTA managed&nbsp;IT company. Before and after, side by side.</p>
+  </div>
+  <div style="position:absolute;left:64px;right:64px;top:720px;height:500px">
+    <div class="browser" style="left:0;top:40px;width:560px;transform:rotate(-4deg);filter:saturate(.75)">
+      <div class="bar"><i></i><i></i><i></i><div class="url">techfahm.com · before</div></div>
+      <div class="view" style="height:330px"><img src="d00.jpg" style="width:100%"></div>
+    </div>
+    <div class="browser dark" style="right:0;top:0;width:600px;transform:rotate(3deg)">
+      <div class="bar"><i></i><i></i><i></i><div class="url">techfahm.com · after</div></div>
+      <div class="view" style="height:372px"><img src="new-desk-hero.jpg"></div>
+    </div>
+    <div class="tag b" style="position:absolute;left:30px;bottom:-6px">Before</div>
+    <div class="tag a" style="position:absolute;right:30px;bottom:-30px">After</div>
+  </div>
+  <div class="foot"><span>Designed &amp; built by Milink</span><span class="swipe">Swipe <b></b></span></div>
+</div>
+
+<!-- 2 BEFORE -->
+<div class="slide" id="s2">
+  <div style="position:absolute;left:64px;top:150px">
+    <div class="tag b"><span class="dot"></span>Before</div>
+    <h2 style="font-size:96px;margin-top:26px">A template site<br>from 2023.</h2>
+    <p style="font:500 30px/1.4 DM;color:#4a4f5c;margin-top:22px;width:880px">A WordPress theme, a stock-photo hero and an icon grid. It did the job, but it didn’t show what Techfahm actually does.</p>
+  </div>
+  <div class="browser" style="left:120px;top:610px;width:840px">
+    <div class="bar"><i></i><i></i><i></i><div class="url">techfahm.com</div></div>
+    <div class="view" style="height:600px"><img src="old-full.jpg"></div>
+  </div>
+  <div class="foot"><span>techfahm.com · before</span><span class="swipe">After <b></b></span></div>
+</div>
+
+<!-- 3 AFTER HERO -->
+<div class="slide" id="s3" style="background:#0B1020">
+  <div style="position:absolute;inset:0;background:radial-gradient(900px 600px at 80% 20%,rgba(229,40,60,.22),transparent 60%),radial-gradient(800px 500px at 0% 100%,rgba(60,90,200,.18),transparent 60%)"></div>
+  <div style="position:absolute;left:64px;top:150px;color:#fff">
+    <div class="tag a"><span class="dot"></span>After</div>
+    <h2 style="font-size:96px;margin-top:26px">IT that looks<br>like IT.</h2>
+    <p style="font:500 30px/1.4 DM;color:#aab2c6;margin-top:22px;width:900px">A live network map of the GTA, Hamilton and Waterloo replaces the stock photo. Visitors see what Techfahm does in one second.</p>
+  </div>
+  <div class="browser dark" style="left:64px;top:640px;width:952px">
+    <div class="bar"><i></i><i></i><i></i><div class="url">techfahm.com</div></div>
+    <div class="view" style="height:560px"><img src="new-desk-hero.jpg"></div>
+  </div>
+  <div class="foot" style="color:#8e97ad"><span>techfahm.com · after</span><span class="swipe" style="color:#fff">Mobile <b style="background:#fff"></b></span></div>
+</div>
+
+<!-- 4 MOBILE -->
+<div class="slide" id="s4">
+  <div style="position:absolute;left:64px;top:150px">
+    <div class="tag a"><span class="dot"></span>Mobile first</div>
+    <h2 style="font-size:92px;margin-top:26px">Built for the<br>phone in your hand.</h2>
+  </div>
+  <div class="phone" style="left:90px;top:530px;width:290px;height:628px;transform:rotate(-5deg)"><div class="isl"></div><div class="scr"><img src="mobile-hero.jpg"></div></div>
+  <div class="phone" style="left:395px;top:470px;width:300px;height:650px;z-index:2"><div class="isl"></div><div class="scr"><img src="mobile-services-stack.jpg"></div></div>
+  <div class="phone" style="left:710px;top:530px;width:290px;height:628px;transform:rotate(5deg)"><div class="isl"></div><div class="scr"><img src="mobile-menu.jpg"></div></div>
+  <div class="foot"><span>Hero · services · menu</span><span class="swipe">Services <b></b></span></div>
+</div>
+
+<!-- 5 SERVICES -->
+<div class="slide" id="s5" style="background:#0B1020">
+  <div style="position:absolute;inset:0;background:radial-gradient(800px 600px at 10% 10%,rgba(229,40,60,.18),transparent 60%)"></div>
+  <div style="position:absolute;left:64px;top:150px;color:#fff">
+    <div class="tag a"><span class="dot"></span>Every service, its own page</div>
+    <h2 style="font-size:88px;margin-top:26px">Six services.<br>Six pages Google can find.</h2>
+  </div>
+  <div class="browser dark" style="left:64px;top:560px;width:620px;transform:rotate(-2deg)">
+    <div class="bar"><i></i><i></i><i></i><div class="url">/services/cybersecurity</div></div>
+    <div class="view" style="height:388px"><img src="desktop-service-page.jpg"></div>
+  </div>
+  <div class="browser dark" style="right:64px;top:820px;width:560px;transform:rotate(2deg);z-index:2">
+    <div class="bar"><i></i><i></i><i></i><div class="url">techfahm.com/#services</div></div>
+    <div class="view" style="height:350px"><img src="desktop-services.jpg"></div>
+  </div>
+  <div class="foot" style="color:#8e97ad"><span>Network · Support · Cloud · Security · Backup · Consulting</span></div>
+</div>
+
+<!-- 6 WHAT CHANGED + CTA -->
+<div class="slide" id="s6">
+  <div style="position:absolute;left:64px;top:150px;right:64px">
+    <h2 style="font-size:96px">What changed.</h2>
+    <div style="margin-top:44px;display:grid;gap:0">
+      <div class="row"><span>Platform</span><s>WordPress theme</s><b>Hand-coded Next.js</b></div>
+      <div class="row"><span>Hero</span><s>Stock photo</s><b>Live network map</b></div>
+      <div class="row"><span>Design</span><s>Ready-made template</s><b>Custom, phone-first</b></div>
+      <div class="row"><span>Services</span><s>One icon grid</s><b>Six dedicated pages</b></div>
+      <div class="row"><span>Call to action</span><s>“Get Started”</s><b>Book a free consultation</b></div>
+    </div>
+  </div>
+  <div style="position:absolute;left:64px;right:64px;top:790px;height:200px;display:grid;grid-template-columns:1fr 1fr;gap:28px">
+    <div style="position:relative;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px rgba(14,18,32,.12);filter:saturate(.7)"><img src="d00.jpg" style="width:100%;display:block"><span class="tag b" style="position:absolute;left:14px;bottom:14px;font-size:17px;padding:8px 14px">Before</span></div>
+    <div style="position:relative;border-radius:18px;overflow:hidden;box-shadow:0 20px 40px -20px rgba(14,18,32,.5)"><img src="new-desk-hero.jpg" style="width:100%;display:block"><span class="tag a" style="position:absolute;left:14px;bottom:14px;font-size:17px;padding:8px 14px">After</span></div>
+  </div>
+  <div style="position:absolute;left:64px;right:64px;bottom:140px;background:#0E1220;color:#fff;border-radius:28px;padding:44px 48px;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font:700 50px/1.05 Brico;letter-spacing:-.03em">Your site next?</div><div style="font:500 26px DM;color:#aab2c6;margin-top:12px">DM us “CHECK” for a free website review.</div></div>
+    <div style="font:700 30px DM;background:#E5283C;border-radius:999px;padding:20px 32px">milink.ca</div>
+  </div>
+  <div class="foot"><span>Techfahm · now live at techfahm.com</span><span>@milink.ca</span></div>
+</div>
+
+<style>
+.row{display:grid;grid-template-columns:190px 1fr 1.2fr;gap:20px;align-items:center;padding:26px 0;border-top:2px solid rgba(14,18,32,.12);font:500 28px DM}
+.row:last-child{border-bottom:2px solid rgba(14,18,32,.12)}
+.row span{font:700 20px DM;letter-spacing:.14em;text-transform:uppercase;color:#8a8f9c}
+.row s{color:#8a8f9c;text-decoration-color:#E5283C;text-decoration-thickness:3px}
+.row b{font-weight:700;color:#0E1220}
+.row b:before{content:'→ ';color:#E5283C}
+</style>
+<script>
+const s=+(new URLSearchParams(location.search).get('s')||1);
+document.getElementById('s'+s).style.display='block';
+document.getElementById('pg').textContent=String(s).padStart(2,'0')+' / 06';
+if(s===3||s===5){document.querySelector('.top img').src='Logo-White.png';document.querySelector('.top').style.color='#8e97ad';document.querySelector('.grid').style.display='none'}
+</script>
+</body></html>
