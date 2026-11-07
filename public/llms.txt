@@ -25,6 +25,7 @@ Contact: info@milink.ca · +1 (437) 600-3139 · https://milink.ca/contact · Ins
 
 - [Fair Construction](https://fairconstructions.ca/): construction and building
 - [Kind Steps](https://kindsteps.ca/): therapy and behavioural services
+- [Techfahm](https://techfahm.com/): managed IT services (redesign, hand-coded in Next.js)
 - [Intershine](https://intershine-ca.vercel.app/): professional cleaning services
 - [Zarsa Gold](https://zarsa.ca/): jewellery online store
 - [Sky Contracting Inc.](https://skyinc.ca): renovation and contracting

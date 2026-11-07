@@ -110,6 +110,16 @@ export const work = [
     shots: { desktop: shot("fair-construction", "desktop", 1200, 5834), mobile: shot("fair-construction", "mobile", 390, 9000) },
   },
   {
+    id: "p8",
+    slug: "techfahm",
+    title: "Techfahm",
+    summary: "Managed IT company site, redesigned and hand-coded in Next.js.",
+    tags: ["Redesign", "Development", "IT services"],
+    tint: [229, 40, 60],
+    liveUrl: "https://techfahm.com/",
+    shots: { desktop: shot("techfahm", "desktop", 1200, 9579), mobile: shot("techfahm", "mobile", 390, 11088) },
+  },
+  {
     id: "p2",
     slug: "kind-steps",
     title: "Kind Steps",
