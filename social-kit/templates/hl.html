@@ -116,18 +116,19 @@ const S={
   ${name==='start'?'<img src="Logo-White.png" style="position:absolute;left:50%;top:50%;width:520px;transform:translate(-50%,-50%);filter:drop-shadow(0 0 24px rgba(120,170,255,.8))">':I[name].replace('<svg','<svg style="position:absolute;left:50%;top:50%;width:340px;height:340px;transform:translate(-50%,-50%);stroke:#fff;fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 24px rgba(120,170,255,.8))"')}
  </div>
  <div class="abs" style="top:1460px;text-align:center"><p class="p">${sub}</p></div>`)},
-'work':(n)=>{const W=[
+'work':(n)=>{let W=[
  ['fair-construction','Fair Construction','Construction company site with project showcases.',['Web design','Development','Construction'],'255,200,70','fairconstructions.ca'],
  ['kind-steps','Kind Steps','Therapy & behavioral services site designed for families.',['Web design','Development','Healthcare'],'150,112,255','kindsteps.ca'],
  ['intershine','Intershine','Cleaning services website with a modern, clear layout.',['Web design','Development','Local services'],'45,190,190',''],
  ['zarsa-gold','Zarsa Gold','Jewelry e-commerce site built for elegance and trust.',['Web design','E-commerce','Jewelry'],'255,189,92','zarsa.ca'],
  ['sky-contracting','Sky Contracting Inc','Renovation & cabinetry site highlighting services.',['Web design','Development','Contracting'],'66,138,240','skyinc.ca'],
  ['tarahan-choob','Tarahan Choob','Cabinetry & office furniture design/build studio.',['Web design','Persian · RTL','Furniture'],'214,150,60',''],
- ['peg-studio','PEG Studio','Interior design studio site with a calm, editorial layout.',['Web design','Development','Interior design'],'64,176,154','']][n-1];
+ ['peg-studio','PEG Studio','Interior design studio site with a calm, editorial layout.',['Web design','Development','Interior design'],'64,176,154',''],
+ ['techfahm','Techfahm','Managed IT company site, redesigned and hand-coded in Next.js.',['Redesign','Next.js','IT services'],'229,40,60','techfahm.com']];const TOT=W.length;W=W[n-1];
  const [slug,name,sum,tags,c,dom]=W;
  shell('OUR WORK',`
  <div style="position:absolute;inset:0;background:radial-gradient(900px 800px at 80% 35%,rgba(${c},.38),transparent 62%),radial-gradient(700px 600px at 10% 90%,rgba(${c},.18),transparent 60%)"></div>
- <div class="abs" style="top:250px"><div class="k" style="color:rgb(${c})">PROJECT 0${n} / 07</div>
+ <div class="abs" style="top:250px"><div class="k" style="color:rgb(${c})">PROJECT 0${n} / 0${TOT}</div>
  <div class="h" style="font-size:${name.length>16?80:name.length>14?92:110}px;margin-top:18px">${name}</div>
  <p class="p" style="margin-top:20px;font-size:36px">${sum}</p></div>
  ${lap(slug+'-desktop.jpg',40,700,820,'transform:perspective(1800px) rotateY(10deg) rotateX(3deg)')}

@@ -7,7 +7,7 @@ Use them in the Muse package for the week of Mon Nov 16 – Sun Nov 22, 2026:
 |---|---|---|
 | Tue story (interactive) | Tue Nov 17, 8:00 PM | story-poll.jpg + Instagram POLL sticker in the empty bottom area: options "A · Before" / "B · After" |
 | Wed Reel | Wed Nov 18, 5:00 PM | reel.mp4 (16 s, original music, no IG music), cover reel-cover.jpg, reel-caption.txt, reel-alt-text.txt |
-| Thu story | Thu Nov 19, 8:00 PM | Reshare Wednesday's Reel to story with a "Link" sticker to techfahm.com |
+| Thu stories (related pair) | Thu Nov 19, 8:00 PM | 1) Reshare Wednesday's Reel to story with a "Link" sticker to techfahm.com; 2) work-highlight-08-techfahm.jpg with a Link sticker to https://techfahm.com. Add BOTH to the existing "Work" highlight (Milad asked for Techfahm to be in the Work highlight). |
 | Fri post | Fri Nov 20, 4:30 PM | carousel-01..06.jpg (4:5), carousel-caption.txt, carousel-alt-text.txt |
 
 Facts on the assets are real (old site = 2023 WordPress template; new = hand-coded Next.js, live network map hero, 6 service pages). Do not add numbers or claims.
