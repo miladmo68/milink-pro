@@ -162,11 +162,11 @@ export const work = [
   {
     id: "p6",
     slug: "tarahan-choob",
-    title: "Tarahan Choob",
+    title: "طراحان چوب",
     summary: "Cabinetry & office furniture design/build studio.",
     tags: ["Web design", "Persian · RTL", "Furniture"],
     tint: [214, 150, 60],
-    liveUrl: "https://woodline-ir.vercel.app/",
+    liveUrl: "https://tarahanchoob.com/",
     shots: { desktop: shot("tarahan-choob", "desktop", 1200, 4990), mobile: shot("tarahan-choob", "mobile", 390, 9000) },
   },
   {
