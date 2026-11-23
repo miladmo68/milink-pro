@@ -162,7 +162,7 @@ export const work = [
   {
     id: "p6",
     slug: "tarahan-choob",
-    title: "طراحان چوب",
+    title: "Tarahan Choob",
     summary: "Cabinetry & office furniture design/build studio.",
     tags: ["Web design", "Persian · RTL", "Furniture"],
     tint: [214, 150, 60],
