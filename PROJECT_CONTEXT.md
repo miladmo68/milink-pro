@@ -8,6 +8,8 @@
 
 All Marketing / Landing-page components, styles, copy, animations, SEO metadata, and layouts are **frozen by default**. This includes `/`, hero sections, services, work, pricing, testimonials, contact, navigation, footer, and marketing route pages.
 
+**Portfolio record update (2026-11-23):** The portfolio entry with slug `tarahan-choob` displays as **طراحان چوب** and its sole live-site URL is `https://tarahanchoob.com/`; the retired `woodline-ir.vercel.app` address must not be presented to visitors.
+
 Under **no circumstances** may future automated or manual work alter, refactor, restyle, reorganize, or otherwise touch marketing files unless the user explicitly and unambiguously authorizes marketing work. Dashboard styling, theming, logic, and bug fixes must be isolated to `/admin`, `/portal`, authentication pages, dashboard-specific API routes, and dashboard-specific wrappers/components.
 
 ### Frozen marketing scope
